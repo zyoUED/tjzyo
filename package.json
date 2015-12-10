@@ -1,0 +1,19 @@
+{
+  "name": "project-name",
+  "description": "project created by thinkjs",
+  "version": "0.1.0",
+  "author": {},
+  "dependencies": {
+    "request": "",
+    "thinkjs": "*"
+  },
+  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "readmeFilename": "README.md"
+}

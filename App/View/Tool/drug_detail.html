@@ -1,0 +1,122 @@
+<% include ../tpl/common_head.html %>
+
+<body class="store-detail ms-controller" ms-controller='drug_detail'>
+    <% include ../tpl/common_header.html %>
+    <p class=" zyo-pdbottom"></p>
+    <section class="box-800">
+        <div class="zyo-box zyo-box-last">
+            <div class="col-3 pull-left">
+                <div class="zyo-pdleft">
+                    <img class="col-12" ms-attr-src='drugInfo.picPath||"/resource/img/img_loading.png"' ms-css-border='"1px solid lightgray"' />
+                </div>
+            </div>
+            <div class="col-9 pull-left">
+                <div class="zyo-pdleft big">
+                    <p class="">
+                        <b ms-text='drugInfo.drugName'></b>
+                        <small class="badge-sm text-white zyo-bg-chufangyao" ms-if='drugInfo.OTC==0'>处方药</small>
+                        <small class="badge-sm text-white zyo-bg-xiyao" ms-if='drugInfo.xiyao==1'>西药</small>
+                        <small class="badge-sm text-white zyo-bg-yibaoyao" ms-if='drugInfo.yibao==1'>医保药</small>
+                        <small class="badge-sm text-white zyo-bg-ylqx" ms-if='drugInfo.numberType==1'>医疗器械</small>
+                        <small class="badge-sm text-white zyo-bg-bjsp" ms-if='drugInfo.numberType==2'>保健食品</small>
+                        <small class="badge-sm text-white zyo-bg-bjsp" ms-if='drugInfo.numberType==3'>参茸饮片</small>
+                        <small class="badge-sm text-white zyo-bg-bjsp" ms-if='drugInfo.numberType==5'>化妆品</small>
+                        <small class="badge-sm text-white zyo-bg-bjsp" ms-if='drugInfo.numberType==6'>消毒用品</small>
+<!--                        <small class="badge-sm text-white zyo-bg-bjsp" ms-if='drugInfo.numberType==4'>日常用品</small>-->
+                        <small class="badge-sm text-white zyo-bg-otc" ms-if='drugInfo.OTC==1'>OTC</small>
+                        <small class="badge-sm text-white zyo-bg-zhongchenyao" ms-if='drugInfo.xiyao==0'>中成药</small>
+                    </p>
+					<a ms-attr-href='"/tool/drug/info?drugId="+drugInfo.drugId'>
+						<p class="a text-info small">药品说明书</p>
+					</a>
+                    <p class="text-gray small">
+                        规格：<span ms-text='drugInfo.pack+" "+drugInfo.form'></span>
+                    </p>
+                    <p class="text-gray small">
+                        厂商：<span class="a text-info" ms-text='drugInfo.companyName'></span>
+                    </p>
+                </div>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div class="zyo-box" ms-if='indicationList.length'>
+            <p class="text-dark zyo-pdleft big">适用症</p>
+        </div>
+        <div class="zyo-box zyo-box-last container" ms-if='indicationList.length'>
+                <a class="text-warning a" ms-repeat-el='indicationList' ms-text='el.keyWord' ms-css-margin-right='"1em"' ms-css-display='"inline-block"' ms-data-id='el.keyId' ms-data-type='el.keyType' ms-href='"/tool/symptom/detail?symptomId="+el.keyId+"&symptomType="+el.keyType'></a>
+        </div>
+        <div class="zyo-box zyo-pdleft" ms-if='nearStoreList.length'>
+            <p class="p text-gray">附近药店(<span ms-text='nearStoreList.length'></span>)</p>
+            <dl>
+                <dd class="dd-box" ms-repeat-el='[0,1]'>
+                    <a ms-attr-href='"/tool/store/detail?storeId="+nearStoreList[el].storeId'>
+                        <div class="col-3 pull-left" ms-if='!!nearStoreList[el].storePic'>
+                            <div class="zyo-pdright">
+                                <img class="col-12" ms-attr-src='nearStoreList[el].storePic||"/resource/img/img_loading.png"' />
+                            </div>
+                        </div>
+                        <div class="col-9 pull-left" ms-attr-class='!!nearStoreList[el].storePic?"col-9 pull-left":"col-12"'>
+                            <div class="zyo-pdright">
+                                <p class="b text-dark" ms-text='nearStoreList[el].storeName'></p>
+                                <div class="p" ms-css-padding='"10px 0 0"'>
+                                    <small class="text-white badge-sm zyo-bg-warning" ms-if='nearStoreList[el].tag4==1' ms-css-margin='"-5px auto"'>送货上门</small>
+                                    <small class="text-white badge-sm zyo-bg-warning" ms-if='nearStoreList[el].tag3==1' ms-css-margin='"-5px auto"'>24H</small>
+                                    <small class="text-white badge-sm zyo-bg-info" ms-if='nearStoreList[el].tag1==1' ms-css-margin='"-5px auto"'>医保店</small>
+                                    <small class="text-white badge-sm zyo-bg-grass" ms-if='nearStoreList[el].tag2==1' ms-css-margin='"-5px auto"'>坐堂医生</small>
+                                    <small class="text-white badge-sm zyo-bg-yes" ms-if='nearStoreList[el].tag5==1' ms-css-margin='"-5px auto"'>中草药</small>
+                                    <small class="text-white badge-sm zyo-bg-primary" ms-if='nearStoreList[el].tag6==1' ms-css-margin='"-5px auto"'>熬</small>
+                                    <small class="text-white badge-sm zyo-bg-info" ms-if='nearStoreList[el].isCoupon==1' ms-css-margin='"-5px auto"'>券</small>
+                                </div>
+                                <div class="col-8 pull-left" >
+                                    <span class="pull-left" style="padding:0;margin-right:.25em;" ms-repeat-ej=[1,2,3,4,5]>
+                                        <img class="" src='/resource/img/icon_starfull.png' ms-if='nearStoreList[el].rank>ej' height=14 />
+                                        <img class="" src='/resource/img/icon_starhalf.png' ms-if='nearStoreList[el].rank==ej' height=14 />
+                                        <img class="" src='/resource/img/icon_starnull.png' ms-if='nearStoreList[el].rank<ej' height=14 />
+                                    </span>
+                                    <div class="-col-4 pull-left"><span ms-text='nearStoreList[el].commentNum'></span>评</div>
+                                </div>
+                                <div class="pull-right text-right"><span ms-text='nearStoreList[el].distance'></span></div>
+                                <div class="clear"></div>
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </a>
+                </dd>
+            </dl>
+        </div>
+        <a ms-attr-href='"/tool/store?drugId="+drugInfo.drugId'>
+            <div class='zyo-box zyo-box-last box-88 link-right-arrow btn-link'>查看更多附近药店</div>
+        </a>
+    </section>
+    <% include ../tpl/common_footer.html %>
+    <script>
+        require(['avalon'], function(avalon){
+            var app_header= avalon.define({
+                $id: 'app_header',
+                navbarCtrl: "<img class='-col-2' src='/resource/img/btn_nav_backward.png'/>",
+                navbarCtrlFn: function(){
+                    history.go(-1);
+                },
+                navbarInfo: '',
+                appTitle: '药品详情',
+                navbarMenu: "<img class='pull-right' src='/resource/img/icon_nav_claim.png' />",
+                navbarMenuFn: function(){
+                    location.href= '/';
+                },
+                navbarFilter: "",
+                navbarFilterFn: function(){},
+            })
+            avalon.scan()
+        })
+        require(['avalon'], function(avalon){
+            var drug_detail= avalon.define({
+                $id: 'drug_detail',
+                drugInfo: <%- drugInfo %>,
+                indicationList: <%- indicationList %>,
+                nearStoreList: <%- nearStoreList %>,
+            })
+            avalon.scan()
+        })
+    </script>
+
+</body>

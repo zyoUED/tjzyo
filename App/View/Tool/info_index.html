@@ -1,0 +1,153 @@
+<% include ../tpl/common_head.html %>
+    <link rel="stylesheet" href="/resource/module/owl.carousel/owl-carousel/owl.carousel.css" />
+    <link rel="stylesheet" href="/resource/module/owl.carousel/owl-carousel/owl.theme.css" />
+    <style>
+        .owl-carousel{padding-top: 40px;}
+        .owl-controls{top: 0;position: absolute;margin-right: -100%;}
+        .owl-controls .owl-page, .owl-controls .owl-buttons div{width: 40px;height: 40px;display: inline-block;}
+    </style>
+    
+<body class="main-info" ms-controller='info_main'>
+    <% include ../tpl/common_header.html %>
+    
+    <div class="p"></div>
+    <div class="box-800-">
+        <!--owl-->
+        <div id="owl-info" class="owl-carousel">
+            <div class="item">
+                <p class="p"></p>
+                <a class="" ms-attr-href='"http://phone.lkhealth.net/ydzx/business/apppage/newsdetail.html?dataid="+el.dataId' ms-repeat-el='channelinfoList' ms-data-id='el.dataId'>
+                    <dl class="zyo-box-last zyo-box">
+                        <div class="col-3 pull-left">
+                            <div class="zyo-pdleft">
+                                <img class="col-12" ms-attr-src='el.pic' />
+                            </div>
+                        </div>
+                        <div class="col-9 pull-left">
+                            <div class="container">
+                                <textarea class="text-black b big" ms-text='el.dataTitle' style="border:0;height:2.5em;" disabled></textarea>
+                                <p class="text-gray small" ms-text='el.content'></p>
+                                <p class="pull-right text-gray small" style="margin-top:-1.1em;background:white;">
+                                    <span class="text-gray" ms-text='el.likeCount'></span>收藏
+                                </p>
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </dl>
+                </a>
+            </div>
+            <div class="item row-9" ms-repeat-el='info_list'>
+                <iframe class="col-12 row-12" ms-data-id='el.id' ms-attr-src='el.src' style="border:none;outline:none;overflow:auto;"></iframe>
+            </div>
+        </div>
+        <!--endof owl-->
+    </div>
+    
+    <% include ../tpl/common_footer.html %>
+
+    <script>
+        avalon.config({
+            paths: {
+                owl: '../module/owl.carousel/owl-carousel/owl.carousel.min.js',
+            },
+            shim: {
+                owl: {
+                    exports: 'owl'
+                },
+            },
+        })
+        require(['jquery'], function($){
+            require(['owl'], function(){
+                $("#owl-info").owlCarousel({
+                    navigation : 0,
+                    slideSpeed : 300,
+                    pagination : true,
+                    paginationSpeed : 400,
+                    lazyLoad: 1,
+                    items : 1,
+                    itemsDesktop : 1,
+                    itemsDesktopSmall : 1,
+                    itemsTablet: 1,
+                    itemsMobile : 1,
+                    autoplay:400,
+                })
+                $(".owl-pagination").owlCarousel({
+                    navigation : 0,
+                    slideSpeed : 300,
+                    pagination : false,
+                    paginationSpeed : 400,
+                    lazyLoad: 1,
+                    items : 4,
+                })
+            })
+        })
+        require(['avalon'], function(avalon){
+            var app_header= avalon.define({
+                $id: 'app_header',
+                navbarCtrl: "<img class='-col-2' src='/resource/img/btn_nav_backward.png'/>",
+                navbarCtrlFn: function(){
+                    history.go(-1);
+                },
+                navbarFilter:'',
+                appTitle: '资讯',
+                navbarMenu: "<img class='-col-12' src='/resource/img/icon_nav_claim.png' />",
+                navbarMenuFn: function(){
+                    location.href= '/';
+                }
+            })
+            avalon.scan()
+        })
+        require(['avalon'], function(avalon){
+            var info_main= avalon.define({
+                $id: 'info_main',
+                channelinfoList: [
+{
+"dataId": "22655",
+"dataTitle": "世界过敏日，专家谈哮喘",
+"pic": "http://image.lkhealth.net/article_img/small_559c7d00bac41.jpg",
+"content": "7月8日世界过敏日，增强全民对过敏性疾病的认识",
+"likeCount": "234",
+"isAlbum": "0",
+"infoType": "0"
+},
+{
+"dataId": "22662",
+"dataTitle": "世界过敏日 特殊宝宝如何喂养",
+"pic": "http://image.lkhealth.net/article_img/small_559c9a3039f00.jpg",
+"content": "新华医院儿童与青少年保健科 主任医师 教授 盛晓阳",
+"likeCount": "326",
+"isAlbum": "0",
+"infoType": "0"
+},
+{
+"dataId": "22661",
+"dataTitle": "一句话搞定孩子耍赖皮",
+"pic": "http://image.lkhealth.net/article_img/small_559c94d72a3ab.jpg",
+"content": "东南大学附属中大医院心理精神科主治医师 李英辉",
+"likeCount": "338",
+"isAlbum": "0",
+"infoType": "0"
+},
+{
+"dataId": "22008",
+"dataTitle": "【科普】吃哪些药不宜喝水",
+"pic": "http://image.lkhealth.net/article_img/small_5562e30b68501.jpg",
+"content": "外周镇咳药：如复方甘草合剂、止咳糖浆、枇杷露等",
+"likeCount": "267",
+"isAlbum": "0",
+"infoType": "0"
+},
+],
+                info_list: [
+                    {id: '123', title:'头条', src: 'http://phone.lkhealth.net/ydzx/business/apppage/newsdetail.html'},
+                    {id: '223', title:'两性知识', src: 'http://phone.lkhealth.net/ydzx/business/apppage/druginfo.html'},
+                    {id: '321', title:'养生保健', src: 'http://phone.lkhealth.net/ydzx/business/apppage/shopperinfo.html'},
+                    {id: '321', title:'养生保健', src: 'http://phone.lkhealth.net/ydzx/business/apppage/shopperinfo.html'},
+                ]
+            })
+            avalon.scan()
+        })
+    </script>
+    
+</body>
+    

@@ -1,0 +1,2 @@
+#zyoapp
+dependence:`thinkjs`,`ejs`

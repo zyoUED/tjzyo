@@ -1,0 +1,75 @@
+<% include ../tpl/common_head.html %>
+
+<body class='main-drug ms-controller' ms-controller='drug_main'>
+    <% include ../tpl/common_header.html %>
+    
+    <section class="box-800">
+        <div class="zyo-box col-12">
+            <div class="col-9 pull-left">
+                <div class="col-10 container">
+                    <input class="col-12 search-input-round text-black" type="search" placeholder="输入药品" />
+                </div>
+            </div>
+            <div class="col-3 pull-left">
+                <div class="col-4 zyo-pdleft">
+                    <button class="btn text-white btn-zyo-info col-4 container" style="padding:11px 4px;">搜索</button>
+                </div>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div class="zyo-box zyo-box-last" style="padding-top:0;padding-bottom:0;height:70%;">
+            <dl class="col-4 pull-left" style='height:100%;overflow:auto;'>
+                <dd class="box-80 text-left bordered" ms-repeat-el='classifyList' ms-click='fuckFlag($index)' ms-data-active='!($index-active_flag)' ms-data-id='el.classId'>
+                    <p class="container box-80 center-block big" ms-text='el.className'></p>
+                </dd>
+            </dl>
+            <dl id='dudu' class="col-8 pull-right" ms-repeat-el='classifyList' ms-if-loop='$index==active_flag' style='height:100%;overflow:auto;'>
+                <a ms-attr-href='"drug/list?symptomId="+ej.classId+"&avalonTitle="+ej.className' ms-repeat-ej='el.twoType' data-active='true' ms-data-id='ej.classId'>
+                    <dd class="text-left btn-link">
+                        <div class="zyo-pdleft" ms-text='ej.className'></div>
+                    </dd>
+                </a>
+            </dl>
+            <div class="clear"></div>
+        </div>
+    </section>
+    
+    <% include ../tpl/common_footer.html %>
+
+    <script type="text/javascript">
+        require(['avalon'], function(avalon){
+            var app_header= avalon.define({
+                $id: 'app_header',
+                navbarCtrl: "<img class='-col-2' src='/resource/img/btn_nav_backward.png'/>",
+                navbarCtrlFn: function(){
+                    history.go(-1);
+                },
+                navbarInfo: '',
+                appTitle: '药品大全',
+                navbarMenu: "<img class='-col-12' src='/resource/img/icon_nav_claim.png'/>",
+                navbarMenuFn: function(){
+                    location.href= '/';
+                },
+                navbarFilter: "",
+                navbarFilterFn: function(){
+                    avalon.vmodels.drug_list.fuckFilter(!avalon.vmodels.drug_list.filter);
+                },
+            })
+            avalon.scan()
+        })
+        require(['avalon'], function(avalon){
+            var drug_main= avalon.define({
+                $id: "drug_main",
+                classifyList: <%- classifyList %>,
+                active_flag: 0,
+                fuckFlag: function(index){
+                    avalon.log(drug_main.active_flag= index)
+                },
+                update: function(data){
+                    avalon.log(data)
+                },
+            })
+            avalon.scan()
+        })
+    </script>
+</body>

@@ -1,0 +1,282 @@
+<% include ../tpl/common_head.html %>
+
+<body>
+    <% include ../tpl/common_header.html %>
+    <section class="main-user ms-controller" ms-controller="user_main">
+        <div class="login-banner-top" ms-if='!editing'>
+            <!-- 未登录 -->
+            <div class="text-center center-block box-200 zyo-box" style="background:none;" ms-visible="nologin" ms-if="!!nologin">
+                <br>
+                <p class="p zyo-h4 text-gray">您还没有登陆哦~</p>
+                <p class="p">
+                    <a href='/login' class="btn btn-default center-block" ms-click='cacheReferer()'>登陆</a>
+                </p>
+            </div>
+            <!-- endof 未登录 -->
+            <!-- 已登录 -->
+            <a class="clear" data-href='#/editing' ms-if="logined">
+                <div class="box-160 zyo-box btn-link" ms-if="logined" ms-click='goEdit(true)'>
+                    <div class="col-3 pull-left">
+                        <div class="zyo-pdleft">
+                            <img class='circle' ms-attr-src='userinfo.avatar||"/resource/img/icon_userphoto_loading.png"' height='70px' width='70px'/>
+                        </div>
+                    </div>
+                    <div class="col-9 pull-left center-left" style="margin-top: 20px;">
+                        <a><div class="col-1 pull-right text-right zyo-pdright link-right-arrow" style="color:lightgray;"></div></a>
+                        <div class="text-gray zyo-h1 zyo-pdleft m-bottom" ms-text='userinfo.userName'></div>
+                        <div class="zyo-h zyo-h4 zyo-pdleft" style="margin-top: 6px;" ms-text='userinfo.city'></div>
+                    </div>
+                    <div class='clear'></div>
+                </div>
+            </a>
+            <a ms-attr-href='logined? "/user/favorchemist": "/login"' ms-data-if="logined">
+                <div class="zyo-box box-88 btn-link link-right-arrow">
+                    <div class='col-1 pull-left'>
+                        <p class='text-center '>
+                            <img class='half-height-responsive center-block' src='/resource/img/icon_syssetting_noticing.png' height='22px' width='22px'/>
+                        </p>
+                    </div>
+                    <div class='col-10 zyo-pdleft pull-left p'>我的关注</div>
+                </div>
+                <div class='clear'></div>
+            </a>
+            <a ms-attr-href='logined? "/user/account": "/login"' ms-data-if="logined">
+                <div class="zyo-box zyo-box-last box-88 btn-link link-right-arrow">
+                    <div class='col-1 pull-left'>
+                        <p class='text-center '>
+                            <img class='half-height-responsive center-block' src='/resource/img/icon_setting_account.png' height='22px' width='22px'/>
+                        </p>
+                    </div>
+                    <div class='col-10 zyo-pdleft pull-left p'>我的账户<small class="pull-right text-white badge-sm zyo-bg-danger" ms-if='!userinfo||!userinfo.cellPhone'>未绑定手机号，未设置密码</small></div>
+                </div>
+                <div class='clear'></div>
+            </a>
+            <!-- endof 已登录 -->
+            <a href='/user/aboutus'>
+                <div class="zyo-box box-88 btn-link link-right-arrow">
+                    <div class='col-1 pull-left'>
+                        <p class='text-center '>
+                            <img class='half-height-responsive center-block' src='/resource/img/icon_syssetting_aboutus.png' height='22px' width='22px' onerror="this.src='/resource/img/icon_syssetting_aboutus.png'" />
+                        </p>
+                    </div>
+                    <div class='col-10 zyo-pdleft pull-left p'>关于我们</div>
+                </div>
+                <div class='clear'></div>
+            </a>
+            <a href='user/statement'>
+                <div class="zyo-box zyo-box-last box-88 btn-link link-right-arrow">
+                    <div class='col-1 pull-left'>
+                        <p class='text-center '>
+                            <img class='half-height-responsive center-block' src='/resource/img/icon_syssetting_legalnotice.png' height='22px' width='22px'/>
+                        </p>
+                    </div>
+                    <div class='col-10 zyo-pdleft pull-left p'>法律声明</div>
+                </div>
+                <div class='clear'></div>
+            </a>
+            <a href='tel:4000318766'>
+                <div class="zyo-box zyo-box-last box-88 btn-link">
+                    <div class='col-1 pull-left'>
+                        <p class='text-center '>
+                            <img class='half-height-responsive center-block' src='/resource/img/icon_syssetting_partner.png' height='22px' width='22px'/>
+                        </p>
+                    </div>
+                    <div class='col-5 zyo-pdleft pull-left p'>商务合作</div>
+                    <div class='col-5 pull-right p zyo-h text-right'>400-0318-766</div>
+                </div>
+                <div class='clear'></div>
+            </a>
+            <a href="/home/download" >
+                <div class="col-12 ">
+                    <div class='clear container text-center'>
+                        <br>
+                        <button class="btn btn-zyo-yes text-white zyo-h2 col-11 zyo-pdtop zyo-pdbottom">下载掌药客户端，提供最好的药事服务</button>
+                        <p class='p'><br></p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <!-- editor panel-->
+        <div class="edit-panel" ms-if='editing'>
+            <div class="zyo-box box-88 link-right-arrow">
+                <div class="col-3 pull-left">
+                    <div class="">昵称
+                        <span class='text-danger'>*</span>
+                    </div>
+                </div>
+                <div class="col-9 pull-left big">
+                    <input class="small" type="text" ms-duplex-string='userinfo.userName' style="border:none;outline:none;" />
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="zyo-box zyo-box-last box-88 link-right-arrow">
+                <div class="col-3 pull-left">
+                    <div class="">性别</div>
+                </div>
+                <div class="col-9 pull-left">
+                    <div class="col-6 pull-left">
+                        <label class='col-12 zyo-label-radio zyo-pdright' ms-class-disabled='male'>
+                            <input class="" type="checkbox" data-name='gender' value='true' ms-duplex-checked='male' data-click='fuckGender(male, this.value)' />男
+                        </label>
+                    </div>
+                    <div class="col-6 pull-left">
+                        <label class='col-12 zyo-label-radio zyo-pdright' ms-class-disabled='female'>
+                            <input class="" type="checkbox" data-name='gender' value='true' ms-duplex-checked='female' data-click='fuckGender(female, this.value)' />女
+                        </label>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="zyo-box zyo-box-last box-88 btn-link ">
+                <div class="col-3 pull-left">
+                    <div class="">出生日期</div>
+                </div>
+                <a>
+                    <div class="col-9 pull-left link-right-arrow">
+                        <input class="" type="date" ms-duplex-string='user_editail.birthday' style="border:none;outline:none;" />
+                    </div>
+                </a>
+                <div class="clear"></div>
+            </div>
+            <div class="zyo-box zyo-box-last box-88 btn-link ">
+                <div class="col-3 pull-left">
+                    <div class="">所在地</div>
+                </div>
+                <a>
+                    <div class="col-9 pull-left link-right-arrow big">
+                        <input class="small" type="text" style="border:none;outline:none;" ms-duplex-string='userinfo.city' />
+                    </div>
+                </a>
+                <div class="clear"></div>
+            </div>
+            <div class="col-12 ">
+                <div class='clear container text-center'>
+                    <br>
+                    <button class="btn btn-zyo-yes text-white zyo-h2 col-11 zyo-pdtop zyo-pdbottom" ms-click='subInfo()'>保存</button>
+                    <p class='p'><br></p>
+                </div>
+            </div>
+        </div>
+        <!--endof editor panel-->
+    </section>
+
+    <% include ../tpl/common_footer.html %>
+
+    <script id='script'>
+        require(['avalon'], function(avalon){
+            var app_header= avalon.define({
+                $id: 'app_header',
+                navbarCtrl: "<img class='-col-2' src='/resource/img/btn_nav_backward.png'/>",
+                navbarCtrlFn: function(){
+                    history.go(-1);
+                },
+                navbarInfo: '',
+                appTitle: '我',
+                navbarFilter:'',
+                navbarMenu: "<img class='pull-right' src='/resource/img/icon_nav_claim.png'/>",
+                navbarMenuFn: function(){
+                    location.href= '/';
+                }
+            });
+            avalon.scan();
+        });
+        require(['avalon', 'Ajax', 'urlParser'], function(avalon){
+            var user_main = avalon.define({
+                $id: "user_main",
+                userinfo: <%- !!userInfo? userInfo: "{}" %>,
+                logined: <%- logined? logined:false %>,
+                nologin: <%- nologin? nologin:false %>,
+                cacheReferer: function(){
+                    console.log(setCookie('http_referer', self.location.href))
+                },
+                user_editail: {},
+                male: true,
+                female: false,
+                fuckGender: function(){
+//                    user_main[arguments[0]]= true;//arguments[1]
+//                    if(!arguments){
+//                        user_main.user_editail.gender= !user_main.user_editail.gender? 1: 0;
+//                    }
+//                    else{
+//                        avalon.log(user_main.user_editail.gender= arguments[0], user_main.user_editail_bk.gender);
+//                        avalon.log(user_main.shit= arguments[0]);
+//                    }
+                },
+                user_editail_bk: {},
+                editing: false,
+                edit_title: '个人资料',
+                goEdit: function(ff){
+//                        console.log(this);
+                    user_main.editing= ff;//warning:exception throwed in [avalon.injectBinding]  ReferenceError: Invalid left-hand side in assignment
+                    (ff)&& (location.href= '#/editing')&&(user_main.init())
+                },
+                init: function(){
+                    Ajax(
+                        'get',
+                        '/user/index/editinfo',
+                        'uid='+ user_main.userinfo.uid,
+                        function(json){
+                            var res= JSON.parse(json);
+                            if(res.code== 0){
+                                user_main.user_editail= res.data.userInfo;
+                                user_main.user_editail_bk= res.data.userInfo;
+                                user_main.shit= !!parseInt(res.data.userInfo.gender);
+                            }
+                        }
+                    );
+                },
+                subInfo: function(){
+                    console.info('updating~');
+                    if(!!user_main.userinfo.userName&& !!(user_main.userinfo.userName.trim())){
+                        Ajax(
+                            'get',
+                            '/user/index/saveinfo',
+                            'uid='+user_main.userinfo.uid+'&userName='+user_main.userinfo.userName+'&birthday='+user_main.user_editail.birthday+'&city='+user_main.userinfo.city+'&gender='+user_main.user_editail.gender,
+                            function(json){
+                                var res= JSON.parse(json)
+                                if(res.code== 0){
+                                    console.info('updated~');
+                                    user_main.userinfo.userName= user_main.user_editail_bk.userName;
+                                    user_main.user_editail.gender=user_main.user_editail_bk.gender;
+                                    user_main.user_editail.birthday=user_main.user_editail_bk.birthday;
+                                    user_main.userinfo.city= user_main.user_editail_bk.city;
+                                    window.history.go(-1);
+                                }
+                            }
+                        );
+                    }
+                },
+            });
+            avalon.scan();
+            user_main.$watch('userinfo.city', function(v, vv){
+                console.log(v);
+            });
+            user_main.$watch('male', function(v, vv){
+                console.log('male', v, vv)
+                    user_main.female= vv;
+            })
+            user_main.$watch('female', function(v, vv){
+                console.log('female', v, vv)
+                    user_main.male= vv;
+            })
+            window.onhashchange= function onhashchange(){
+//                console.log(location.hash);//hashchange触发后的hash值
+                if(!location.hash){
+                    if(user_main.userinfo.userName== user_main.user_editail_bk.userName && user_main.user_editail.gender== user_main.user_editail_bk.gender && user_main.user_editail.birthday== user_main.user_editail_bk.birthday && user_main.userinfo.city== user_main.user_editail_bk.city){
+                        user_main.goEdit(false);
+                    }
+                    else{
+                        console.warn('unsave~', user_main.userinfo.userName= user_main.user_editail_bk.userName);
+                        user_main.goEdit(false);
+//                        window.history.pushState(null, '#/saving');
+//                        avalon.vmodels.user_main.subInfo();
+                    }
+                }
+                else{
+                    avalon.vmodels.user_main.editing= true;
+                }
+//                location.hash.match('#/editing')&& (user_main.init());
+            }
+        });
+    </script>
+</body>

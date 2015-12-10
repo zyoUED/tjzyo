@@ -1,0 +1,234 @@
+<% include ../tpl/common_head.html %>
+<body class="drug-information ms-controller" ms-controller='drug_information'>
+    <% include ../tpl/common_header.html %>
+    <div  class="">
+	    <div id="drug-name" class="zyo-pdbottom zyo-pdleft zyo-pdright" style="margin-top: 55px;">【<span>名称</span>】 </div>
+    	<div class="zyo-box zyo-pdleft zyo-pdright" >
+    		<span class="bg_blue" ms-if="drugInfo.yibao==1">医保药</span>
+    		<span class="bg_yellowshit" ms-if="drugInfo.OTC==1">OTC</span>
+    		<span class="bg_yellowshit" ms-if="drugInfo.OTC==0">处方药</span>
+    		<span class="bg_purple" ms-if="drugInfo.xiyao==1">西药</span>
+    		<span class="bg_purple" ms-if="drugInfo.xiyao==0">中药</span>
+    	</div>
+   	</div>
+    <div  class="">
+    	<div id="drug-type" class=" zyo-pdbottom zyo-pdleft zyo-pdright">【<span>类别</span>】 </div>
+    	<div class="zyo-box zyo-pdleft zyo-pdright"></div>
+   	</div>
+    <div  class="">
+    	<div id="drug-ingredient" class=" zyo-pdbottom zyo-pdleft zyo-pdright">【<span>主要成分</span>】 </div>
+    	<div class="zyo-box zyo-pdleft zyo-pdright" ms-html="drugInfo.component"></div>
+   	</div>
+    <div  class="">
+    	<div id="drug-manufacturer" class=" zyo-pdbottom zyo-pdleft zyo-pdright">【<span>生产企业</span>】 </div>
+    	<div class="zyo-box zyo-pdleft zyo-pdright" ms-html="drugInfo.companyName"></div>
+   	</div>
+    <div  class="">
+    	<div id="drug-forsymptom" class=" zyo-pdbottom zyo-pdleft zyo-pdright">【<span>适用症</span>】 </div>
+    	<div class="zyo-box zyo-pdleft zyo-pdright" ms-html="drugInfo.indication"></div>
+   	</div>
+    <div  class="">
+    	<div id="drug-specification" class=" zyo-pdbottom zyo-pdleft zyo-pdright">【<span>规格</span>】 </div>
+    	<div class="zyo-box zyo-pdleft zyo-pdright" ms-html="drugInfo.form"></div>
+   	</div>
+    <div  class="">
+    	<div id="drug-using" class=" zyo-pdbottom zyo-pdleft zyo-pdright">【<span>用法用量</span>】 </div>
+    	<div class="zyo-box zyo-pdleft zyo-pdright" ms-html="drugInfo.dosage"></div>
+   	</div>
+    <div  class="">
+    	<div id="drug-untoward" class=" zyo-pdbottom zyo-pdleft zyo-pdright">【<span>不良反应</span>】 </div>
+    	<div class="zyo-box zyo-pdleft zyo-pdright" ms-html="drugInfo.adverseReactions"></div>
+   	</div>
+    <div  class="">
+    	<div id="drug-forbidden" class=" zyo-pdbottom zyo-pdleft zyo-pdright">【<span>禁忌</span>】 </div>
+    	<div class="zyo-box zyo-pdleft zyo-pdright" ms-html="drugInfo.contraindications"></div>
+   	</div>
+    <div  class="">
+    	<div id="drug-attention" class=" zyo-pdbottom zyo-pdleft zyo-pdright">【<span>注意事项</span>】 </div>
+    	<div class="zyo-box zyo-pdleft zyo-pdright" ms-html="drugInfo.precautions"></div>
+   	</div>
+    <div  class="">
+    	<div id="drug-forpregnant" class=" zyo-pdbottom zyo-pdleft zyo-pdright">【<span>孕妇及哺乳期妇女用药</span>】 </div>
+    	<div class="zyo-box zyo-pdleft zyo-pdright" ms-html="drugInfo.useInPregLact"></div>
+   	</div>
+    <div  class="">
+    	<div id="drug-forelder" class=" zyo-pdbottom zyo-pdleft zyo-pdright">【<span>老年用药</span>】 </div>
+    	<div class="zyo-box zyo-pdleft zyo-pdright" ms-html="drugInfo.useInElderly"></div>
+   	</div>
+    <div  class="">
+    	<div id="drug-interaction" class=" zyo-pdbottom zyo-pdleft zyo-pdright">【<span>药物相互作用</span>】 </div>
+    	<div class="zyo-box zyo-pdleft zyo-pdright" ms-html="drugInfo.drugInteractions"></div>
+   	</div>    
+   	<div  class="">
+    	<div id="drug-overdose" class=" zyo-pdbottom zyo-pdleft zyo-pdright">【<span>药物过量</span>】 </div>
+    	<div class="zyo-box zyo-pdleft zyo-pdright" ms-html="drugInfo.overdosage"   /div>
+   	</div>    
+   	<div  class="">
+    	<div id="drug-toxicology" class=" zyo-pdbottom zyo-pdleft zyo-pdright">【<span>毒理研究</span>】 </div>
+    	<div class="zyo-box zyo-pdleft zyo-pdright" ms-html="drugInfo.poison"></div>
+   	</div>    
+   	<div  class="">
+    	<div id="drug-character" class=" zyo-pdbottom zyo-pdleft zyo-pdright">【<span>性状</span>】 </div>
+    	<div class="zyo-box zyo-pdleft zyo-pdright" ms-html="drugInfo.description"></div>
+   	</div>    
+   	<div  class="">
+    	<div id="drug-storage" class=" zyo-pdbottom zyo-pdleft zyo-pdright">【<span>贮藏</span>】 </div>
+    	<div class="zyo-box zyo-pdleft zyo-pdright" ms-html="drugInfo.storage"></div>
+   	</div>    
+   	<div  class="">
+    	<div id="drug-pack" class=" zyo-pdbottom zyo-pdleft zyo-pdright">【<span>包装</span>】 </div>
+    	<div class="zyo-box zyo-pdleft zyo-pdright" ms-html="drugInfo.pack"></div>
+   	</div>    
+   	<div  class="">
+    	<div id="drug-indate" class=" zyo-pdbottom zyo-pdleft zyo-pdright">【<span>有效期</span>】 </div>
+    	<div class="zyo-box zyo-pdleft zyo-pdright" ms-html="drugInfo.period"></div>
+   	</div>    
+   	<div  class="">
+    	<div id="drug-authentication" class=" zyo-pdbottom zyo-pdleft zyo-pdright">【<span>批准文号</span>】 </div>
+    	<div class="zyo-box zyo-pdleft zyo-pdright" ms-html="drugInfo.number"></div>
+   	</div>
+   	
+   	<nav class="detail-info-guid">
+		<div class="nav-top">
+            <button class="text-white btn-nav-top">目录</button>
+        </div>
+        <div class="detail-guider">
+            <a class='info-guider' data-anchor='#drug-name'>
+                <p class='p text-blue'>名称</p>
+            </a>
+            <a class='info-guider' data-anchor='#drug-type'>
+                <p class='p text-blue'>类别</p>
+            </a>
+            <a class='info-guider' data-anchor='#drug-ingredient'>
+                <p class='p text-blue'>主要成分</p>
+            </a>
+            <a class='info-guider' data-anchor='#drug-manufacturer'>
+                <p class='p text-blue'>生产企业</p>
+            </a>
+            <a class='info-guider' data-anchor='#drug-forsymptom'>
+                <p class='p text-blue'>适用症</p>
+            </a>
+            <a class='info-guider' data-anchor='#drug-specification'>
+                <p class='p text-blue'>规格</p>
+            </a>
+            <a class='info-guider' data-anchor='#drug-using'>
+                <p class='p text-blue'>用法用量</p>
+            </a>
+            <a class='info-guider' data-anchor='#drug-untoward'>
+                <p class='p text-blue'>不良反应</p>
+            </a>
+            <a class='info-guider' data-anchor='#drug-forbidden'>
+                <p class='p text-blue'>禁忌</p>
+            </a>
+            <a class='info-guider' data-anchor='#drug-attention'>
+                <p class='p text-blue'>注意事项</p>
+            </a>
+            <a class='info-guider' data-anchor='#drug-forpregnant'>
+                <p class='p text-blue'>孕妇及哺乳期妇女用药</p>
+            </a>
+            <a class='info-guider' data-anchor='#drug-forelder'>
+                <p class='p text-blue'>老年用药</p>
+            </a>
+            <a class='info-guider' data-anchor='#drug-interaction'>
+                <p class='p text-blue'>药物相互作用</p>
+            </a>
+            <a class='info-guider' data-anchor='#drug-overdose'>
+                <p class='p text-blue'>药物过量</p>
+            </a>
+            <a class='info-guider' data-anchor='#drug-toxicology'>
+                <p class='p text-blue'>毒理研究</p>
+            </a>
+            <a class='info-guider' data-anchor='#drug-character'>
+                <p class='p text-blue'>性状</p>
+            </a>
+            <a class='info-guider' data-anchor='#drug-storage'>
+                <p class='p text-blue'>贮藏</p>
+            </a>
+           	<a class='info-guider' data-anchor='#drug-pack'>
+                <p class='p text-blue'>包装</p>
+            </a>
+            <a class='info-guider' data-anchor='#drug-indate'>
+                <p class='p text-blue'>有效期</p>
+            </a>
+            <a class='info-guider' data-anchor='#drug-authentication'>
+                <p class='p text-blue'>批准文号</p>
+            </a>
+        </div>
+    </nav>
+
+    <% include ../tpl/common_footer.html %>
+    <script src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script>
+        require(['avalon'], function(avalon){
+            var app_header= avalon.define({
+                $id: 'app_header',
+                navbarCtrl: "<img class='-col-2' src='/resource/img/btn_nav_backward.png'/>",
+                navbarCtrlFn: function(){
+                    history.go(-1);
+                },
+                navbarInfo: '',
+                appTitle: '药品说明',
+                navbarMenu: "<img class='pull-right' src='/resource/img/icon_nav_claim.png' />",
+                navbarMenuFn: function(){
+                    location.href= '/';
+                },
+                navbarFilter: "",
+                navbarFilterFn: function(){},
+            })
+            avalon.scan()
+        })
+
+        require(['avalon'], function(avalon){
+            var drug_information= avalon.define({
+                $id: 'drug_information',
+                drugInfo: {
+    "drugName": "邦特林",
+    "OTC": "0",
+    "yibao": "1",
+    "xiyao": "1",
+    "numberType": "4",
+    "form": "0.2g",
+    "companyName": "成都菊乐制药有限公司",
+    "component": "羟乙磷酸钠",
+    "indication": "用于原发性骨质疏松症和绝经后骨质疏松症。",
+    "dosage": "口服。一次0.2g，一日2次，两餐间服用。",
+    "drugInteractions": "1.抗酸药和导泻剂因常含钙或其他金属离子如镁，铁等而会影响本药吸收。<br />\n2.与氨基糖苷类合用会诱发低钙血症。",
+    "adverseReactions": "腹部不适，腹泻，呕吐，口炎，头痛，咽喉灼热感，瘙痒，皮疹等症状。",
+    "contraindications": "严重肾损害者，骨软化症患者禁用。",
+    "precautions": "1．需间隙，周期性服药，服药两周后需停药十一周为一周期，然后又重新开始第二周期，停药期间需补充钙剂及维生素D3。<br />\r\n<br />\r\n2．在服用本品两小时内，避免食用高钙食品（例如牛奶或奶制品）和含矿物质的维生素或抗酸药。<br />\r\n<br />\r\n3．肾功能损害，消化性溃疡，肠炎等患者慎用。<br />\r\n<br />\r\n4．若出现皮肤瘙痒，皮疹等过敏症状时应停止用药。",
+    "useInElderly": "适当减量",
+    "useInPregLact": "禁用",
+    "mechanismAction": "1．需间隙，周期性服药，服药两周后需停药十一周为一周期，然后又重新开始第二周期，停药期间需补充钙剂及维生素D3。<br />\r\n<br />\r\n2．在服用本品两小时内，避免食用高钙食品（例如牛奶或奶制品）和含矿物质的维生素或抗酸药。<br />\r\n<br />\r\n3．肾功能损害，消化性溃疡，肠炎等患者慎用。<br />\r\n<br />\r\n4．若出现皮肤瘙痒，皮疹等过敏症状时应停止用药。",
+    "overdosage": "",
+    "poison": "",
+    "description": "本品为白色片",
+    "storage": "密封，在干燥处保存",
+    "pack": "10片/盒",
+    "period": "36个月",
+    "number": "国药准字H10960307"
+},
+            })
+            avalon.scan()
+        })
+    </script>
+    <!--↓↓↓↓↓↓↓JQ部分↓↓↓↓↓↓-->
+    <script>
+    //拉开目录
+	    $(document).on('click', function(e){
+	    if($(e.target)[0]== $('.btn-nav-top')[0]){
+	        var rightflag= $('.detail-info-guid').hasClass('guid-active')? '-110px': '0px';
+	        $('.detail-info-guid').animate({right:rightflag},250).toggleClass('guid-active')
+	    }
+	    else if($(e.target).hasClass('zyo-h3') || $(e.target).is('span') || $(e.target).hasClass('zyo-box') || 				$(e.target).hasClass('text-gray')){
+	        		$('.detail-info-guid').animate({right:'-110px'},250).removeClass('guid-active')
+	    }
+        $('.info-guider').on('click', function(){
+        var _data_guider= $(this).attr('data-anchor');
+        var _targetTop= $(_data_guider).offset().top;
+        //头部存在所以：_targetTop-45
+        $('body').stop(true).animate({'scrollTop':_targetTop-45}, 250)
+    	})
+	})
+    </script>
+
+</body>

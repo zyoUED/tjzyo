@@ -1,0 +1,74 @@
+<% include ../tpl/common_head.html %>
+    
+<body class="chemist-index ms-controller" ms-controller='chemist_list'>
+    <% include ../tpl/common_header.html %>
+    
+    <div class="zyo-pdbottom"></div>
+    <div class="box-1000">
+        <dl class="item" ms-repeat-el='storeEmployeeList'>
+            <a class="" ms-attr-href='"chemist/detail?chemistId="+el.uid' ms-data-id='el.uid'>
+                <dd class="zyo-box-last zyo-box btn-link">
+                    <div class="col-3 pull-left">
+                        <div class="zyo-pdleft">
+                            <img class="col-11 circle" ms-attr-src='el.avatar||"/resource/img/img_loading.png"' />
+                        </div>
+                    </div>
+                    <div class="col-9 pull-left">
+                        <div class="container">
+                            <p class="pull-right text-gray small" >
+                                <span class="text-gray" ms-text='el.distance||parseInt(Math.random()*1000)+"m"'></span>
+                            </p>
+                            <p class='p small'>
+                                <span class="big" ms-text='el.userName'></span>
+                                <small class="text-white badge-sm zyo-bg-info" ms-if='el.userType==0'>执业药师</small>
+                                <small class="text-white badge-sm zyo-bg-info" ms-if='el.userType==1'>店员</small>
+                                <small class="text-white badge-sm zyo-bg-yes" ms-if='el.onLine==1'>在线</small>
+                                <small class="text-white badge-sm zyo-bg-disabled" ms-if='el.onLine==2'>离线</small>
+                            </p>
+                            <p class="p">
+                                <small>
+                                    <img class='' src='/resource/img/icon_chemist_servcount.png' height=15 /><span ms-text='el.serviceNum||"0"'> <span ms-text='el.serviceNum||"0"'></span>人
+                                </small>
+                                <small ms-if='el.userRank'>
+                                    <img class='' src='/resource/img/icon_chemist_levelcount.png' height=15 /> <span ms-text='el.userRank'></span>
+                                </small>
+                            </p>
+                            <p class="text-gray small" ms-text='el.signature||"未留言"'></p>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </dd>
+            </a>
+        </dl>
+    </div>
+    
+    <% include ../tpl/common_footer.html %>
+
+    <script>
+        require(['avalon'], function(avalon){
+            var app_header= avalon.define({
+                $id: 'app_header',
+                navbarCtrl: "<img class='pull-left' src='/resource/img/btn_nav_backward.png'/>",
+                navbarCtrlFn: function(){
+                    history.go(-1);
+                },
+                appTitle: '药师',
+                navbarFilter:'',
+                navbarMenu: "<img class='pull-right' src='/resource/img/icon_nav_claim.png' />",
+                navbarMenuFn: function(){
+                    location.href= '/';
+                },
+            })
+            avalon.scan()
+        })
+        require(['avalon'], function(avalon){
+            var chemist_list= avalon.define({
+                $id: 'chemist_list',
+                storeEmployeeList: <%- storeEmployeeList %>,
+            })
+            avalon.scan()
+        })
+    </script>
+    
+</body>
+    

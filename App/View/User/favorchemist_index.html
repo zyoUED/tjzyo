@@ -1,0 +1,76 @@
+<% include ../tpl/common_head.html %>
+
+<body class='my-favorate ms-controller' ms-controller='my_favorate'>
+    <% include ../tpl/common_header.html %>
+    <p class="zyo-pdbottom"></p>
+    <section class="my-favorate box-800">
+        <a href='/user/favorstore'>
+            <dl class="zyo-box zyo-box-last container btn-link">
+                <div class="col-1 pull-left text-left">
+                    <img class="col-12 circle" src="/resource/img/icon_mystores.png" />
+                </div>
+                <div class="col-10 pull-left text-left" style="padding-top:5px;">
+                    <p class="text-gray zyo-pdleft row-12 box-80">我的药店</p>
+                </div>
+                <div class="clear"></div>
+            </dl>
+        </a>
+        <div class="" ms-if='focusList.length==0'>
+            <div class="box-200 p"></div>
+            <p class="text-center small text-gray">目前还没有关注过任何药师</p>
+            <br>
+            <div class="col-12 text-center">
+                <a class="btn col-6 btn-zyo-yes text-white zyo-pdtop zyo-pdbottom big" href="/tool/chemist">去关注吧</a>
+            </div>
+            <div class="p"></div>
+        </div>
+        <div class="" ms-if='focusList.length>0'>
+            <dd ms-repeat-ej='letterList'>
+                <p class="container text-info b" name='a' ms-text='ej' ms-repeat-el='focusList' ms-if-loop='el.group== ej'></p>
+                <a ms-attr-href='"/tool/chemist/detail?chemistId="+el.focusId' ms-repeat-el='focusList' ms-if-loop='el.group== ej'>
+                    <dl class="zyo-box container btn-link" ms-data-zyo-box-last='$first' ms-data-if='$index==0'>
+                        <div class="col-1 pull-left text-left">
+                            <img class="col-12 circle" ms-attr-src='el.avatar||"/resource/img/icon_userphoto_loading.png"' />
+                        </div>
+                        <div class="col-10 pull-left text-left" style="padding-top:5px;">
+                            <p class="text-gray zyo-pdleft row-12 box-80" ms-text='el.focusName'></p>
+                        </div>
+                        <div class="clear"></div>
+                    </dl>
+                </a>
+            </dd>
+        </div>
+    </section>
+    <br>
+    
+    <script>
+        require(['avalon'], function(avalon){
+            var my_favorate= avalon.define({
+                $id: 'my_favorate',
+                letterList: [
+                    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
+                ],
+                focusList: <%- focusList %>,
+            })
+            avalon.scan()
+        })
+        require(['avalon'], function(avalon){
+            var app_header= avalon.define({
+                $id: 'app_header',
+                navbarCtrl: "<img class='-col-2' src='/resource/img/btn_nav_backward.png'/>",
+                navbarCtrlFn: function(){
+                    history.go(-1);
+                },
+                appTitle: '我的关注',
+                navbarMenu: "<img class='pull-right' src='/resource/img/icon_nav_claim.png'/>",
+                navbarMenuFn: function(){
+                    location.href= '/';
+                },
+                navbarFilter: '',
+            })
+            avalon.scan()
+        })
+    </script>
+    <% include ../tpl/common_footer.html %>
+
+</body>

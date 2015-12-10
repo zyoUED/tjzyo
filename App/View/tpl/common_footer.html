@@ -1,0 +1,72 @@
+<div class="app-footer box-200" ms-important='app_footer' ms-if='!window.yaodian'>
+    <div class="col-8 pull-left">
+        <a class="btn text-info pull-left text-center" ms-attr-href='user.loginFn' ms-html='user.nickname' ms-click='cacheReferer'></a>
+        <div class="pull-left" style="border-right:1px solid darkgray;margin-right:-1px;height:1.5em;margin-top:.45em;"></div>
+        <a class="btn text-info pull-left text-center" ms-attr-href='user.logoutFn' ms-html='user.operate'></a>
+        <div class="clear"></div>
+    </div>
+    <div class="col-4 pull-left text-center">
+        <a class="btn text-info center-block" href="/home/download">客户端</a>
+    </div>
+    <div class="p clear text-center col-12">
+        <p class="p"><br></p>
+        <p class="p text-gray center-block">@2015 掌上药店 苏ICP证20150075</p>
+    </div>
+    <div class="clear p"></div>
+</div>
+<div class='' ms-important='topScroller' style="position:fixed; bottom:15%; right:15px; z-index:21; height:30px; width:30px; background:#2cadf0; border-radius:100%; border:3px solid white; opacity:.75; color:white; font-weight:bold; text-align:center; vertical-align:middle; line-height:20px; font-size:16px; " ms-click='scFn' ms-if='showFlag'>
+    <span class="" style="padding:0; margin-top:-5px;" ms-html='scrollerText'></span>
+</div>
+<script type="text/javascript">
+    require(['avalon', 'cookie'], function(avalon){
+        var app_footer= avalon.define({
+            $id: 'app_footer',
+            user: {
+                uid: '<%- uid|| "" %>',
+                nickname: <%- logined %>? '<%- username %>': '登录',
+                operate: <%- logined %>? '退出': '注册',
+                avatar:  '<%- useravatar %>'|| "/resource/img/placeholder_unuser_avatar.png",
+                uid: '<%- uid|| "" %>',
+                nickname: <%- logined %>? '<%- username %>': '登录',
+                operate: <%- logined %>? '退出': '注册',
+                avatar:  '<%- useravatar %>'|| '/resource/img/placeholder_unuser_avatar.png',
+                userlat: getCookie('userlat'),
+                userlng: getCookie('userslng'),
+                loginFn:<%- logined%>?'/user':'/login',
+                logoutFn:<%- logined%>?'/user/signout':'/user/register',
+            },
+            cacheReferer: function(){
+                console.log(setCookie('http_referer', self.location.href))
+            },
+        })
+        avalon.log('app_footer.user.latandlng:', app_footer.user.userlat, app_footer.user.userlng)
+        avalon.scan();
+    })
+    require(['avalon'], function(avalon){
+        var topScroller= avalon.define({
+            $id: 'topScroller',
+            scroller: '',
+            scrollerText: '<img class="row-12 col-12 circle" src="/resource/img/bg_page_topper.png" />'||'&uarr;',
+            scFn: function(){
+                var top= document.body.scrollTop
+                for(var i= top; i>0; i--){
+                    setTimeout(function(){
+                        document.body.scrollTop--;
+                    }, (top- i)/2)
+                }
+            },
+            showFlag: false,
+            docScroll: {
+                get: function(){
+                    document.onscroll= function(){
+                        if(document.body.scrollTop> 100)
+                            topScroller.showFlag= true
+                        else topScroller.showFlag= false
+                    }
+                }
+            }
+        })
+        avalon.scan()
+    })
+    
+</script>

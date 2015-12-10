@@ -1,0 +1,88 @@
+<% include ../tpl/common_head.html %>
+
+<body class='main-drug ms-controller' ms-controller='drug_main'>
+    <% include ../tpl/common_header.html %>
+    
+    <section class="box-800">
+        <div class="zyo-box ">
+            <div class="col-10 pull-left">
+                <div class="zyo-pdleft zyo-pdright-">
+                    <input class="col-11 search-input-round text-black zyo-pdtop zyo-pdbottom" type="search" placeholder="输入药品" />
+                </div>
+            </div>
+            <div class="col-2 pull-left text-center">
+                <div class="zyo-pdleft- zyo-pdright">
+                    <button class="btn text-white btn-zyo-info col-12 zyo-pdtop zyo-pdbottom" ms-css-padding='"5px 0"'>搜索</button>
+                </div>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div class="zyo-box zyo-box-last row-8 text-dark" style="padding-top:0;padding-bottom:0;">
+            <dl class="col-4 pull-left row-12" ms-css-overflow='"auto"'>
+                <dd class="row-12 box-80 text-left zyo-pdleft bordered" ms-repeat-el='commonDiseaseList' ms-click='fuckFlag($index)' ms-data-active='!($index-active_flag)' ms-data-id='el.dataId'>
+                    <span class="" ms-css-display='"inline-block"' ms-css-overflow='"hidden"' ms-css-white-space='"nowrap"' ms-css-text-overflow='"hidden"'>
+                        <img class="" ms-if-loop='active_flag!= $index' ms-attr-src='iconList[$index]' height=18 width=18 ms-css-margin-top='"-2px"' />
+                        <img class="" ms-if-loop='active_flag== $index' ms-attr-src='iconList[$index].split(".")[0]+ "_active."+ iconList[$index].split(".")[1]' height=18 width=18 ms-css-margin-top='"-2px"' />
+                    <span class="row-12 box-80 -center-block big" ms-text='el.dataName' ms-css-font-size='el.dataName.length<5? "auto": ".9em"'></span>
+                    </span>
+                </dd>
+            </dl>
+            <dl class="col-8 pull-right row-12" ms-css-overflow='"auto"' ms-repeat-el='commonDiseaseList' ms-if-loop='$index==active_flag'>
+                <a ms-attr-href='"drug/list?symptomId="+ej.dataId+"&avalonTitle="+ej.dataName' ms-repeat-ej='el.twoType' data-active='true' ms-data-id='ej.classId'>
+                    <dd class="text-left btn-link">
+                        <div class="zyo-pdleft" ms-text='ej.dataName'></div>
+                    </dd>
+                </a>
+            </dl>
+            <div class="clear"></div>
+        </div>
+    </section>
+    
+    <% include ../tpl/common_footer.html %>
+
+    <script type="text/javascript">
+        require(['avalon'], function(avalon){
+            var app_header= avalon.define({
+                $id: 'app_header',
+                navbarCtrl: "<img class='-col-2' src='/resource/img/btn_nav_backward.png'/>",
+                navbarCtrlFn: function(){
+                    history.go(-1);
+                },
+                navbarInfo: '',
+                navbarFilter:'',
+                appTitle: '常见病症',
+                navbarMenu: "<img class='-col-12' src='/resource/img/icon_nav_claim.png'/>",
+                navbarMenuFn: function(){
+                    location.href= '/';
+                }
+            })
+            avalon.scan()
+        })
+        require(['avalon'], function(avalon){
+            var drug_main= avalon.define({
+                $id: "drug_main",
+                commonDiseaseList: <%- commonDiseaseList %>,
+                iconList: [
+                    "/resource/img/iconsCommonDrug/icon_courses_neike.png",
+                    "/resource/img/iconsCommonDrug/icon_courses_shoushudao.png",
+                    "/resource/img/iconsCommonDrug/icon_courses_nanke.png",
+                    "/resource/img/iconsCommonDrug/icon_courses_fuke.png",
+                    "/resource/img/iconsCommonDrug/icon_courses_erke.png",
+                    "/resource/img/iconsCommonDrug/icon_courses_wuguan.png",
+                    "/resource/img/iconsCommonDrug/icon_courses_pifu.png",
+                    "/resource/img/iconsCommonDrug/icon_courses_guanjie.png",
+                    "/resource/img/iconsCommonDrug/icon_courses_zhongyao.png",
+                    "/resource/img/iconsCommonDrug/icon_courses_chuanran.png",
+                ],
+                active_flag: 0,
+                fuckFlag: function(index){
+                    avalon.log(drug_main.active_flag= index)
+                },
+                update: function(data){
+                    avalon.log(data)
+                }
+            })
+            avalon.scan()
+        })
+    </script>
+</body>

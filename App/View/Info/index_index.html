@@ -1,0 +1,64 @@
+<% include ../tpl/common_head.html %>
+    
+<body class="main-info">
+    <% include ../tpl/common_header.html %>
+    
+    <div class="">
+        <!--mtscroller-->
+        <div class="col-12mThumbnailScroller" data-mts-axis="x" id="thumbs-list" style="overflow:auto;">
+            <ul>
+                <li>
+                    <div class='col-12' style='background:red;height:300px;'>haode</div>
+                </li>
+                <li>
+                    <div class='col-12' style='background:blue;height:300px;'>haode</div>
+                </li>
+                <li>
+                    <div class='col-12' style='background:green;height:300px;'>haode</div>
+                </li>
+            </ul>
+        </div>
+        <!--mtscroller-->
+<!--        <iframe class="" src="http://phone.lkhealth.net/ydzx/business/website/" style="width:100%;height:90%;border:none;outline:none;overflow:auto;"></iframe>-->
+    </div>
+    
+    <script>
+        avalon.config({
+            paths: {
+                itemslide: '../module/itemslide/dist/itemslide.vanilla.min.js',
+                mThumbnailScroller: '../module/thumbnail.scroller/js/minified/jquery.mThumbnailScroller.min.js'
+            },
+            shim: {
+                mThumbnailScroller: {
+                    exports: 'mThumbnailScroller'
+                }
+            },
+        })
+        require(['avalon'], function(avalon){
+            var app_header= avalon.define({
+                $id: 'app_header',
+                navbarCtrl: "<img class='-col-2' src='/resource/img/btn_nav_backward.png'/>",
+                navbarCtrlFn: function(){
+                    history.go(-1);
+                },
+                appTitle: '资讯',
+                navbarMenu: "<img class='-col-12' src='/resource/img/icon_nav_claim.png'/>",
+                navbarMenuFn: function(){
+                    location.href= '/';
+                }
+            })
+            avalon.scan()
+        })
+        require(['jquery'], function($){
+            require(['mThumbnailScroller'], function(){
+                $("#thumbs-list").mThumbnailScroller({
+//                    axis:"x", //change to "y" for vertical scroller
+                })
+                console.log('mt')
+            })
+        })
+    </script>
+    
+<!--    <% include ../tpl/common_footer.html %>-->
+</body>
+    

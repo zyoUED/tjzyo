@@ -1,0 +1,24 @@
+<div class="zyo-nav clear" ms-important='app_header' ms-if='!window.yaodian'>
+    <p class="p"></p>
+    <div class="col-2 pull-left text-left">
+        <a class='col-6 pull-left text-white' ms-click='navbarCtrlFn'>
+            <div class='zyo-pdleft row-12' ms-html='navbarCtrl'></div>
+        </a>
+        <a class="col-6 pull-left" ms-if='navbarInfo' ms-click='navbarInfoFn'>
+            <div class=' row-12' ms-html='navbarInfo'></div>
+        </a>
+    </div>
+    <div class="col-8 pull-left text-center">
+        <div class='box-80 row-12'><big class="b" ms-html='appTitle||"掌上药店"'></big></div>
+    </div>
+    <div class="col-2 pull-right text-right">
+        <a class="col-6 pull-right" ms-if='navbarFilter' ms-click='navbarFilterFn'>
+            <div class='zyo-pdright row-12' ms-html='navbarFilter'></div>
+        </a>
+        <a class="col-6 pull-right text-white" ms-click='navbarMenuFn'>
+            <div class='zyo-pdright row-12' ms-html='navbarMenu'></div>
+        </a>
+    </div>
+    <div class="clear"></div>
+    <p class="p"></p>
+</div>

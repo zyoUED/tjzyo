@@ -1,0 +1,128 @@
+<% include ../tpl/common_head.html %>
+
+<body class='ms-controller' ms-controller='login_form'>
+    <% include ../tpl/common_header.html %>
+    <div class="clear"></div>
+<!--    <form class='' action='/login/index/login' method='post'>-->
+        <div class='zyo-box zyo-box-first'>
+            <div class='col-1 pull-left text-right zyo-pdtop'>
+                <div class="zyo-pdleft">
+                    <img class="col-12" src="/resource/img/icon_login_username.png" />
+                </div>
+            </div>
+            <div class='col-11 pull-left text-left'>
+                <div class="container">
+                    <input class='col-12 row-12 box-100' type='text' ms-duplex='username' style='border:0;' placeholder='手机号/邮箱' required name="username" ms-attr-autofocus='username?"false":"true"' />
+                </div>
+            </div>
+            <div class='clear'></div>
+        </div>
+        <div class='zyo-box zyo-box-'>
+            <div class='col-1 pull-left text-right zyo-pdtop'>
+                <div class="zyo-pdleft">
+                    <img class="col-12" src="/resource/img/icon_login_password.png" />
+                </div></div>
+            <div class='col-11 pull-left text-left'>
+                <div class="container">
+                    <input class='col-12 row-12 box-100' type='password' ms-duplex='password' style='border:0;' placeholder='密码' required name="password" ms-keypress='pwLogin' ms-attr-autofocus='username?"false":"true"' />
+                </div>
+            </div>
+            <div class='clear'></div>
+        </div>
+        <div class='col-12'>
+            <div class='clear container text-center'>
+                <br>
+                <button class='btn btn-zyo-yes col-11 text-white zyo-pdtop zyo-pdbottom big' ms-class-btn-zyo-disabled='!username||!password' ms-class-disabled='!username||!password' ms-click='btnLogin'>登  录</button>
+            </div>
+        </div>
+<!--    </form>-->
+    <br>
+    <div class="col-5 pull-left text-left zyo-pdleft">
+        <a href='/user/register' class='a text-blue'>立即注册</a>
+    </div>
+    <div class="col-5 pull-right text-right zyo-pdright">
+        <a href='/user/account/findback' class='a text-blue'>忘记密码</a>
+    </div>
+    <div class="col-12 clear text-center showup-tips" ms-class-active='tipbox.active'>
+        <div class="badge zyo-bg-info text-white zyo-pdleft zyo-pdright" ms-text='tipbox.content'></div>
+    </div>
+    
+    <script>
+        require(['avalon'], function(avalon){
+            var login_form= avalon.define({
+                $id: 'login_form',
+                username: '',
+                password: '',
+                tipbox: {
+                    active: false,
+                    content:'用户名或密码错误',
+                },
+                btnLogin: function(){
+                    if(!login_form.username|| !login_form.password){
+                        setTimeout(function(){
+                            login_form.tipbox.content= '用户名或密码不能为空';
+                            login_form.tipbox.active= true;
+                            setTimeout(function(){
+                                login_form.tipbox.active= false;
+                            }, 3000)
+                        }, 0)
+                        return false
+                    }
+                    require(['Ajax', 'cookie', 'MD5'], function(){
+                        setCookie('username',login_form.username)
+                        var ajax_data= 'username='+ login_form.username+ '&password='+ login_form.password;
+                        Ajax('post',
+                             '/login/index/login',
+                             ajax_data,
+                             function(json){
+                                var res= JSON.parse(json)
+                                avalon.log('login ajax:\n', res)
+                                if(res.code== 0){
+                                    setCookie('userid', sessionStorage.userid= res.data.userInfo.uid)
+                                    require(['zyoIMpack'], function(){});
+                                    (!!getCookie('http_referer'))? (self.location.href= getCookie('http_referer')): (self.location.href= '/user')
+//                                    console.info(self.location.href= getCookie('http_referer'))
+                                }
+                                else{
+                                    setTimeout(function(){
+                                        login_form.tipbox.content= '用户名或密码错误';
+                                        login_form.tipbox.active= true;
+                                        setTimeout(function(){
+                                            login_form.tipbox.active= false;
+                                        }, 3000)
+                                    }, 0)
+                                }
+                            }
+                        )
+                    })
+                },
+                pwLogin: function(e){
+                    if (e.which == 13) {
+        				login_form.btnLogin();
+                    }
+                },
+            })
+        })
+        require(['avalon'], function(avalon){
+            var app_header= avalon.define({
+                $id: 'app_header',
+                navbarCtrl: "<img class='-col-2' src='/resource/img/btn_nav_backward.png'/>",
+                navbarCtrlFn: function(){
+                    history.go(-1);
+                },
+                appTitle: '掌上药店',
+                navbarFilter: '',
+                navbarMenu: "<img class='-col-12' src='/resource/img/icon_nav_claim.png'/>",
+                navbarMenuFn: function(){
+                    location.href= '/';
+                }
+            })
+            avalon.scan()
+        })
+//        var startIM= function startIM(){
+//        }
+//        require(['../module/easymob-webim-sdk/zyo_im_pack'], function(){
+//            console.log(67)
+//        })
+    </script>
+</body>

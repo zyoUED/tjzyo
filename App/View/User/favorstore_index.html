@@ -1,0 +1,61 @@
+<% include ../tpl/common_head.html %>
+
+<body class='my-favorate' ms-controller='my_favorate'>
+    <% include ../tpl/common_header.html %>
+    <p class="zyo-pdbottom"></p>
+    <section class="my-favorate box-800">
+        <div class="" ms-if='!collectList.length'>
+            <div class="box-200 p"></div>
+            <p class="text-center small text-gray">目前还没有关注过任何药店</p>
+            <br>
+            <div class="col-12 text-center">
+                <a class="btn col-6 btn-zyo-yes text-white zyo-pdtop zyo-pdbottom big" href="/tool/store">去关注吧</a>
+            </div>
+            <div class="p"></div>
+        </div>
+        <div class="" ms-if='!!collectList.length'>
+            <dd>
+                <a ms-attr-href='"/tool/store/detail?storeId="+el.dataId' ms-repeat-el='collectList'>
+                    <dl class="zyo-box zyo-box-last container btn-link">
+                        <div class="col-1 pull-left text-left">
+                            <img class="col-12" ms-attr-src='el.storePic||"/resource/img/icon_mystores.png"' />
+                        </div>
+                        <div class="col-10 pull-left text-left" style="padding-top:5px;">
+                            <p class="text-gray zyo-pdleft row-12 box-80" ms-text='el.dataTitle'></p>
+                        </div>
+                        <div class="clear"></div>
+                    </dl>
+                </a>
+            </dd>
+        </div>
+    </section>
+    <br>
+    
+    <script>
+        require(['avalon'], function(avalon){
+            var my_favorate= avalon.define({
+                $id: 'my_favorate',
+                collectList: <%- collectList %>,
+            })
+            avalon.scan()
+        })
+        require(['avalon'], function(avalon){
+            var app_header= avalon.define({
+                $id: 'app_header',
+                navbarCtrl: "<img class='-col-2' src='/resource/img/btn_nav_backward.png'/>",
+                navbarCtrlFn: function(){
+                    history.go(-1);
+                },
+                appTitle: '我的关注',
+                navbarMenu: "<img class='pull-right' src='/resource/img/icon_nav_claim.png'/>",
+                navbarMenuFn: function(){
+                    location.href= '/';
+                },
+                navbarFilter: '',
+            })
+            avalon.scan()
+        })
+    </script>
+    <% include ../tpl/common_footer.html %>
+
+</body>

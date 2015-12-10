@@ -1,0 +1,384 @@
+<% include ../tpl/common_head.html %>
+<style type="text/css">
+    .btn_nav{text-align: center;padding: 2px 0;}
+    .col-8{width:auto;display: inline-block;overflow: hidden;}
+    .btn_backs{border-radius: 5px;border: 1px solid #fff;height: auto !important;}
+    .btn_phoneback,.btn_emailback{padding: 5px 10px;display: inline-block;}
+    .email_back{margin-top: -10px;}
+    .backbgwhite{background: #fff;color: #2cadf0;}
+
+</style>
+<body class='user-acount' ms-controller='my_favorate'>
+    <!--header-->
+        <div class="zyo-nav btn_nav clear" ms-if='!window.yaodian'>
+            <p class="p"></p>
+            <div class="col-2 pull-left text-left">
+                <a class='col-6 pull-left text-white' ms-click='navbarCtrlFn'>
+                    <div class='zyo-pdleft row-12' ms-html='navbarCtrl'></div>
+                </a>
+                <a class="col-6 pull-left" ms-if='navbarInfo' ms-click='navbarInfoFn'>
+                    <div class=' row-12' ms-html='navbarInfo'></div>
+                </a>
+            </div>
+            <div class="col-8 text-center">
+                <div class='box-80 btn_backs row-12'>
+                    <div class="btn_phoneback backbgwhite" ms-class="backbgwhite:!currentIndex" ms-click="tabtoggle(0)">手机找回</div>
+                    <div class="btn_emailback" ms-class="backbgwhite:!!currentIndex"  ms-click="tabtoggle(1)">邮箱找回</div>
+                </div>
+                 <!-- <div class='box-80 row-12'><big class="b" ms-html='appTitle||"掌上药店"'></big></div> -->
+            </div>
+            <div class="col-2 pull-right text-right">
+                <a class="col-6 pull-right" ms-if='navbarFilter' ms-click='navbarFilterFn'>
+                    <div class='zyo-pdright row-12' ms-html='navbarFilter'></div>
+                </a>
+                <a class="col-6 pull-right text-white" ms-click='navbarMenuFn'>
+                    <div class='zyo-pdright row-12' ms-html='navbarMenu'></div>
+                </a>
+            </div>
+            <div class="clear"></div>
+            <p class="p"></p>
+        </div> 
+        <p class="zyo-pdbottom"></p>
+        <!--header end-->
+        <div class="phone_back" ms-if="!currentIndex">
+            <div class='zyo-box zyo-box-last'>
+            <div class='col-1 pull-left text-right'>
+                    <div class="zyo-pdleft">
+                        <img class='' style="margin-top: 8px;" src="/resource/img/icon_login_username.png" width='22px' height='22px'>
+                    </div>
+                </div>
+                <div class='col-11 pull-left text-left '>
+                    <div class="zyo-pdleft zyo-pdright">
+                        <input class='col-12 row-12 box-100 zyo-h2' type='tel' style='border:0;' placeholder='手机号' required name="username" maxlength="13"  ms-css-background='phone_bg' ms-duplex-string='telephone' />
+                    </div>
+                </div>
+                <div class='clear'></div>
+            </div>
+            <div>
+                <div class='zyo-box zyo-box-last'>
+                    <div class='col-1 pull-left text-right'>
+                        <div class="zyo-pdleft">
+                            <img class='' style="margin-top: 8px;" src="/resource/img/icon_login_shortmsg.png" width='22px' height='22px' />
+                        </div>
+                    </div>
+                    <div class='col-7 pull-left text-left'>
+                        <div class="zyo-pdleft">
+                            <input class='col-11 row-12 box-100 zyo-h2' type='text'  style='border:0;' ms-duplex-string='vericode' placeholder='请输入手机短信中的验证码' required name="" maxlength="8" />
+                        </div>
+                    </div>
+                    <div class="col-4 pull-left  ">
+                        <div class='zyo-pdtop zyo-pdbottom btn-link text-center' style='border:1px solid #a7d445;border-radius: 5px;margin-right: 10px;color:#a7d445;' name='verifyCode' ms-click='verifyCode' ms-css-border-color='codeColor' ms-css-color='codeColor' ms-text='codeText' ms-class-btn-link='!isVerifing'>
+                        获取验证码
+                        </div>
+                    </div>
+                    <div class='clear'></div>
+                </div>
+            </div>
+            <div>
+                <div class='zyo-box zyo-box-last'>
+                    <div class='col-1 pull-left text-right'>
+                        <div class="zyo-pdleft">
+                            <img class='' style="margin-top: 8px;" src="/resource/img/icon_login_password.png" width='22px' height='22px'>
+                        </div>
+                    </div>
+                    <div class='col-11 pull-left text-left'>
+                        <div class="zyo-pdleft">
+                            <input class='col-12 row-12 box-100 zyo-h2' type='password'  style='border:0;' placeholder='请输入密码' required name="password1" maxlength='20' ms-duplex-string='passw' />
+                        </div>
+                    </div>
+                    <div class='clear'></div>
+                </div>
+            </div>
+            <div>
+                <div class='zyo-box zyo-box-last' >
+                    <div class='col-1 pull-left text-right'>
+                        <div class="zyo-pdleft">
+                            <img class='' style="margin-top: 8px;" src="/resource/img/icon_login_password.png" width='22px' height='22px'>
+                        </div>
+                    </div>
+                    <div class='col-11 pull-left text-left'>
+                        <div class="zyo-pdleft">
+                            <input class='col-12 row-12 box-100 zyo-h2' type='password' ms-duplex-string='repassw' style='border:0;' placeholder='请再次输入密码' required name="password2" maxlength='20' />
+                        </div>
+                    </div>
+                    <div class='clear'></div>
+                </div>
+            </div>
+             <div class='col-12'>
+                <div class='clear container text-center'>
+                    <br>
+                    <button class='btn btn-zyo-yes col-11 text-white box-100 row-12 zyo-h1' style='height: 30px;font-size: 20px;' ms-click="findbackphone">保  存</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="email_back" ms-if="!!currentIndex">
+<!--    <form class='' action='/login/index/login' method='post'>-->
+            <div class='zyo-box zyo-box-first'>
+                <div class='col-1 pull-left text-right zyo-pdtop'>
+                    <div class="zyo-pdleft">
+                        <img class="col-12" src="/resource/img/icon_login_username.png" />
+                    </div>
+                </div>
+                <div class='col-11 pull-left text-left'>
+                    <div class="container">
+                        <input class='col-12 row-12 zyo-h2 box-100' type='text'  style='border:0;' placeholder='用户名' required name="username"  ms-duplex-string='email_username' ms-css-background='phone_bg'/>
+                    </div>
+                </div>
+                <div class='clear'></div>
+            </div>
+            <div class='zyo-box zyo-box-'>
+                <div class='col-1 pull-left text-right zyo-pdtop'>
+                    <div class="zyo-pdleft">
+                        <img class="col-12" src="/resource/img/icon_login_shortmsg.png" />
+                    </div></div>
+                <div class='col-11 pull-left text-left'>
+                    <div class="container">
+                        <input class='col-12 row-12 zyo-h2 box-100' type='text'  style='border:0;' placeholder='注册时所填写邮箱地址' required name="password"  ms-attr-autofocus='username?"false":"true"' ms-duplex-string='email_email'/>
+                    </div>
+                </div>
+                <div class='clear'></div>
+            </div>
+            <p class="p text-gray center-block text-center box-88 zyo-h4">我们完成对您的用户名及注册邮箱的校验后，会把您的新密码发送到您所留的邮箱中，请及时查收！</p>
+            <div class='col-12'>
+                <div class='clear container text-center'>
+                    <br>
+                    <button class='btn btn-zyo-yes col-11 text-white zyo-pdtop zyo-pdbottom big' ms-click='findbackemail' >保    存</button>
+                </div>
+            </div>
+<!--    </form>-->            
+        </div>
+        <div class="col-12 clear text-center showup-tips" ms-class-active='tipbox.active'>
+            <div class="badge zyo-bg-info text-white zyo-pdleft zyo-pdright" ms-text='tipbox.content'></div>
+        </div>
+    <script type="text/javascript">
+        require(['avalon','Ajax'],function(avalon,Ajax){
+            var app_findback= avalon.define({
+                $id: 'my_favorate',
+                navbarCtrl: "<img class='-col-2' src='/resource/img/btn_nav_backward.png'/>",
+                navbarCtrlFn: function(){
+                    history.go(-1);
+                },                
+                navbarFilter:'',
+                navbarMenu: "<img class='pull-right' src='/resource/img/icon_nav_claim.png'/>",
+                navbarMenuFn: function(){
+                    location.href= '/';
+                },
+                currentIndex:0,               
+                tabtoggle:function(index){                  
+                    app_findback.currentIndex = index  
+                },
+                telephone:'',
+                vericode:'',
+                passw:'',
+                repassw:'',
+                isVerifing:false, //当前验证状态
+                codeColor:'#a7d445',//按钮颜色
+                number:30, //验证码倒计时
+                codeText:'获取验证码', //按钮文本
+                phone_bg: 'rgba(250,0,0,0)',
+                verifyCode:function(){                    
+                    if(app_findback.telephone.match(/^(1[3,5,8,7]{1}[\d]{9})/)){
+                        console.log(app_findback.telephone);
+                        //需要校验手机号
+                        Ajax(
+                            'post',
+                            '/user/account/verify',
+                            'telephone='+ app_findback.telephone,
+                            function(json){
+                                console.info(json);
+                            }
+                        )
+                        app_findback.isVerifing = true;
+                        app_findback.codeColor = '#999999';
+                        var timeout = setInterval(function(){
+                            if(app_findback.number == 0){
+                                app_findback.number = 30;
+                                app_findback.isVerifing = false;
+                                app_findback.codeColor = '#a7d445';
+                                app_findback.codeText = '获取验证码';
+                                clearInterval(timeout);
+                            }
+                            else{
+                                app_findback.codeText = '获取验证码('+app_findback.number+')';
+                                app_findback.number --;
+                            }
+                        },1000);
+                    }else{
+                        setTimeout(function(){
+                            app_findback.phone_bg= 'rgba(250,0,0,0.4)';
+                            setTimeout(function(){
+                                app_findback.phone_bg= 'rgba(250,0,0,0.3)';
+                                setTimeout(function(){
+                                    app_findback.phone_bg= 'rgba(250,0,0,0.2)';
+                                    setTimeout(function(){
+                                        app_findback.phone_bg= 'rgba(250,0,0,0.1)';
+                                        setTimeout(function(){
+                                            app_findback.phone_bg= 'rgba(250,0,0,0)';
+                                        },100)
+                                    },100)
+                                },100)
+                            },100)
+                        },100)
+                    }
+                },
+                findbackphone:function(){
+                    console.log(app_findback.telephone+'密码:'+app_findback.passw+'重复密码:'+app_findback.repassw+'验证码：'+app_findback.vericode);
+                    if(!(app_findback.telephone.match(/^(1[3,5,8,7]{1}[\d]{9})/))){
+                        setTimeout(function(){
+                            setTimeout(function(){
+                                app_findback.phone_bg= 'rgba(250,0,0,0.4)';
+                                setTimeout(function(){
+                                    app_findback.phone_bg= 'rgba(250,0,0,0.3)';
+                                    setTimeout(function(){
+                                        app_findback.phone_bg= 'rgba(250,0,0,0.2)';
+                                        setTimeout(function(){
+                                            app_findback.phone_bg= 'rgba(250,0,0,0.1)';
+                                            setTimeout(function(){
+                                                app_findback.phone_bg= 'rgba(250,0,0,0)';
+                                            },100)
+                                        },100)
+                                    },100)
+                                },100)
+                            },100)
+                            app_findback.tipbox.content= '请重新确认你的手机号';
+                            app_findback.tipbox.active= true;
+                            setTimeout(function(){
+                                app_findback.tipbox.active= false;
+                            }, 3000)
+                        }, 0)
+                        return false                     
+                    }else if(app_findback.passw!= app_findback.repassw){
+                        setTimeout(function(){
+                            app_findback.repassw= '';
+                            app_findback.tipbox.content= '请重新确认你的密码';
+                            app_findback.tipbox.active= true;
+                            setTimeout(function(){
+                                app_findback.tipbox.active= false;
+                            }, 3000)
+                        }, 0)
+                        return false
+                    }else{
+                        /*$.ajax({
+                            url:'http://testapi.lkhealth.net/index.php?r=user/resetpasswordphone&cellphone='+app_findback.telephone+'&code='+app_findback.vericode+'&passWord='+app_findback.passw,
+                            success:function(data){
+                                var data = JSON.parse(data);
+                                console.log(data);
+                            }
+                        })*/
+                        Ajax(
+                            'post',
+                            '/user/account/backphone',
+                            'cellphone='+app_findback.telephone+'&code='+app_findback.vericode+'&password='+app_findback.passw,
+                            function(json){
+                                var res = JSON.parse(json);
+                                if(res.code ==0){
+                                    self.location.href = '/login'
+                                }else{
+                                     setTimeout(function(){
+                                        app_findback.tipbox.content= '找回失败，请重试~'|| res.msg;
+                                        app_findback.tipbox.active= true;
+                                        setTimeout(function(){
+                                            app_findback.tipbox.active= false;
+                                        }, 3000)
+                                    }, 0)
+                                    return false
+                                }
+                            }
+                        )
+                    }
+                },
+                tipbox:{
+                    active: false,
+                    content:'用户名或密码错误',
+                },
+                email_username:'',
+                email_email:'',
+                findbackemail:function(){
+                    console.log('邮箱找回');
+                    console.log(app_findback.email_username.trim()+'邮箱:'+app_findback.email_email);
+                    if(app_findback.email_username.trim()==''){
+                        setTimeout(function(){
+                            setTimeout(function(){
+                                app_findback.phone_bg= 'rgba(250,0,0,0.4)';
+                                setTimeout(function(){
+                                    app_findback.phone_bg= 'rgba(250,0,0,0.3)';
+                                    setTimeout(function(){
+                                        app_findback.phone_bg= 'rgba(250,0,0,0.2)';
+                                        setTimeout(function(){
+                                            app_findback.phone_bg= 'rgba(250,0,0,0.1)';
+                                            setTimeout(function(){
+                                                app_findback.phone_bg= 'rgba(250,0,0,0)';
+                                            },100)
+                                        },100)
+                                    },100)
+                                },100)
+                            },100)
+                            app_findback.tipbox.content= '请填写用户名';
+                            app_findback.tipbox.active= true;
+                            setTimeout(function(){
+                                app_findback.tipbox.active= false;
+                            }, 3000)
+                        }, 0)
+                        return false 
+                    }else if(!app_findback.email_email.match(/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/)){
+                        setTimeout(function(){
+                            setTimeout(function(){
+                                app_findback.phone_bg= 'rgba(250,0,0,0.4)';
+                                setTimeout(function(){
+                                    app_findback.phone_bg= 'rgba(250,0,0,0.3)';
+                                    setTimeout(function(){
+                                        app_findback.phone_bg= 'rgba(250,0,0,0.2)';
+                                        setTimeout(function(){
+                                            app_findback.phone_bg= 'rgba(250,0,0,0.1)';
+                                            setTimeout(function(){
+                                                app_findback.phone_bg= 'rgba(250,0,0,0)';
+                                            },100)
+                                        },100)
+                                    },100)
+                                },100)
+                            },100)
+                            app_findback.tipbox.content= '请确认您填写的邮箱格式正确';
+                            app_findback.tipbox.active= true;
+                            setTimeout(function(){
+                                app_findback.tipbox.active= false;
+                            }, 3000)
+                        }, 0)
+                        return false 
+                    }else{
+                        /*$.ajax({
+                            url:'http://127.0.0.1/testapi/testapi/index.php?r=user/resetpasswordemail&email='+app_findback.email_email+'&userName='+app_findback.email_username,
+                            success:function(data){
+                                var data = JSON.parse(data);
+                                console.log(data);
+                            }
+                        })*/
+                        Ajax(
+                            'post',
+                            '/user/account/backemail',
+                            'email='+app_findback.email_email+'&username='+app_findback.email_username,
+                            function(json){
+                                var res = JSON.parse(json);
+                                console.log(res);
+                                if(res.code == 0){
+                                    self.location.href = '/login'
+                                }else{
+                                    setTimeout(function(){
+                                        app_findback.tipbox.content= '找回失败，请重试~'|| res.msg;
+                                        app_findback.tipbox.active= true;
+                                        setTimeout(function(){
+                                            app_findback.tipbox.active= false;
+                                        }, 3000)
+                                    }, 0)
+                                    return false
+                                }
+                            }
+                        )
+                        console.log('保存');
+                    }
+                }  
+            })            
+            avalon.scan()
+        })
+    </script>
+</body>

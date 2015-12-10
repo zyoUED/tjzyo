@@ -1,0 +1,187 @@
+<% include ../tpl/common_head.html %>
+
+<body class="store-detail ms-controller" ms-controller='disease_detail'>
+    <% include ../tpl/common_header.html %>
+    <p class=" zyo-pdbottom"></p>
+    <section class="box-800">
+        <div class="zyo-box zyo-box-last">
+        	<p class="text-dark zyo-pdleft big text-black" ms-text="deseaseInfo.deseaseName"></p>
+	        <a ms-data-href='"/tool/disease?deseaseId="+deseaseInfo.deseaseId'>
+            	<div class='col-10 zyo-box-last zyo-pdtop p box-88 pull-left small text-gray' ms-text="deseaseInfo.deseaseIntro"></div>
+				<div class="col-1 link-right-arrow btn-link pull-right"></div>
+            	<div class="clear"></div>
+        	</a>
+            <div class="clear"></div>
+        </div>
+
+        <div class="zyo-box zyo-pdleft" ms-if='recommendArticleList.length>0'>
+            <p class="p text-gray">推荐文章</p>
+            <dl>
+                <dd class="dd-box btn-link" ms-repeat-el='recommendArticleList'>
+                    <div class='col-12 pull-left'>
+                        <a ms-data-href='"/tool/chemist/detail?chemistId="+el.uid'>
+                            <div class="col-3 pull-left">
+                            	<div class="zyo-pdright" >
+                            		<img style="width: 100%;" ms-attr-src="el.dataPic" />
+                            	</div>
+                            </div>
+                            <div class="col-9 pull-left">
+                            	<p class="text-dark p big text-black" ms-text="el.dataName"></p>
+                            	<p class="text-gray p  small" ms-text="el.content"></p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="clear"></div>
+                </dd>
+            </dl>
+        </div>
+        <a ms-data-href='"/tool/store?drugId="+drugInfo.drugId' ms-if='recommendArticleList.length>0'>
+            <div class='zyo-box zyo-box-last box-88 link-right-arrow btn-link text-gray'>查看更多推荐文章</div>
+        </a>
+        
+        <div class="zyo-box zyo-pdleft" ms-if='drugList.length>0'>
+            <p class="text-gray text-left p">相关用药</p>
+            <div class="">
+                <dl class="dd-box">
+                    <dd ms-attr-class='$index==0?"zyo-pdbottom":"col-3 pull-left"' ms-repeat-el='drugList' ms-if-loop="$index<5">
+                        <a ms-attr-href='"/tool/drug/detail?drugId="+el.drugId'>
+                            <div ms-attr-class='$index==0?"col-3 pull-left":"col-12 pull-left"'>
+                                <div class='zyo-pdright0'>
+                                    <img class="col-11" ms-attr-src='el.drugPic||"/resource/img/img_loading.png"' />
+                                </div>
+                            </div>
+                            <div ms-attr-class='$index==0?"col-9 pull-left":"col-12 pull-left"'>
+                                <div ms-attr-class='$index==0?"zyo-pdleft":"zyo-pdtop text-center zyo-pdright"' ms-css-text-align='$index>0?"center":"left"'>
+                                    <p ms-attr-class='$index==0?"big text-black p":"pz small text-gray"' ms-text='el.drugName'></p>
+                                    <p class="text-gray p small" ms-if='$index==0' ms-text='el.promotionInfo'></p>
+                                </div>
+                            </div>
+                            <div class="clear" ms-if='$index==0'></div>
+                            <p class="" style="margin-top:10px;margin-right:-10px;border-top:1px solid lightgray;" ms-if='$index==0&& drugList.length>1'></p>
+                        </a>
+                    </dd>
+                    <dd class="clear"></dd>
+                </dl>
+            </div>
+        </div>
+        <a ms-data-href='"/tool/store?drugId="+drugInfo.drugId' ms-if='drugList.length>0'>
+            <div class='zyo-box zyo-box-last box-88 link-right-arrow btn-link text-gray'>查看更多相关用药</div>
+        </a>
+        
+        <div class="main-hot-chemists" ms-if='storeEmployeeList.length>0'>
+            <div class='zyo-box zyo-pdleft'>
+                <p class="p text-left text-gray">热门药师</p>
+                <dl>
+                    <dd class="dd-box btn-link" ms-repeat-el='storeEmployeeList'>
+                        <div class='col-10 pull-left'>
+                            <a ms-attr-href='"/tool/chemist/detail?chemistId="+el.uid'>
+                                <div class="col-4 pull-left">
+                                    <img class='col-10 circle' ms-attr-src='el.avatar||"/resource/img/icon_userphoto_loading.png"' maxheight='80' />
+                                </div>
+                                <div class="col-8 pull-left">
+                                    <p class='p small'>
+                                        <span class="big" ms-text='el.userName'></span>
+                                        <small class="text-white badge-sm zyo-bg-info" ms-if='el.userType==0'>执业药师</small>
+                                        <small class="text-white badge-sm zyo-bg-info" ms-if='el.userType==1'>店员</small>
+                                        <small class="text-white badge-sm zyo-bg-yes" ms-if='el.onLine'>在线</small>
+                                        <small class="text-white badge-sm zyo-bg-disabled" ms-if='!el.onLine'>离线</small>
+                                    </p>
+                                    <p class="p">
+                                        <small>
+                                            <img class='' src='/resource/img/icon_chemist_servcount.png' height=15 /><span ms-text='el.serviceNum||"0"'>
+                                            <span ms-text='el.serviceNum||"0"'></span>人
+                                        </small>
+                                        <small ms-if='el.userRank'>
+                                            <img class='' src='/resource/img/icon_chemist_levelcount.png' height=15 />
+                                            <span ms-text='el.userRank'></span>
+                                        </small>
+                                    </p>
+                                    <p class="text-gray">
+                                        <small ms-text='el.signature||"未留言"'></small>
+                                    </p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class='col-2 pull-right'><a ms-attr-href='"/message#/talk/to="+el.uid' ms-click='talkTo(el)'>
+                            <div class="col-10 pull-right text-right">
+                                <img class="col-9 pull-right" src="/resource/img/btn_tabmsg_active.png" ms-css-padding-top='"50%"' />
+                            </div>
+                            <div class="clear"></div>
+                        </a></div>
+                        <div class="clear"></div>
+                    </dd>
+                </dl>
+            </div>
+            <a href="/tool/chemist" ms-if='storeEmployeeList.length>0'>
+                <div class='zyo-box zyo-box-last zyo-pdleft link-right-arrow btn-link text-gray'>更多热门药师</div>
+            </a>
+            
+        </div>
+        
+        <!--检测工具接口？-->
+        <div class="main-hot-chemists" ms-if='0'>
+            <div class='zyo-box zyo-pdleft'>
+                <p class="p text-left text-gray">检测工具</p>
+                <dl>
+                </dl>
+            </div>
+			<dd>
+	            <a  ms-attr-href='el.quizUrl' ms-data-id='el.quizId'>
+	                <dl class="zyo-box zyo-box-last btn-link">
+	                    <div class="col-3 pull-left">
+	                        <div class='zyo-pdleft'>
+	                            <img class="col-12" ms-attr-src='el.quizPic||"/resource/img/img_loading.png"' />
+	                        </div>
+	                    </div>
+	                    <div class="col-9 pull-left">
+	                        <div class='zyo-pdleft zyo-pdright'>
+	                            <p class="pull-right"><span ms-text='parseInt(el.quizNum/10000)? parseInt(el.quizNum/10000)+ "万": el.quizNum'></span></p>
+	                            <p class="big b text-dark" ms-text='el.quizTitle' ms-css-min-height='"2em"'></p>
+	                            <p class="text-gray" ms-text='el.quizIntro.substr(0,document.body.scrollWidth/15)+"..."'></p>
+	                        </div>
+	                    </div>
+	                    <div class="clear"></div>
+	                </dl>
+	            </a>
+        	</dd>
+		</div>
+            <a href="/tool/chemist" ms-if='0'>
+                <div class='zyo-box zyo-box-last zyo-pdleft link-right-arrow btn-link text-gray'>查看更多检测工具</div>
+            </a>
+    </section>
+    <% include ../tpl/common_footer.html %>
+    <script>
+        require(['avalon'], function(avalon){
+            var app_header= avalon.define({
+                $id: 'app_header',
+                navbarCtrl: "<img class='-col-2' src='/resource/img/btn_nav_backward.png'/>",
+                navbarCtrlFn: function(){
+                    history.go(-1);
+                },
+                navbarInfo: '',
+                appTitle: '疾病详情',
+                navbarMenu: "<img class='pull-right' src='/resource/img/icon_nav_claim.png' />",
+                navbarMenuFn: function(){
+                    location.href= '/';
+                },
+                navbarFilter: "",
+                navbarFilterFn: function(){},
+            })
+            avalon.scan()
+        })
+        require(['avalon'], function(avalon){
+            var disease_detail= avalon.define({
+                $id: 'disease_detail',
+                deseaseInfo: <%- deseaseInfo %>,
+				drugList:<%- drugList %>,
+                relationToolList: <%- relationToolList %>,
+                recommendArticleList:<%- recommendArticleList %>,
+               	relationAdInfo:<%- relationAdInfo %>,
+				storeEmployeeList:<%- storeEmployeeList %>,
+//				缺少检测工具: ,
+            })
+            avalon.scan()
+        })
+    </script>
+
+</body>

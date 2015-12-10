@@ -1,0 +1,294 @@
+<% include ../tpl/common_head.html %>
+
+<body class="store-detail ms-controller" ms-controller='store_detail'>
+    <% include ../tpl/common_header.html %>
+    <p class=" zyo-pdbottom"></p>
+    <section class="box-1000">
+        <div class="zyo-box zyo-box-last" ms-if='!storeInfo.storeBanner'>
+            <div class="col-10 pull-left">
+                <div class="zyo-pdleft">
+                    <p class="p b" ms-text='storeInfo.storeName'></p>
+                    <p class="p text-gray">
+                        粉丝
+                        <span class="" ms-text='storeInfo.favNum'></span>
+                    </p>
+                    <p class="">
+                        <span class="" style="margin:0;padding:0;margin-right:-.25em;" ms-repeat-ej=[1,2,3,4,5]>
+                            <img class="" src='/resource/img/icon_starfull.png' ms-if='storeInfo.rank>ej' height=14 />
+                            <img class="" src='/resource/img/icon_starhalf.png' ms-if='storeInfo.rank==ej' height=14 />
+                            <img class="" src='/resource/img/icon_starnull.png' ms-if='storeInfo.rank<ej' height=14 />
+                        </span>
+                        <span class="text-center"><span class="" ms-text='storeInfo.commentNum'></span>评</span>
+                    </p>
+                </div>
+            </div>
+            <div class="col-2 pull-left">
+                <div class="zyo-pdright zyo-pdtop" ms-click='likeStore'>
+                    <p class="text-center col-10 pull-right" ms-if='storeInfo.isFav==0'>
+                        <img class="col-12 pull-right zyo-pdbottom" src="/resource/img/btn_notice.png" />
+                        <small class="text-gray">加关注</small>
+                    </p>
+                    <p class="text-center col-10 pull-right" ms-if='storeInfo.isFav==1'>
+                        <img class="col-12 pull-right zyo-pdbottom" src="/resource/img/btn_noticed.png" />
+                        <small class="text-gray" ms-css-margin='"auto -10px"'>取消关注</small>
+                    </p>
+                </div>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <style>
+        </style>
+        <div class="" ms-if='storeInfo.storeBanner'>
+            <div id='store-bb' class="zyo-box zyo-box-last -box-400" style="padding:0;z-index:-1;background:url('/resource/img/img_carousel_loading.png');background-size:100% 100%;height:200px;" ms-css-background='"url("+storeInfo.storeBanner+")"' ms-css-background-size='"100% 100%"'>
+                <div class="col-12 row-8" ms-css-background='"none"'></div>
+                <div class="col-12 row-4 text-white" ms-css-background='"rgba(9,9,9,0.8)"'>
+                    <div class="zyo-pdleft zyo-pdright zyo-pdtop zyo-pdbottom">
+                        <div class="col-9 pull-left">
+                            <p class="p text-white" ms-text='storeInfo.storeName'></p>
+                            <p class="text-white">
+                                <span class="" style="margin:0;padding:0;margin-right:-.25em;" ms-repeat-ej=[1,2,3,4,5]>
+                                    <img class="" src='/resource/img/icon_starfull.png' ms-if='storeInfo.rank>ej' height=14 />
+                                    <img class="" src='/resource/img/icon_starhalf.png' ms-if='storeInfo.rank==ej' height=14 />
+                                    <img class="" src='/resource/img/icon_starnull.png' ms-if='storeInfo.rank<ej' height=14 />
+                                </span>
+                                <span class="text-center"><span class="" ms-text='storeInfo.commentNum'></span>评</span>
+                            </p>
+                        </div>
+                        <div class="col-3 pull-left">
+                            <div class="" style="bottom:10px;right:0;margin-top:-40%;position:relative;padding:1px;border:1px solid white;">
+                                <img class="col-12 row-12 box-200" ms-attr-src='storeInfo.storePic||"/resource/img/img_loading.png"' />
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div class="zyo-box zyo-box-last">
+                <big class="p text-gray col-8 pull-left zyo-pdtop">
+                    <span class="zyo-pdleft">粉丝</span>
+                    <span class="" ms-text='storeInfo.favNum'></span>
+                </big>
+                <div class="col-3 pull-right">
+                    <div class="zyo-pdleft text-center" ms-click='likeStore'>
+                        <div class="text-center col-12" ms-if='storeInfo.isFav==0'>
+                            <img class="col-5" src="/resource/img/btn_notice.png" />
+                            <p class="text-gray small">加关注</p>
+                        </div>
+                        <div class="text-center col-12" ms-if='storeInfo.isFav==1'>
+                            <img class="col-5" src="/resource/img/btn_noticed.png" />
+                            <p class="text-gray small" ms-css-margin='"auto -10px"'>取消关注</p>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+        <div class="zyo-box" style="padding-bottom:0;">
+            <div class="container">
+                <dd class="">
+                    <dl class="col-4 pull-left p" ms-if='storeInfo.tag4==1'>
+                        <small class="badge-sm text-white zyo-bg-warning" ms-if='storeInfo.tag4==1'>送</small>
+                        <span class='text-gray small'>送货上门</span>
+                    </dl>
+                    <dl class="col-4 pull-left p">
+                        <small class="badge-sm text-white zyo-bg-warning">营</small>
+                        <span class="text-gray small" ms-if='storeInfo.tag3==0' ms-text='storeInfo.openHours||"09:00-18:00"'></span>
+                        <span class="text-gray small" ms-if='storeInfo.tag3==1' ms-text='"00:00-24:00"'></span>
+                    </dl>
+                    <dl class="col-4 pull-left p" ms-if='storeInfo.tag1==1'>
+                        <small class="badge-sm text-white zyo-bg-info" ms-if='storeInfo.tag1==1'>医</small>
+                        <span class='text-gray small'>医保店</span>
+                    </dl>
+                    <dl class="col-4 pull-left p" ms-if='storeInfo.tag2==1'>
+                        <small class="badge-sm text-white zyo-bg-grass" ms-if='storeInfo.tag2==1'>堂</small>
+                        <span class='text-gray small'>坐堂医生</span>
+                    </dl>
+                    <dl class="col-4 pull-left p" ms-if='storeInfo.tag6==1'>
+                        <small class="badge-sm text-white zyo-bg-yes" ms-if='storeInfo.tag6==1'>中</small>
+                        <span class='text-gray small'>中草药有售</span>
+                    </dl>
+                    <dl class="col-4 pull-left p" ms-if='storeInfo.tag5==1'>
+                        <small class="badge-sm text-white zyo-bg-info" ms-if='storeInfo.tag5==1'>熬</small>
+                        <span class='text-gray small'>中药代煎</span>
+                    </dl>
+                    <dl class="clear"></dl>
+                </dd>
+            </div>
+        </div>
+        <div class="zyo-box">
+            <div class="container text-center">
+                <div class="col-1 pull-left text-left">
+                    <img class="col-5" src="/resource/img/icon_address.png" />
+                </div>
+                <div class="col-11 pull-left text-left">
+                    <p class="col-12 text-gray" ms-text='storeInfo.address'></p>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+        <div class="main-hot-chemists" ms-if='storeEmployeeList.length>0'>
+            <div class='zyo-box zyo-pdleft'>
+                <p class="p text-left text-gray">店员服务(<span class='' ms-text='storeEmployeeList.length'></span>)</p>
+                <dl>
+                    <dd class="dd-box" ms-repeat-el='storeEmployeeList'>
+                        <div class='col-3 pull-left'>
+                            <img class='col-11 circle' ms-attr-src='el.avatar||"/resource/img/icon_userphoto_loading.png"' maxheight=80 />
+                        </div>
+                        <div class='col-9 pull-left'>
+                            <div class="col-2 pull-right text-right">
+                                <br>
+                                <img class="col-10 pull-right" src="/resource/img/btn_tabmsg_active.png"/>
+                            </div>
+                            <p class='p'>
+                                <span ms-text='el.userName'></span>
+                                <small class="text-white badge zyo-bg-info" ms-if='el.userType==0'>执业药师</small>
+                                <small class="text-white badge zyo-bg-info" ms-if='el.userType==1'>店员</small>
+                                <small class="text-white badge zyo-bg-yes" ms-if='el.onLine'>在线</small>
+                                <small class="text-white badge zyo-bg-disabled" ms-if='!el.onLine'>离线</small>
+                            </p>
+                            <p class="p">
+                                <small>
+                                    <img class='' src='/resource/img/icon_chemist_servcount.png' height=15 /> <span ms-text='el.serviceNum||"0"'></span>人
+                                </small>
+                                <small ms-if='el.userRank'>
+                                    <img class='' src='/resource/img/icon_chemist_levelcount.png' height=15 /> <span ms-text='el.serviceNum||"0"'><span ms-text='el.userRank'></span>
+                                </small>
+                            </p>
+                            <p class="text-gray">
+                                <small ms-text='el.signature||"未留言"'></small>
+                            </p>
+                            <div class="clear"></div>
+                        </div>
+                        <div class="clear"></div>
+                    </dd>
+                </dl>
+            </div>
+            <a href="">
+                <div class='zyo-box zyo-box-last box-88 link-right-arrow btn-link'>查看全部店员</div>
+            </a>
+        </div>
+        <div class="zyo-box zyo-pdleft" ms-if='drugList.length>0'>
+            <p class="text-gray text-left p">热卖商品</p>
+            <div class="">
+                <dl class="dd-box">
+                    <dd ms-attr-class='$index==0?"zyo-pdbottom":"col-3 pull-left"' ms-repeat-el='drugList'>
+                        <a ms-attr-href='"/tool/drug/detail?drugId="+el.drugId'>
+                            <div ms-attr-class='$index==0?"col-3 pull-left":"col-12 pull-left"'>
+                                <div class='zyo-pdright0'>
+                                    <img class="col-11" ms-attr-src='el.drugPic||"/resource/img/img_loading.png"' />
+                                </div>
+                            </div>
+                            <div ms-attr-class='$index==0?"col-9 pull-left":"col-12 pull-left"'>
+                                <div ms-attr-class='$index==0?"zyo-pdleft":"zyo-pdtop text-center zyo-pdright"' ms-css-text-align='$index>0?"center":"left"'>
+                                    <p class="p big text-black" ms-text='el.drugName'></p>
+                                    <p class="text-gray p small" ms-if='$index==0' ms-text='el.promotionInfo'></p>
+                                    <p class="text-info small" ms-if='el.price'>￥<span class='' ms-text='el.price'></span></p>
+                                </div>
+                            </div>
+                            <div class="clear" ms-if='$index==0'></div>
+                            <p class="" style="margin-top:10px;margin-right:-10px;border-top:1px solid lightgray;" ms-if='$index==0&& drugList.length>1'></p>
+                        </a>
+                    </dd>
+                    <dd class="clear"></dd>
+                </dl>
+            </div>
+        </div>
+        <a ms-if='storeInfo.hasku==1' ms-attr-href='"/tool/store/classify?storeid="+storeInfo.storeId'>
+            <div class="zyo-box btn-link">
+                <div class='col-4 pull-left'>
+                    <div class="zyo-pdleft text-left">
+                        <img class="col-11" ms-attr-src='"/resource/img/img_carousel_default.png"' max-height='50px'/>
+                    </div>
+                </div>
+                <div class="col-8 pull-left" ms-css-padding-top='"2%"'>
+                    <p class="p b">商品分类</p>
+                    <p class="text-gray">
+                        <small class="text-gray">药品、器械、保健品等多种商品有售</small>
+                    </p>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </a>
+        <div class="zyo-box zyo-pdleft" ms-if='commentList.length>0'>
+            <p class="text-gray text-left p">网友点评</p>
+            <dl>
+                <dd class="dd-box" ms-repeat-el='commentList'>
+                    <div class="col-3 pull-left">
+                        <img class="col-10 circle pull-left" ms-attr-src='el.avatar||"/resource/img/icon_userphoto_loading.png"' />
+                    </div>
+                    <div class="col-9 pull-left">
+                        <small class="pull-right text-gray" ms-text='("0"+(new Date(parseInt(el.addTime)).getMonth())+1).slice(-2)+"-"+("0"+(new Date(parseInt(el.addTime)).getDate())).slice(-2)'></small>
+                        <p class="p text-black" ms-text='el.userName'></p>
+                        <p class="p">
+                            <span class="" style="margin:0;padding:0;margin-right:-.25em;" ms-repeat-ej=[1,2,3,4,5]>
+                                <img class="" src='/resource/img/icon_starfull.png' ms-if='el.rank>ej' height=14 />
+                                <img class="" src='/resource/img/icon_starhalf.png' ms-if='el.rank==ej' height=14 />
+                                <img class="" src='/resource/img/icon_starnull.png' ms-if='el.rank<ej' height=14 />
+                            </span>
+                            <span class="text-center"><span class="" ms-text='storeInfo.commentNum'></span>评</span>
+                        </p>
+                        <p class="text-gray" ms-text='el.content'></p>
+                    </div>
+                    <div class="clear"></div>
+                </dd>
+            </dl>
+        </div>
+        <a ms-attr-href='"/tool/store/comments?storeId="+storeInfo.storeId' ms-if='commentList.length>0'>
+            <div class='zyo-box zyo-box-last zyo-pdleft link-right-arrow btn-link text-gray'>查看全部<span ms-text='storeInfo.commentNum'></span>条点评</div>
+        </a>
+    </section>
+    <% include ../tpl/common_footer.html %>
+    <script>
+        require(['avalon'], function(avalon){
+            var app_header= avalon.define({
+                $id: 'app_header',
+                navbarCtrl: "<img class='-col-2' src='/resource/img/btn_nav_backward.png'/>",
+                navbarCtrlFn: function(){
+                    history.go(-1);
+                },
+                navbarInfo: '',
+                appTitle: '商家详情',
+                navbarMenu: "<img class='pull-right' src='/resource/img/icon_nav_claim.png' />",
+                navbarMenuFn: function(){
+                    location.href= '/';
+                },
+                navbarFilter: "",
+                navbarFilterFn: function(){},
+            })
+            avalon.scan()
+        })
+        require(['avalon'], function(avalon){
+            var store_detail= avalon.define({
+                $id: 'store_detail',
+                storeInfo: <%- storeinfo %>,
+                storeEmployeeList: <%- storeemployee %>,
+                drugList: <%- druglist %>,
+                commentList: <%- commentlist %>,
+                likeStore: function(){
+                    require(['Ajax','cookie'], function(Ajax){
+                        var api_url= avalon.vmodels.store_detail.storeInfo.isFav==0? '/tool/store/collect': '/tool/store/uncollect';
+                        Ajax(
+                            'get',
+                            api_url,
+                            'storeid='+ avalon.vmodels.store_detail.storeInfo.storeId+ '&uid='+ avalon.vmodels.app_footer.user.uid,
+                            function(json){
+                                var res= JSON.parse(json)
+                                if(res.code== 3){
+                                    setCookie('http_referer', self.location.href)
+                                    self.location.href= '/login';
+                                }
+                                if(res.code== 0){
+                                    avalon.vmodels.store_detail.storeInfo.isFav= Math.pow(avalon.vmodels.store_detail.storeInfo.isFav-1,2)
+                                }
+                            }
+                        )
+                    })
+                },
+            })
+            avalon.scan()
+        })
+    </script>
+
+</body>

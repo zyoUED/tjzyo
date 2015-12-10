@@ -1,0 +1,44 @@
+<% include ../tpl/common_head.html %>
+<style type="text/css">
+	.detail_section{background: #fff !important;border-bottom: 1px solid lightgrey;margin-bottom: 60px;}
+	.detail_header{padding: 10px 0;border-bottom: 1px solid lightgrey;text-align: center;font-size: 1.2em;color: #666;}
+	.detail_article{padding: 20px 10px;color: #666;}
+	img{max-width: 640px;}
+	.app-footer{background-color: #fff;padding: 5px 0 5%;}
+	.app-footer div:last-child,.app-footer div:nth-of-type(3){margin: 0 !important;}
+</style>
+<body class="" ms-controller="newsdetail">
+    <% include ../tpl/common_header.html %>
+    	<section class="detail_section">
+		<header class="detail_header" ms-html="newsInfo.dataTitle"></header>
+		<article class="detail_article" ms-html="newsInfo.content">
+		</article> 
+	</section>
+	<% include ../tpl/common_footer.html %>
+	<script type="text/javascript">
+		require(['avalon'], function(avalon){
+            var app_header= avalon.define({
+                $id: 'app_header',
+                navbarCtrl: "<img class='-col-2' src='/resource/img/btn_nav_backward.png'/>",
+                navbarCtrlFn: function(){
+                    history.go(-1);
+                },
+                appTitle: '资讯详情页',
+                navbarFilter:'',
+                navbarMenu: "<img class='pull-right' src='/resource/img/icon_nav_claim.png' />",
+                navbarMenuFn: function(){
+                    location.href= '/';
+                },
+            })
+//            avalon.scan()
+        })
+		require(['avalon'],function(avalon){
+			var info_detail = avalon.define({
+				$id:"newsdetail",
+				newsInfo:<%- newsInfo %>,
+				
+			})			
+			avalon.scan();
+		})
+	</script>
+</body>

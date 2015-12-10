@@ -1,0 +1,92 @@
+<% include ../tpl/common_head.html %>
+
+<body class="medical-tool ms-controller" ms-controller='medical_tool'>
+    <% include ../tpl/common_header.html %>
+    <p class=" zyo-pdbottom"></p>
+    <section class="box-800">
+        <dd >
+            <a ms-repeat-el='medicaltoollist' ms-attr-href='el.quizUrl' ms-data-id='el.quizId'>
+                <dl class="zyo-box zyo-box-last btn-link">
+                    <div class="col-3 pull-left">
+                        <div class='zyo-pdleft'>
+                            <img class="col-12" ms-attr-src='el.quizPic||"/resource/img/img_loading.png"' />
+                        </div>
+                    </div>
+                    <div class="col-9 pull-left">
+                        <div class='zyo-pdleft zyo-pdright'>
+                            <p class="pull-right"><span ms-text='parseInt(el.quizNum/10000)'></span>万已测</p>
+                            <p class="big b p" ms-text='el.quizTitle'>糖尿病自测</p>
+                            <p class="text-gray" ms-text='el.quizIntro.substr(0,25)+"..."'>快来试一试快来试一试快来试一试快来试一试</p>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </dl>
+            </a>
+        </dd>
+        
+    </section>
+    <% include ../tpl/common_footer.html %>
+    <script>
+        require(['avalon'], function(avalon){
+            var app_header= avalon.define({
+                $id: 'app_header',
+                navbarCtrl: "<img class='-col-2' src='/resource/img/btn_nav_backward.png'/>",
+                navbarCtrlFn: function(){
+                    history.go(-1);
+                },
+                navbarFilter:'',
+                appTitle: '口袋体检',
+                navbarMenu: "<img class='-col-12' src='/resource/img/icon_nav_claim.png' />",
+                navbarMenuFn: function(){
+                    location.href= '/';
+                }
+            })
+            avalon.scan()
+        })
+        require(['avalon'], function(avalon){
+            var medical_tool= avalon.define({
+                $id: 'medical_tool',
+                medicaltoollist: <%- medicallistdata %>,
+                update: function(data){//传入body.data
+                    medical_tool.medicaltoollist= data.medicalToolList;
+                    avalon.log('updated:',medical_tool.medicaltoollist)
+                    avalon.log('updated:',data)
+                },
+            })
+            avalon.scan()
+        })
+        avalon.config({
+            paths:{
+                zyAPIurl: './zyo-api-url'
+            },
+            shim:{
+                zyAPIurl:{
+                    exports: 'zyAPIurl'
+                }
+            }
+        })
+//        require(['jquery', './zyo-api-url'], function($, zyAPIurl){
+//            //全局参数params
+//            var url_param= location.href.split('?')[1]? location.href.split('?')[1].split('&'): {};
+//            params={};
+//            for(var i=0,l=url_param.length;i<l;i++){
+//                var el=url_param[i];
+//                (!!el.match('='))&& (params[el.split('=')[0]]= el.split('=')[1]);
+//            }
+//            var api_url= zyAPIurl.medical_tool;
+//            $.ajax({
+//                url: api_url,
+//                data:'',
+//                success:function(json){
+//                    var res= JSON.parse(json);
+//                    console.log(res.data)
+//                    avalon.vmodels.medical_tool.update(res.data);
+//                },
+//                error:function(){
+//                    avalon.log('网络出错啦！');
+//                },
+//            })
+//        })
+    </script>
+
+</body>

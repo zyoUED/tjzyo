@@ -1,0 +1,253 @@
+<% include ../tpl/common_head.html %>
+
+<body class='ms-controller' ms-controller='register_form'>
+    <% include ../tpl/common_header.html %>
+        <p class="zyo-pdbottom"></p>
+<!--    <form class='zyo-pdtop' action='/user/index/register' method='post' >-->
+        <div class='zyo-box zyo-box-last'>
+            <div class='col-1 pull-left text-right'>
+                <div class="zyo-pdleft">
+                    <img class='' style="margin-top: 8px;" src="/resource/img/icon_login_username.png" width='22px' height='22px'>
+                </div>
+            </div>
+            <div class='col-11 pull-left text-left '>
+                <div class="zyo-pdleft zyo-pdright">
+                    <input class='col-12 row-12 box-100 zyo-h2' type='tel' style='border:0;' placeholder='手机号' required name="username" maxlength="15" ms-duplex-string='telephone' ms-css-background='phone_bg' />
+                </div>
+            </div>
+            <div class='clear'></div>
+        </div>
+        <div>
+            <div class='zyo-box zyo-box-last'>
+                <div class='col-1 pull-left text-right'>
+                    <div class="zyo-pdleft">
+                        <img class='' style="margin-top: 8px;" src="/resource/img/icon_login_shortmsg.png" width='22px' height='22px' />
+                    </div>
+                </div>
+                <div class='col-7 pull-left text-left'>
+                    <div class="zyo-pdleft">
+                        <input class='col-11 row-12 box-100 zyo-h2' type='text' ms-duplex-string='vericode' style='border:0;' placeholder='请输入手机短信中的验证码' required name="" maxlength="8" />
+                    </div>
+                </div>
+                <div class="col-4 pull-left  ">
+                    <div class='zyo-pdtop zyo-pdbottom btn-link text-center' style='border:1px solid #a7d445;border-radius: 5px;margin-right: 10px;color:#a7d445;' name='verifyCode' ms-click='verifyCode' ms-css-border-color='codeColor' ms-css-color='codeColor' ms-text='codeText' ms-class-btn-link='!isVerifing'>
+                    获取验证码
+                    </div>
+                </div>
+                <div class='clear'></div>
+            </div>
+        </div>
+        <div>
+            <div class='zyo-box zyo-box-last'>
+                <div class='col-1 pull-left text-right'>
+                    <div class="zyo-pdleft">
+                        <img class='' style="margin-top: 8px;" src="/resource/img/icon_login_password.png" width='22px' height='22px'>
+                    </div>
+                </div>
+                <div class='col-11 pull-left text-left'>
+                    <div class="zyo-pdleft">
+                        <input class='col-12 row-12 box-100 zyo-h2' type='password' ms-duplex-string='passw' style='border:0;' placeholder='请输入密码' required name="password1" maxlength='20' />
+                    </div>
+                </div>
+                <div class='clear'></div>
+            </div>
+        </div>
+        <div>
+            <div class='zyo-box zyo-box-last' >
+                <div class='col-1 pull-left text-right'>
+                    <div class="zyo-pdleft">
+                        <img class='' style="margin-top: 8px;" src="/resource/img/icon_login_password.png" width='22px' height='22px'>
+                    </div>
+                </div>
+                <div class='col-11 pull-left text-left'>
+                    <div class="zyo-pdleft">
+                        <input class='col-12 row-12 box-100 zyo-h2' type='password' ms-duplex-string='repassw' style='border:0;' placeholder='请再次输入密码' required name="password2" maxlength='20' />
+                    </div>
+                </div>
+                <div class='clear'></div>
+            </div>
+        </div>
+<!--
+        <div class='col-12 text-gray'>
+            <div class="zyo-pdleft zyo-pdright">
+                <label class='zyo-label-check'>
+                    <input class="zyo-bg-white" type="checkbox" name="agree" ms-duplex-checked='readen' /><span class="zyo-pdleft">我已阅读并同意</span>
+                </label>
+                <a class="text-info" ms-click='reading()'>《掌上药店用户协议》</a>
+            </div>
+        </div>
+-->
+        <div class='col-12'>
+            <div class='clear container text-center'>
+                <br>
+                <button class='btn btn-zyo-yes col-11 text-white box-100 row-12 zyo-h1' 
+                        ms-class-disabled='!telephone&& !vericode&& !passw&& !repassw' 
+                        ms-css-background='telephone&& vericode&& passw&& repassw? "rgb(167,212,69)": "lightgray"' 
+                        style='height: 30px;font-size: 20px;'
+                        ms-click='goRegist()'
+                        >保  存</button>
+            </div>
+        </div>
+<!--    </form>-->
+    <br>
+    <div class="col-12 clear text-center showup-tips" ms-class-active='tipbox.active'>
+        <div class="badge zyo-bg-info text-white zyo-pdleft zyo-pdright" ms-text='tipbox.content'></div>
+    </div>
+        
+    <script>
+        require(['avalon'], function(avalon){
+            var app_header= avalon.define({
+                $id: 'app_header',
+                navbarCtrl: "<img class='-col-2' src='/resource/img/btn_nav_backward.png'/>",
+                navbarCtrlFn: function(){
+                    history.go(-1);
+                },
+                appTitle: '掌上药店',
+                navbarFilter:'',
+                navbarMenu: "<img class='pull-right' src='/resource/img/icon_nav_claim.png'/>",
+                navbarMenuFn: function(){
+                    location.href= '/';
+                },
+            })
+            avalon.scan()
+        })
+        require(['avalon','Ajax'], function(avalon, Ajax){
+            var register_form= avalon.define({
+                $id: 'register_form',
+                verifyCode: function(){
+                    //可以点击获取验证码
+                    if(!register_form.isVerifing){
+                        //正则匹配手机号
+                        if(register_form.telephone.match(/^(1[3,5,8,7]{1}[\d]{9})/)){
+                            //需要校验手机号
+                            Ajax(
+                                'post',
+                                '/user/register/verify',
+                                'telephone='+ register_form.telephone,
+                                function(json){                                    
+                                    console.info(json);
+                                }
+                            )
+                            register_form.isVerifing = true;
+                            register_form.codeColor = '#999999';
+                            var timeout = setInterval(function(){
+                                if(register_form.number == 0){
+                                    register_form.number = 30;
+                                    register_form.isVerifing = false;
+                                    register_form.codeColor = '#a7d445';
+                                    register_form.codeText = '获取验证码';
+                                    clearInterval(timeout);
+                                }
+                                else{
+                                    register_form.codeText = '获取验证码('+register_form.number+')';
+                                    register_form.number --;
+                                }
+                            },1000);
+                        }
+                        //手机号为空或不匹配
+                        else{
+                            setTimeout(function(){
+                                register_form.phone_bg= 'rgba(250,0,0,0.4)';
+                                setTimeout(function(){
+                                    register_form.phone_bg= 'rgba(250,0,0,0.3)';
+                                    setTimeout(function(){
+                                        register_form.phone_bg= 'rgba(250,0,0,0.2)';
+                                        setTimeout(function(){
+                                            register_form.phone_bg= 'rgba(250,0,0,0.1)';
+                                            setTimeout(function(){
+                                                register_form.phone_bg= 'rgba(250,0,0,0)';
+                                            },100)
+                                        },100)
+                                    },100)
+                                },100)
+                            },100)
+                        }
+                    }
+                },
+                telephone:'', vericode:'', passw:'', repassw:'',//data of form inputs
+                isVerifing:false, //当前验证状态
+                codeColor:'#a7d445',//按钮颜色
+                number:30, //验证码倒计时
+                codeText:'获取验证码', //按钮文本
+                phone_bg: 'rgba(250,0,0,0)',
+                readen: 1,
+                reading: function(){
+                    avalon.log(register_form.readen)
+                    register_form.readen= 1
+                },
+                goRegist: function(){//submit regist
+                    console.log(register_form.telephone, register_form.vericode, register_form.passw)
+                    if(!(register_form.telephone.match(/^(1[3,5,8,7]{1}[\d]{9})/))){
+                        setTimeout(function(){
+                            setTimeout(function(){
+                                register_form.phone_bg= 'rgba(250,0,0,0.4)';
+                                setTimeout(function(){
+                                    register_form.phone_bg= 'rgba(250,0,0,0.3)';
+                                    setTimeout(function(){
+                                        register_form.phone_bg= 'rgba(250,0,0,0.2)';
+                                        setTimeout(function(){
+                                            register_form.phone_bg= 'rgba(250,0,0,0.1)';
+                                            setTimeout(function(){
+                                                register_form.phone_bg= 'rgba(250,0,0,0)';
+                                            },100)
+                                        },100)
+                                    },100)
+                                },100)
+                            },100)
+                            register_form.tipbox.content= '请重新确认你的手机号';
+                            register_form.tipbox.active= true;
+                            setTimeout(function(){
+                                register_form.tipbox.active= false;
+                            }, 3000)
+                        }, 0)
+                        return false
+                    }
+                    else if(register_form.passw!= register_form.repassw){
+                        setTimeout(function(){
+                            register_form.repassw= '';
+                            register_form.tipbox.content= '请重新确认你的密码';
+                            register_form.tipbox.active= true;
+                            setTimeout(function(){
+                                register_form.tipbox.active= false;
+                            }, 3000)
+                        }, 0)
+                        return false
+                    }
+                    else{
+                        Ajax(
+                            'post',
+                            '/user/register/regist',
+                            'code='+ register_form.vericode+ '&cellphone='+ register_form.telephone+ '&passwrod='+ register_form.passw,
+                            function(json){
+                                var res= JSON.parse(json);                                
+                                if(res.code== 0){
+                                    self.location.href= '/login'
+                                }
+                                else{
+                                    setTimeout(function(){
+                                        register_form.tipbox.content= '注册失败，请重试~'|| res.msg;
+                                        register_form.tipbox.active= true;
+                                        setTimeout(function(){
+                                            register_form.tipbox.active= false;
+                                        }, 3000)
+                                    }, 0)
+                                    return false
+                                }
+                            }
+                        )
+                    }
+                },
+                tipbox: {
+                    active: false,
+                    content:'用户名或密码错误',
+                },
+            })
+            register_form.$watch('telephone', function(new_v, old_v){
+                if(new_v.match(/^(1[3,5,8,7]{1}[\d]{9})/)){
+                    console.log('nice phone')
+                }
+            })
+            avalon.scan()
+        })
+    </script>
+</body>

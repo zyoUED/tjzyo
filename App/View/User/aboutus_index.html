@@ -1,0 +1,51 @@
+<% include ../tpl/common_head.html %>
+
+<body class='statement' ms-controller='app_statement'>
+    <% include ../tpl/common_header.html %>
+    
+    <div class="clear"></div>
+    <section class="statement-sec box-800">
+        <div class="zyo-box zyo-box-last text-center">
+            <div class="col-12 zyo-pdtop p">
+                <img class="col-3 center-block" src="/resource/img/icon_syssetting_zyologo.png" />
+            </div>
+            <p class="p"><span class="text-gray" style="font-family: cursive;" ms-text='"V1.0.0"'></span></p>
+        </div>
+        <div class="zyo-box btn-link text-gray">
+            <a href="http://jq.qq.com/?_wv=1027&k=e6jfhR">
+                <p class="col-5 pull-left text-left zyo-pdleft" ms-text='"QQ用户群"'></p>
+                <p class="col-5 pull-right text-right zyo-pdright" ms-text='"194898208"'></p>
+                <p class="clear"></p>
+            </a>
+        </div>
+        <div class="zyo-box zyo-box-last btn-link text-gray">
+            <a href="tel:4000318766">
+                <p class="col-5 pull-left text-left zyo-pdleft" ms-text='"客服电话"'></p>
+                <p class="col-5 pull-right text-right zyo-pdright" ms-text='"400-0318-766"'></p>
+                <p class="clear"></p>
+            </a>
+        </div>
+    </section>
+    <script>
+        require(['avalon'], function(avalon){
+            var app_statement= avalon.define({
+                $id: 'app_statement',
+            })
+            var app_header= avalon.define({
+                $id: 'app_header',
+                navbarCtrl: "<img class='-col-2' src='/resource/img/btn_nav_backward.png'/>",
+                navbarCtrlFn: function(){
+                    history.go(-1);
+                },
+                appTitle: '关于我们',
+                navbarMenu: "<img class='pull-right' src='/resource/img/icon_nav_claim.png'/>",
+                navbarMenuFn: function(){
+                    location.href= '/';
+                },
+                navbarFilter: '',
+            })
+            avalon.scan()
+        })
+    </script>
+    <% include ../tpl/common_footer.html %>
+</body>

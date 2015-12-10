@@ -1,0 +1,73 @@
+<% include ../tpl/common_head.html %>
+    <link rel="stylesheet" href="/resource/module/owl.carousel/owl-carousel/owl.carousel.css" />
+    <link rel="stylesheet" href="/resource/module/owl.carousel/owl-carousel/owl.theme.css" />
+    <style>
+        .owl-theme .owl-controls .owl-page span{background: white;border:1px solid lightgray;opacity: 1;}
+        .owl-theme .owl-controls .owl-page.active span, .owl-theme .owl-controls.clickable .owl-page:hover span{background: lightgray;}
+    </style>
+
+<body class='' ms-controller='app_download'>
+    <% include ../tpl/common_header.html %>
+    
+    <div class="p"></div>
+    <div class="zyo-box zyo-box-last col-12">
+        <!--oniui-->
+<!--        <div ms-widget="carousel, carousel, $opt"></div>-->
+        <!--oniui-->
+        <!--owl-->
+        <div id="owl-download" class="owl-carousel">
+            <div class="item box-600"><img class='' src="/resource/img/app_download_car_1.png" alt="下载掌上药店APP" width='100%' height='' /></div>
+            <div class="item box-600"><img class='' src="/resource/img/app_download_car_2.png" alt="下载掌上药店APP" width='100%' height='' /></div>
+            <div class="item box-600"><img class='' src="/resource/img/app_download_car_3.png" alt="下载掌上药店APP" width='100%' height='' /></div>
+        </div>
+        <!--owl-->
+        <p><br></p>
+        <div class="col-12 text-center">
+            <button class="btn btn-zyo-yes text-white col-8 zyo-pdtop zyo-pdbottom b big" style="border-radius:2px;"><h3 class=" zyo-pdtop zyo-pdbottom">立即下载</h3></button>
+        </div>
+        <p><br></p>
+    </div>
+
+    <script>
+        require(['jquery'], function($){
+            require(['owl'], function(){
+                $("#owl-download").owlCarousel({
+                    navigation : 0,
+                    slideSpeed : 300,
+                    pagination : true,
+                    paginationSpeed : 400,
+                    lazyLoad: 1,
+                    items : 1,
+                    itemsDesktop : 1,
+                    itemsDesktopSmall : 1,
+                    itemsTablet: 1,
+                    itemsMobile : 1,
+                    autoplay:400,
+                })
+                console.log('owl initialed')
+            })
+        })
+        require(['avalon'], function(avalon){
+            var app_header= avalon.define({
+                $id: 'app_header',
+                navbarCtrl: "<img class='-col-2' src='/resource/img/btn_nav_backward.png'/>",
+                navbarCtrlFn: function(){
+                    history.go(-1);
+                },
+                navbarFilter:'',
+                appTitle: '客户端下载',
+                navbarMenu: "<img class='-col-12' src='/resource/img/icon_nav_claim.png'/>",
+                navbarMenuFn: function(){
+                    location.href= '/';
+                }
+            })
+            avalon.scan()
+        })
+        require(['avalon'], function(){// "../module/avalon.oniui/carousel/avalon.carousel"
+            var app_download = avalon.define({
+                $id: 'app_download',
+            })
+            avalon.scan()
+        })
+    </script>
+</body>

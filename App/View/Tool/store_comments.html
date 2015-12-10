@@ -1,0 +1,68 @@
+<% include ../tpl/common_head.html %>
+    
+<body class="chemist-index -ms-controller" ms-controller='comments_list'>
+    <% include ../tpl/common_header.html %>
+    <div class="zyo-pdbottom"></div>
+    <div class="box-1000">
+        <dl class="item" ms-repeat-el='commentList'>
+            <a class="" ms-data-href='el.uid'>
+                <dd class="zyo-box-last zyo-box btn-link">
+                    <div class="col-3 pull-left">
+                        <div class="zyo-pdleft">
+                            <img class="col-11 circle" ms-attr-src='el.avatar||"/resource/img/img_loading.png"' />
+                        </div>
+                    </div>
+                    <div class="col-9 pull-left">
+                        <div class="container">
+                            <p class="pull-right text-gray small" >
+                                <span class="text-gray" ms-text='el.addTime| date("MM-dd")'></span>
+                            </p>
+                            <div class="text-dark big p" ms-text='el.userName'></div>
+                            <div class="p">
+                                <span class="pull-left" style="margin:0;padding:0;margin-right:.25em;" ms-repeat-ej=[1,2,3,4,5]>
+                                    <img class="" src='/resource/img/icon_starfull.png' ms-if='el.rank>=ej' height=14 />
+                                    <img class="" src='/resource/img/icon_starhalf.png' ms-if='el.rank>ej&& el.rank<ej' height=14 />
+                                    <img class="" src='/resource/img/icon_starnull.png' ms-if='el.rank<ej' height=14 />
+                                </span>
+<!--                                <div class="col-4- pull-left"><span ms-text='el.commentNum'></span>评</div>-->
+                                <div class="clear"></div>
+                            </div>
+                            <div class="text-gray text-justify" ms-text='el.content'></div>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </dd>
+            </a>
+        </dl>
+    </div>
+    
+    <% include ../tpl/common_footer.html %>
+
+    <script>
+        require(['avalon'], function(avalon){
+            var app_header= avalon.define({
+                $id: 'app_header',
+                navbarCtrl: "<img class='pull-left' src='/resource/img/btn_nav_backward.png'/>",
+                navbarCtrlFn: function(){
+                    history.go(-1);
+                },
+                appTitle: '药师',
+                navbarFilter:'',
+                navbarMenu: "<img class='pull-right' src='/resource/img/icon_nav_claim.png' />",
+                navbarMenuFn: function(){
+                    location.href= '/';
+                },
+            })
+            avalon.scan()
+        })
+        require(['avalon'], function(avalon){
+            var comments_list= avalon.define({
+                $id: 'comments_list',
+                commentList: <%- commentList %>,
+            })
+            avalon.scan()
+        })
+    </script>
+    
+</body>
+    

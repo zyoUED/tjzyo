@@ -1,0 +1,115 @@
+<% include ../tpl/common_head.html %>
+
+<body class="store-list ms-controller" ms-controller='store_list'>
+    <% include ../tpl/common_header.html %>
+    <p class=" zyo-pdbottom"></p>
+    <section class="box-800">
+        <dd >
+            <a ms-repeat-el='storeInfoList' ms-attr-href='"store/detail?"+el.storeId' ms-data-id='el.storeId' ms-if-loop='(flagList[1].flag==0?true:el.tag1==flagList[1].flag)&& (flagList[2].flag==0?true:el.tag2==flagList[2].flag)&& (flagList[3].flag==0?true:el.tag3==flagList[3].flag)&& (flagList[4].flag==0?true:el.tag4==flagList[4].flag)&& (flagList[5].flag==0?true:el.tag5==flagList[5].flag)&& (flagList[6].flag==0?true:el.tag6==flagList[6].flag)&& (flagList[0].flag==0?true:el.isCoupon==flagList[0].flag)' >
+                <dl class="zyo-box zyo-box-last btn-link">
+                    <div class="col-3 pull-left" ms-if='el.storePic'>
+                        <div class='zyo-pdleft'>
+                            <img class="col-12" ms-attr-src='el.storePic' style='border:1px solid lightgray;' />
+                        </div>
+                    </div>
+                    <div class="col-9 pull-left" ms-css-width='el.storePic?"75%":"100%"'>
+                        <div class='zyo-pdleft zyo-pdright'>
+                            <p class="big b p" ms-text='el.storeName' ms-css-padding-top='el.storePic?"10px":"0"'></p>
+                            <p class="" ms-if='el.tag1||el.tag2||el.tag3||el.tag4||el.tag5||el.tag6' style="margin-top:-8px;margin-bottom:2px;">
+                                <small class="badge-sm text-white zyo-bg-info" ms-if='el.tag1==1'>医保</small>
+                                <small class="badge-sm text-white zyo-bg-grass" ms-if='el.tag2==1'>坐堂医生</small>
+                                <small class="badge-sm text-white zyo-bg-warning" ms-if='el.tag3==1'>24H</small>
+                                <small class="badge-sm text-white zyo-bg-warning" ms-if='el.tag4==1'>送货上门</small>
+                                <small class="badge-sm text-white zyo-bg-info" ms-if='el.tag5==1'>熬</small>
+                                <small class="badge-sm text-white zyo-bg-yes" ms-if='el.tag6==1'>中草药</small>
+                                <small class="badge-sm text-white zyo-bg-primary" ms-if='el.isCoupon==1'>券</small>
+                            </p>
+                            <p class="pull-right"><span ms-text='el.distance'></span></p>
+                            <span class="" style="margin:0;padding:0;margin-right:-.25em;" ms-repeat-ej=[1,2,3,4,5]>
+                                <img class="" src='/resource/img/icon_starfull.png' ms-if='el.rank>ej' height=14 />
+                                <img class="" src='/resource/img/icon_starhalf.png' ms-if='el.rank==ej' height=14 />
+                                <img class="" src='/resource/img/icon_starnull.png' ms-if='el.rank<ej' height=14 />
+<!--
+                                <i class="fa fa-sm text-warning fa-star" ms-if='el.rank>ej'></i>
+                                <i class="fa fa-sm text-warning fa-star-half-o" ms-if='el.rank==ej'></i>
+                                <i class="fa fa-sm text-warning fa-star-o" ms-if='el.rank<ej'></i>
+-->
+                            </span>
+                            <span class="text-center"><span class="" ms-text='el.commentNum'></span>评</span>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </dl>
+            </a>
+        </dd>
+        
+        <div class="zyo-nav-filter" ms-if='filter'>
+            <div class="store-filter zyo-pdleft zyo-pdright">
+                <dd>
+                    <dl class="filter-item zyo-pdtop zyo-pdbottom" ms-repeat-el='flagList'>
+                        <div class="col-8 pull-left">
+                            <span class='b big text-white' style="font-family:monospace;" ms-text='el.tag'></span>
+                        </div>
+                        <div class="col-4 pull-left" ms-click='fuckFlag(el)'>
+                            <img class="-col-12" src="/resource/img/icon_drugstore_filter_off.png" ms-if='el.flag==0' height=18 />
+                            <img class="-col-12" src="/resource/img/icon_drugstore_filter_on.png" ms-if='el.flag==1' height=18 />
+                        </div>
+                        <div class="clear"></div>
+                    </dl>
+                    <dl class="col-12 text-info text-center zyo-pdtop zyo-pdbottom b" ms-click='fuckFilter(false)'>确定</dl>
+                </dd>
+            </div>
+        </div>
+    </section>
+    <% include ../tpl/common_footer.html %>
+    <script>
+        require(['avalon'], function(avalon){
+            var app_header= avalon.define({
+                $id: 'app_header',
+                navbarCtrl: "<img class='-col-2' src='/resource/img/btn_nav_backward.png'/>",
+                navbarCtrlFn: function(){
+                    history.go(-1);
+                },
+                navbarInfo: '',
+                appTitle: '周边药店',
+                navbarMenu: "<img class='-col-12' src='/resource/img/icon_nav_claim.png' />",
+                navbarMenuFn: function(){
+                    location.href= '/';
+                },
+                navbarFilter: "<img class='-col-12' src='/resource/img/icon_top_filter.png'/>",
+                navbarFilterFn: function(){
+                    avalon.vmodels.store_list.fuckFilter(!avalon.vmodels.store_list.filter);
+                },
+            })
+            avalon.scan()
+        })
+        require(['avalon'], function(avalon){
+            var store_list= avalon.define({
+                $id: 'store_list',
+                storeInfoList: <%- storelistdata %>,
+                update: function(data){//传入body.data
+                    store_list.storeInfoList= data.storeInfoList;
+                    avalon.log('updated:',data,store_list.storeInfoList)
+                },
+                flagList: [
+                    {tag: '优惠券', flag: 0},
+                    {tag: '医保店', flag: 0},
+                    {tag: '坐堂医生', flag: 0},
+                    {tag: '当前营业', flag: 0},
+                    {tag: '送货上门', flag: 0},
+                    {tag: '中药代煎', flag: 0},
+                    {tag: '中草药有售', flag: 0},
+                ],
+                fuckFlag: function(obj){
+                    obj.flag= Math.pow((obj.flag)-1, 2);
+                },
+                filter: false,
+                fuckFilter: function(bool){
+                    store_list.filter= bool;
+                },
+            })
+            avalon.scan()
+        })
+    </script>
+
+</body>

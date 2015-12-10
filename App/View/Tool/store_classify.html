@@ -1,0 +1,49 @@
+<% include ../tpl/common_head.html %>
+
+<body class="store-detail -ms-controller" ms-controller='store_classify'>
+    <% include ../tpl/common_header.html %>
+    <p class=" zyo-pdbottom"></p>
+    <section class="box-800">
+        <div class="">
+            <dd>
+                <div ms-repeat-el='classList'>
+                    <dl class="zyo-box zyo-box-last btn-link">
+                        <a ms-data-href='"/tool/symptom/detail?symptomId="+el.typeId+"&storeId="+storeId'>
+                            <div class="zyo-pdleft link-right-arrow" ms-text='el.typeName'></div>
+                        </a>
+                    </dl>
+                </div>
+            </dd>
+        </div>
+    </section>
+    <% include ../tpl/common_footer.html %>
+    <script>
+        require(['avalon'], function(avalon){
+            var app_header= avalon.define({
+                $id: 'app_header',
+                navbarCtrl: "<img class='-col-2' src='/resource/img/btn_nav_backward.png'/>",
+                navbarCtrlFn: function(){
+                    history.go(-1);
+                },
+                navbarInfo: '',
+                appTitle: '商品分类',
+                navbarMenu: "<img class='pull-right' src='/resource/img/icon_nav_claim.png' />",
+                navbarMenuFn: function(){
+                    location.href= '/';
+                },
+                navbarFilter: "",
+                navbarFilterFn: function(){},
+            })
+            avalon.scan()
+        })
+        require(['avalon','urlParser'], function(avalon){
+            var store_classify= avalon.define({
+                $id: 'store_classify',
+                storeId: urlParser('p', 'storeid'),
+                classList: <%- store_category %>,
+            })
+            avalon.scan()
+        })
+    </script>
+
+</body>

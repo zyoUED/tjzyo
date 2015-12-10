@@ -1,0 +1,269 @@
+<% include ../tpl/common_head.html %>
+    
+<body class="msg-index">
+    <div class="ms-controller" ms-controller='msg_index' ms-if='!!over_flag' >
+        <% include ../tpl/common_header.html %>
+
+        <div class="zyo-pdbottom"></div>
+        <div class="box-1000">
+            <div class="zyo-pdtop big text-center text-gray" ms-if='user_list.length== 0' ms-css-padding-top='"75%"'>暂无消息</div>
+            <dl class="item" ms-repeat-el='user_list'>
+                <a class="" ms-attr-href='"#/talking/to="+el.uid' ms-data-id='el.uid'>
+                    <dd class="zyo-box-last zyo-box">
+                        <div class="col-2 pull-left">
+                            <div class="zyo-pdleft">
+                                <img class="col-12 circle" ms-attr-src='el.avatar||"/resource/img/img_loading.png"' />
+                            </div>
+                        </div>
+                        <div class="col-10 pull-left">
+                            <div class="container">
+                                <p class="pull-right text-gray small" style="margin-bottom:-1em;">
+                                    <span class="text-gray" ms-text='el.newest.time.split(" ")[1]'></span>
+                                </p>
+                                <textarea class="text-black b big" ms-html='el.nickname||"halo"' style="border:0;height:2em;resize:none;" disabled></textarea>
+                                <p class="text-gray small" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;">
+                                    <span class="text-gray b" ms-if='el.newest.status== "sending"'>&lArr;</span>
+                                    <span class="text-danger" ms-if='el.newest.status== "img"'>【图片】</span>
+                                    <span class="text-danger" ms-if='el.newest.status== "draft"'>【草稿】</span>
+                                    <span class="text-gray" ms-if='el.newest.status== "link"'>【链接】</span>
+                                    <span class="text-danger" ms-if='el.newest.status== "commention"'>【求好评】</span>
+                                    <span class="" ms-text='el.newest.content' ms-if='el.newest.status=="sending"||el.newest.status=="sended"||el.newest.status=="draft"'></span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </dd>
+                </a>
+            </dl>
+        </div>
+        <% include ../tpl/common_footer.html %>
+    </div>
+
+    <div class="col-12 row-12 msg-box ms-controller" ms-controller='msg_box' ms-css-position='"absolute"' ms-css-top='"0"' ms-css-background='"#f4f4f4"' ms-css-z-index='300' ms-css-margin-left='box_left' ms-repeat-ek='avalon.vmodels.msg_index.user_list' ms-if-loop='parseInt(box_left)==0'>
+        <!--im header-->
+        <div class="zyo-nav clear" ms-important='app_header' ms-if='!window.yaodian'>
+            <p class="p"></p>
+            <div class="col-2 pull-left text-left">
+                <a class='col-6 pull-left text-white' ms-click='navbarCtrlFn'>
+                    <div class='zyo-pdleft row-12' ms-html='navbarCtrl'></div>
+                </a>
+                <a class="col-6 pull-left" ms-if='navbarInfo' ms-click='navbarInfoFn'>
+                    <div class=' row-12' ms-html='navbarInfo'></div>
+                </a>
+            </div>
+            <div class="col-8 pull-left text-center">
+                <div class='box-80 row-12'><big class="b" ms-html='"消息聊天中"'></big></div>
+            </div>
+            <div class="col-2 pull-right text-right">
+                <a class="col-6 pull-right" ms-if='navbarFilter' ms-click='navbarFilterFn'>
+                    <div class='zyo-pdright row-12' ms-html='navbarFilter'></div>
+                </a>
+                <a class="col-6 pull-right text-white" ms-click='navbarMenuFn'>
+                    <div class='zyo-pdright row-12' ms-html='navbarMenu'></div>
+                </a>
+            </div>
+            <div class="clear"></div>
+            <p class="p"></p>
+        </div>
+        <!--endof im header-->
+        <div class="" style="padding:5px 0 60px;" ms-repeat-ej=[1]>
+            <dd class="container box" ms-repeat-el='msg_list' ms-data-len='$msgList.length'>
+                <dl class='col-12 msg-dl' ms-data-me='(el.from== sessionStorage.userid)?"fromme":"tome"' ms-data-time='el.time'>
+                    <div class="col-1">
+                        <img class="col-12 circle" ms-attr-src='el.avatar|| "/resource/img/icon_userphoto_loading.png"' />
+                    </div>
+                    <div class='col-9 msg-content' ms-if='el.type==1' ms-text='el.message'></div>
+                    <div class='col-9 msg-content' ms-if='el.type==2' >
+                        <img class="center-block" style="max-width:90%;max-height:50%;" ms-attr-src='el.message' />
+                    </div>
+                    <div class="clear"></div>
+                </dl>
+                <dl class="clear"></dl>
+            </dd>
+            <!--edit content-->
+            <div class="col-12 row-12 box-100 zyo-bg-white" style="position:fixed;bottom:0;padding:8px 0 0;border:0;border-top:1px solid lightgray;">
+                <div class="col-10 pull-left text-center">
+                    <textarea class="row-12 col-11" style='border:1px solid gray;border-radius:3px;margin:auto -1px;height:2em;line-height:1.8em;resize:none;vertical-align:middle;padding:0 2px;' placeholder="输入内容" ms-duplex-string='content'></textarea>
+                </div>
+                <div class="col-2 pull-left text-left">
+                    <button class="btn btn-zyo-info text-white" style="min-width:2.5em;padding:5px 5px;height:1.5em;" ms-click='sendFunc'>发送</button>
+                </div>
+            </div>
+            <!--endof edit content-->
+        </div>
+    </div>
+
+    <script>
+        require(['avalon'], function(avalon){
+            var app_header= avalon.define({
+                $id: 'app_header',
+                navbarCtrl: "<img class='-col-2' src='/resource/img/btn_nav_backward.png'/>",
+                navbarCtrlFn: function(){
+                    history.go(-1);
+                },
+                appTitle: '消息',
+                navbarFilter:'',
+                navbarMenu: "<img class='pull-right' src='/resource/img/icon_nav_claim.png' />",
+                navbarMenuFn: function(){
+                    location.href= '/';
+                },
+            })
+            avalon.scan()
+        })
+        require(['zyoIMpack'], function(){
+            if(!avalon.vmodels.app_footer.user.uid){
+                self.location.href= location.protocol+ '//'+ location.host+ '/login'
+            }
+            else{
+                console.log('zyoIMpack required~')
+            }
+        })
+        require(['avalon'], function(avalon){
+            var msg_index= avalon.define({
+                $id: 'msg_index',
+                user_list: [],
+                uuu: function(){
+                    var _user_list= JSON.parse(sessionStorage.user_list)
+                    msg_index.user_list.clear()
+                    for(var i= 0, l= _user_list.length; i< l; i++){
+                        msg_index.user_list.push(_user_list[i])
+                    }
+                },
+                over_flag: 'auto',
+            })
+            avalon.scan()
+            msg_index.uuu()
+        })
+        require(['avalon'], function(avalon){
+            var msg_box= avalon.define({
+                $id: 'msg_box',
+                box_left: '100%',
+                active_uid: '',
+                msg_list: [],
+                mmm: function(){
+                    if(!!msg_box.active_uid){//prevent active_uid null error
+                        var _msg_list= JSON.parse(sessionStorage[msg_box.active_uid])
+                        msg_box.msg_list.clear()
+                        for(var i= 0, l= _msg_list.length; i< l; i++){
+                            msg_box.msg_list.push(_msg_list[i])
+                        }
+                    }
+                    if(self.location.hash.match('/talking/to')){
+                        setTimeout(function(){
+                            document.body.scrollTop= document.body.scrollHeight
+                        }, 1)
+                    }
+                },
+                content: '',
+                sendFunc: function(){
+                    var from= msg_box.active_uid.split('_')[1]|| sessionStorage.userid
+                        ,to= msg_box.active_uid.split('_')[2]
+                    if(msg_box.content==null|| msg_box.content.length== 0){
+                        return
+                    }
+                    //封装发送内容为zyo_msg格式报文
+                    msg= { "from":from,"to":to,"type":"1","message":msg_box.content,"name":avalon.vmodels.app_footer.user.nickname||"","usertype":"4","avatar":avalon.vmodels.app_footer.user.avatar||"","phone":""};
+                    var options={
+                        to:to,
+                        msg: JSON.stringify(msg),
+                        type:'chat',
+                    }
+                    window.conn.sendTextMessage(options)
+                    //session msg_list
+                    var list_name= msg_box.active_uid
+                    if(sessionStorage[list_name]&& JSON.parse(sessionStorage[list_name]).length> 0){
+                        var msg_list= []
+                        msg_list= JSON.parse(sessionStorage[list_name])
+                        msg_list.push(msg)
+                        sessionStorage[list_name]= JSON.stringify(msg_list)
+                    }
+                    else{
+                        sessionStorage[list_name]= new Array()
+                        var msg_list= []
+                        console.log(msg_list.push(msg))
+                        sessionStorage[list_name]= JSON.stringify(msg_list)
+                    }
+                    //endof session msg_list
+                    //session user_list
+                    var name= msg.name
+                        ,avatar= msg.avatar? msg.avatar: ""
+                        ,cellPhone= msg.phone
+                    //newest info
+                    var stamp= new Date()
+                        ,content= msg.message
+                        ,type= msg.type
+                        ,status= msg.type==2?'img':'sending'
+                    console.log('send:',name)//,avatar,cellPhone,time,stamp,content)
+                    var _sess_list_name= JSON.parse(sessionStorage[list_name])
+                    content= _sess_list_name[_sess_list_name.length-1].message
+                    var newest= {"time":stamp.toLocaleString(),"stamp":stamp.getTime(),"content":content,"status":status,"type":type}
+                    var _user= {"uid":msg.from,"nickname":name,"avatar":avatar,"newest":newest};
+                    sessionStorage.user_list= sessionStorage.user_list|| []
+                    if(sessionStorage.user_list.length> 1){
+                        var user_list= JSON.parse(sessionStorage.user_list)
+                        for(var i= 0, l= user_list.length; i< l; i++){
+                            avalon.log(user_list[i].uid)
+                            if(user_list[i].uid== _user.uid){
+                                user_list.splice(i,1)
+                                user_list.reverse()
+                                user_list.push(_user)
+                                user_list.reverse()
+                                avalon.log(1221, _user.newest.content)
+                            }
+                        }
+                        sessionStorage.user_list= JSON.stringify(user_list)
+                    }
+                    else{
+                        var user_list= []
+                        user_list.push(_user)
+                        sessionStorage.user_list= JSON.stringify(user_list)
+                    }
+                    if(!!avalon.vmodels.msg_index){avalon.vmodels.msg_index.uuu()}
+                    if(!!avalon.vmodels.msg_box){avalon.vmodels.msg_box.mmm()}
+                    //endof session user_list
+                    msg_box.content= ''
+                }
+            })
+            msg_box.$watch('box_left', function(newVal, oldVal){
+                if(newVal!= '100%'){
+                    avalon.vmodels.msg_index.over_flag= false
+                }
+                if(newVal!= '0%'){
+                    avalon.vmodels.msg_index.over_flag= true
+                }
+            })
+            avalon.scan()
+            msg_box.mmm()
+            window.onhashchange= function onhashchange(){
+                (location.hash.match('/to='))&& (msg_box.active_uid= '_'+ sessionStorage.userid+ '_'+ location.hash.split('/to=')[1]);
+                console.log('hashchange:', msg_box.active_uid)
+                var _init= parseInt(msg_box.box_left)
+                if(!!location.hash.match('#/talking/to')){
+                    for(var i= 100; i> 1; i--){
+                        setTimeout(function(){
+                            msg_box.box_left= (i- 1)+ '%'
+                        }, (_init-i)*0.5)
+                    }
+                    setTimeout(function(){
+                        document.body.scrollTop= document.body.scrollHeight
+                    }, 1)
+                }
+                else if(!location.hash.match('#/talking/to')){
+                    for(var i= 0; i< 99; i++){
+                        setTimeout(function(){
+                            msg_box.box_left= (i+ 1)+ '%'
+                        }, (_init+i)*0.5)
+                    }
+                }
+            }
+            if(!!location.hash&& location.hash.match('/talk/to')){
+                history.pushState(self.location.href, -1)
+                var _href= location.href.split('#')
+//                avalon.log(_href[1].split('/talk/to')[1])
+                self.location.href= _href[0]+ '#/talking/to'+ _href[1].split('/talk/to')[1]
+            }
+        })
+    </script>
+    
+</body>
+    

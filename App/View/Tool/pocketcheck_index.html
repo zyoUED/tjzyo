@@ -1,0 +1,96 @@
+<% include ../tpl/common_head.html %>
+
+<body class="newsdetail">
+    <% include ../tpl/common_header.html %>
+    
+    <section class="news-detail -hide">
+        <div class="zyo-box zyo-box-last " id='news-title'>
+            <h3 class="text-center "><span></span></h3>
+        </div>
+        <div class="zyo-box box-88 ">
+            <div class="text-center hide" id="news-pic">
+                <img class="img-responsive" src=""/>
+            </div>
+            <div class="">
+                <p class="p news-content" id="news-content"></p>
+            </div>
+<!--                <a class="text-blue hide" id="source-url" href="">查看原文</a>-->
+            <a class="text-blue hide" id="ads-url" href="">热门活动正在进行中！</a>
+        </div>
+        
+        <% include ../tpl/common_footer.html %>
+        <script>
+            require(['avalon'], function(avalon){
+                var app_header= avalon.define({
+                    $id: 'app_header',
+                    navbarCtrl: "<img class='-col-2' src='/resource/img/btn_nav_backward.png'/>",
+                    navbarCtrlFn: function(){
+                        history.go(-1);
+                    },
+                    appTitle: '资讯',
+                    navbarMenu: "<img class='-col-12' src='/resource/img/icon_nav_claim.png' />",
+                    navbarMenuFn: function(){
+                        location.href= '/';
+                    }
+                })
+                avalon.scan()
+            })
+            require(['jquery', 'zyo-api-url'], function($, zyAPIurl){
+                alert('hehe')
+                //全局参数params
+                var url_param= location.href.split('?')[1]? location.href.split('?')[1].split('&'): {};
+                var params={};
+                for(var i=0,l=url_param.length;i<l;i++){
+                    var el=url_param[i];
+                    (!!el.match('='))&& (params[el.split('=')[0]]= el.split('=')[1]);
+                }
+//                      $('#news-type').html((params.datatype||0)==0? '【资讯】': '【杂志】')
+                var api_url= zyAPIurl.news_detail+'&dataId='+(params.dataid||18695)+'&dataType='+(params.datatype||0)+'&isAlbum='+(params.isalbum||0);
+                $.ajax({
+                    url: api_url,
+                    data:'',
+                    success:function(json){
+                        var res= JSON.parse(json)
+                        if(res.code!= 0){
+                            $('.news-detail section').eq(0).removeClass('hide').find('.text-center.zyo-box').html(res.msg)
+                        }else{
+                            (!!res.data.newsInfo.dataTitle)&& $('#news-title').find('span').html(res.data.newsInfo.dataTitle);
+//                                (!!res.data.newsInfo.pic)&& $('#news-pic').removeClass('hide').find('img').attr('src', res.data.newsInfo.pic);
+                            (!!res.data.newsInfo.content)&& $('#news-content').html(res.data.newsInfo.content);
+//                                (!!res.data.newsInfo.url)&& $('#source-url').attr('href', res.data.newsInfo.url).removeClass('hide');
+                            (!!navigator.userAgent.match('MicroMessenger'))&& $('#ads-url').attr('href', 'http://wap.koudaitong.com/v2/showcase/homepage?alias=1aj2oxid').removeClass('hide');
+//	                            $('a').removeAttr('href')
+                            //修复图片父节点的text-indent
+                            $('img').closest('p').css('text-indent', 0);
+                            //修复表格父节点的overflow
+                            $('table').closest('div').css('overflow-x', 'auto');
+                            $('.news-detail').removeClass('hide');
+                            //雀巢幼儿专题业务需求
+                            for(var i= 0, l= $('a[href]').length; i< l; i++){
+                                if($('a[href]').eq(i).attr('href').match('koudaitong.com')){
+                                    var date= new Date();
+//                                            $('a[href]').eq(i).attr('id', 'newsdetail_'+params.dataid+'_btn'+i+'_');
+                                    $('a[href]').eq(i).attr('data-bdevent', '链接');
+                                    $('a[href]').eq(i).attr('onclick', "_hmt.push(['_trackEvent', 'newsdetail_"+params.dataid+"_btn"+i+'_'+date.getFullYear()+('0'+date.getMonth()).slice(-2)+('0'+date.getDate()).slice(-2)+"', 'click'])");
+                                }
+                            }
+                        }
+                    },
+                    error:function(){
+                        $('.news-detail').html('网络出错啦！');
+                    }
+                })
+            })
+        </script>
+    </section>
+    <script>
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "//hm.baidu.com/hm.js?877339b6256464df8b7ad48b6dd6e7e0";
+            var s = document.getElementsByTagName("script")[0]; 
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+
+</body>

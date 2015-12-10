@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,initial-scale=1,user-scalable=no,minimal-ui">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="transparent" />
+<!--    <meta name="full-screen" content="yes">-->
+    <meta name="screen-orientation" content="portrait">
+<!--    <meta name="x5-fullscreen" content="true">-->
+    <meta name="x5-orientation" content="portrait">
+    <meta http-equiv="pragma" content="no-cache"/>
+    <META HTTP-EQUIV="Set-Cookie" CONTENT="0"/>
+    <META HTTP-EQUIV="Expires" CONTENT="0"/>
+    <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate, 0"/>
+	<title>搜索</title>
+	<style type="text/css" href="/resource/css/style.css"></style>
+	<style type="text/css">
+		.ms-controller,.ms-important,[ms-controller],[ms-important]{visibility: hidden;}
+		*{margin: 0;padding: 0;}
+		ul,li{list-style: none;}
+		.pull-left{float: left;}
+		.pull-right{float: right;}
+		input{ -webkit-appearance:none; border-radius:0;vertical-align:middle;}		
+		:focus{outline: none;}
+		.jj_search_box{padding: 10px 0 10px 10px;text-align: center;}
+		.jj_searchcontent{border: 1px solid #ccc;width: 80%;position: relative;padding: 5px 2px;border-radius: 5px;}
+		.jj_searchinput{border: 0;width: 100%;box-sizing:border-box; padding: 3px 5px;background-image: url('/resource/img/icon_search_drugs.png');background-repeat: no-repeat;background-size: 20px 20px;padding-left: 1.5em;color: #666;font-size: 14px;}
+		.jj_xicontent{position: absolute;top: 7px;right: 2px;}
+		.jj_xi,.jj_xlii{ width: 20px;height: 20px;border-radius: 50%;display: block;position: relative;}
+		.jj_xi:after,.jj_xlii:after{content: '';display: block;height: 10px;transform:rotate(45deg);-webkit-transform:rotate(45deg);position: absolute;left: 10px;top: 5px;}
+		.jj_xi:before,.jj_xlii:before{content: '';display: block;height: 10px;transform:rotate(-45deg);-webkit-transform:rotate(-45deg);position: absolute;left: 10px;top: 5px;}
+		.jj_xi_bg{background: #ddd;}
+		.jj_xi_bg:after{width: 1px;background: #fff;}
+		.jj_xi_bg:before{width: 1px;background: #fff;}
+		.jj_xlii_bg{background: #fff;border: 1px solid #ddd;}
+		.jj_xlii_bg:after{width: 1px;background: #ddd;}
+		.jj_xlii_bg:before{width: 1px;background: #ddd;}
+		.jj_cb{clear: both;}
+		.jj_searchbtn{padding: 5px;background: #2cadf0;border-radius: 5px;color: #fff;margin: 2px 0 0 5px; }
+		.jj_search_history_list{color: #666;width: 100%;}
+		.jj_search_history_list li{padding: 5px 10px;border-bottom: 1px solid #ddd;color: #666;}
+		.jj_search_history_list li span{color: #666;}
+		.jj_search_history_list li:after{content: '';display: block;clear: both;zoom:1;}
+		.jj_clearhistory{width: 100%;color: #999999;text-align: center;border-bottom: 1px solid #ddd;padding: 10px 0 5px 0;}
+		.jj_clearhistory img{width: 20px;vertical-align: bottom;}
+		.jj_nonedata{text-align: center;}
+	</style>
+</head>
+<body>
+	<section ms-controller="searchlist">
+		<div class="jj_search_box">
+			<div class="jj_searchcontent pull-left">				
+				<input class="jj_searchinput" ms-duplex-string="searchcontent" placeholder="输入药店、药品、症状、疾病等"></input>
+				<div class="pull-left jj_xicontent"><i class="jj_xi jj_xi_bg"></i></div>
+			</div>
+			<div class="jj_searchbtn pull-left" ms-click="tosearch">搜索</div>
+			<div class="jj_cb"></div>
+		</div>
+		<div>
+			<ul class="jj_search_history_list">
+				<li ms-repeat="array" ms-if-loop="!!(searchcontent.trim())" ><span ms-data-classId="el.classId" class="pull-left">{{el.className}}</span><!-- <i ms-if='' class="pull-right jj_xlii jj_xlii_bg"></i> --></li>
+				 <div class="jj_nonedata" ms-if="isresult">暂无此项数据</div><!-- -->
+				<li ms-repeat='historyarray' ms-if-loop="!searchcontent.trim()"><span class="pull-left">{{el}}</span><i ms-click='removeitem()' class="pull-right jj_xlii jj_xlii_bg"></i></li>
+				
+			</ul>
+			<div class="jj_clearhistory" ms-if-loop="!searchcontent.trim()" ms-click="clearhistory"><img src="/resource/img/btn_search_delete.png"><span>清空搜索历史记录</span></div>
+		</div>
+		<!-- <input type="hide" ms-duplex-string="sessiodata"></input> -->
+	</section>
+	<script type="text/javascript" id="avalonCore" src="/resource/js/avalon2.min.js"></script>
+	<script>
+		avalon.config({
+			debug: 0,
+			paths: {
+				jquery: "http://libs.baidu.com/jquery/2.1.3/jquery.min.js",
+//				jquery: "/jquery-2.1.3.min.js",
+                cookie: './cookie.js',
+                owl: '../module/owl.carousel/owl-carousel/owl.carousel.min.js',
+                swiper: '../module/swiper/js/swiper.min.js',
+                Ajax: './ajax',
+                urlParser: './urlParser',
+                zyoIMpack: '../module/easymob-webim-sdk/zyo_im_pack.js',
+                imEasymob: '../module/easymob-webim-sdk/easemob.im-1.0.5.js',
+                imStrophe: '../module/easymob-webim-sdk/strophe-custom-2.0.0.js',
+                json2: '../module/easymob-webim-sdk/json2.js',
+                MD5: '../module/md5.js',
+//                sqlite: '../module/sqlite/sqlite.js',
+			},
+			shim: {
+				jquery: {
+					exports: "jQuery"//这是原来jQuery库的命名空间，必须写上
+                },
+                cookie: {
+                    exports: 'cookie'
+                },
+                swiper: {
+                    exports: 'swiper'
+                },
+                owl: {
+                    exports: 'owl'
+                },
+                Ajax: {
+                    exports: 'Ajax'
+                },
+                urlParser: {
+                    exports: 'urlParser'
+                },
+                zyoIMpack: {
+                    exports: 'zyoIMpack'
+                },
+                imEasymob:{
+                    exports: 'imEasymob'
+                },
+                imStrophe:{
+                    exports: 'imStrophe'
+                },
+                json2:{
+                    exports: 'json2'
+                },
+                MD5:{
+                    exports: 'MD5'
+                },
+                sqlite:{
+                    exports: 'sqlite'
+                },
+			},
+		})
+    </script>
+	<script type="text/javascript">
+		require(['avalon','Ajax'],function(avalon,Ajax){
+			var search_module = avalon.define({
+				$id:'searchlist',
+				searchcontent:'',
+				array:[],
+				historyarray:[],
+				isresult:false,
+				//isclear:false,
+				// sessiodata:localStorage.historylist?localStorage.historylist:'',
+				tosearch:function(){
+					//localStorage.removeItem('historylist');
+					if(localStorage.historylist ==undefined){
+						localStorage.historylist = '';
+					}
+					/*if(localStorage.historylistsum ==undefined){
+						localStorage.historylistsum = '';
+					}*/
+					//console.log(search_module.searchcontent);
+					if(search_module.searchcontent.trim()){
+						search_module.historyarray.unshift(search_module.searchcontent);
+						/*search_module.sessiodata = search_module.historyarray;*/
+
+						localStorage.historylist = search_module.searchcontent+','+localStorage.historylist;
+						
+						Ajax(
+							'post',
+							'/search/index/search',
+							'&text='+search_module.searchcontent.trim(),
+							function(json){								
+								var res = JSON.parse(json);
+								res = JSON.parse(res);						
+								var code = res.code;
+								if(code == 0){
+									search_module.isresult = false;
+									search_module.array = res.data.drugList;
+									console.log(res.data.drugList.length);
+								}else if(code ==7){
+									search_module.array = [];
+									search_module.isresult = true;
+								}
+								//search_module.	array = res.drugList;
+							}
+						)
+					}
+					//sessionStorage.history += search_module.searchcontent+;
+					
+				},
+				removeitem:function(){
+					this.parentNode.style.display = 'none';
+
+				},
+				clearhistory:function(){
+					localStorage.removeItem('historylist')
+					search_module.historyarray=[];
+				}
+			});
+			search_module.$watch("searchcontent",function(){
+				//localStorage.removeItem("historylist");
+				/*if(!search_module.searchcontent){					
+					search_module.isresult = false;
+				}else *//*if(search_module.searchcontent==''){
+					search_module.isclear = false;
+				}*/
+				if(localStorage.historylist ==undefined){
+					localStorage.historylist = '';
+				}
+				//new一个历史记录的变量
+				var historystr = localStorage.historylist;
+				if(historystr){					
+					//去掉最后一个逗号
+					historystr = historystr.substr(0,historystr.length-1); 
+					//转换为数组
+					var historyarr = historystr.split(',');
+					historyarr = uniqueArray(historyarr);
+					console.log(historyarr);
+					//给avalon对象赋值
+					search_module.historyarray = historyarr;
+				}
+				if(search_module.historyarray){
+					/*search_module.isclear = true;*/
+					search_module.isresult = false;
+				}else if(search_module.historyarray==''){
+					/*search_module.isclear = false;*/
+
+				}
+				//发送请求
+				Ajax(
+					'post',
+					'/search/index/search',
+					'&text='+search_module.searchcontent.trim(),
+					function(json){
+						var res = JSON.parse(json);
+						res = JSON.parse(res);
+						var code = res.code;
+						if(code == 0){
+							
+							search_module.isresult = false;
+							search_module.array = res.data.drugList;
+						}else if(code ==7){
+							
+							search_module.array = [];
+							search_module.isresult = true;			
+						}						
+					}
+				)
+				//数组去重复
+				function uniqueArray(data){  
+				   data = data || [];  
+				   var a = {};  
+				   for (var i=0; i<data.length; i++) {  
+				       var v = data[i];  
+				       if (typeof(a[v]) == 'undefined'){  
+				            a[v] = 1;  
+				       }  
+				   };  
+				   data.length=0;  
+				   for (var i in a){  
+				        data[data.length] = i;  
+				   }  
+				   return data;  
+				} 
+			})
+			avalon.scan()
+		});
+	</script>
+</body>
+</html>

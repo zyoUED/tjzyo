@@ -1,0 +1,120 @@
+<% include ../tpl/common_head.html %>
+
+<body class='drug-list ms-controller' ms-controller='drug_list'>
+    <% include ../tpl/common_header.html %>
+    <p class=" zyo-pdbottom"></p>
+    <section class="box-800 ">
+        <dd >
+            <a ms-repeat-el='drugList' ms-attr-href='el.quizUrl' ms-data-id='el.drugId' ms-if-loop='(flagList[0].flag==0?true:el.OTC==flagList[0].flag)&&(flagList[2].flag==0?true:el.xiyao==flagList[2].flag)&&(flagList[4].flag==0?true:el.yibao==flagList[4].flag)' >
+                <dl class="zyo-box zyo-box-last btn-link">
+                    <div class="col-3 pull-left">
+                        <div class='zyo-pdleft'>
+                            <img class="col-12" ms-attr-src='el.drugPic||"/resource/img/img_loaded_default.png"' style="border:1px solid lightgray;" />
+                        </div>
+                    </div>
+                    <div class="col-9 pull-left">
+                        <div class='zyo-pdleft zyo-pdright'>
+<!--                            <p class="pull-right"><span ms-text='parseInt(el.quizNum/10000)'></span>万已测</p>-->
+                            <p class=" p">
+<!--                                {{el.OTC}}{{flagList[0].flag}}-->
+                                <span class="big b" ms-text='el.drugName'></span>
+                                <span class="badge-sm text-white zyo-bg-chufangyao" ms-if=''>处方药</span>
+                                <span class="badge-sm text-white zyo-bg-xiyao" ms-if='el.xiyao==1'>西药</span>
+                                <span class="badge-sm text-white zyo-bg-yibaoyao" ms-if='el.yibao==1'>医保药</span>
+                                <span class="badge-sm text-white zyo-bg-ylqx" ms-if=''>医疗器械</span>
+                                <span class="badge-sm text-white zyo-bg-bjsp" ms-if=''>保健食品</span>
+                                <span class="badge-sm text-white zyo-bg-otc" ms-if='el.OTC==1'>OTC</span>
+                                <span class="badge-sm text-white zyo-bg-zhongchenyao" ms-if=''>中成药</span>
+                            </p>
+                            <p class="p">
+                                <small class="col-4" ms-text='el.form'></small>
+                                <small class="col-6" ms-text='el.companyName.substr(0,6)+"..."'></small>
+                            </p>
+                            <p class="text-gray zyo-pdright" ms-text='el.indication.substr(0,15)'></p>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </dl>
+            </a>
+        </dd>
+        <div class="zyo-nav-filter" ms-if='filter'>
+            <div class="drug-filter zyo-pdleft zyo-pdright">
+                <dd>
+                    <dl class="filter-item zyo-pdtop zyo-pdbottom" ms-repeat-el='flagList'>
+                        <div class="col-8 pull-left">
+                            <span class='b big text-white' style="font-family:monospace;" ms-text='el.tag'></span>
+                        </div>
+                        <div class="col-4 pull-left" ms-click='fuckFlag(el)'>
+                            <img class="-col-12" src="/resource/img/icon_drugstore_filter_off.png" ms-if='el.flag==0' height=18 />
+                            <img class="-col-12" src="/resource/img/icon_drugstore_filter_on.png" ms-if='el.flag==1' height=18 />
+                        </div>
+                        <div class="clear"></div>
+                    </dl>
+                    <dl class="col-12 text-info text-center zyo-pdtop zyo-pdbottom b" ms-click='fuckFilter(false)'>确定</dl>
+                </dd>
+            </div>
+        </div>
+    </section>
+    
+    <% include ../tpl/common_footer.html %>
+
+    <script type="text/javascript">
+        require(['avalon'], function(avalon){
+            var app_header= avalon.define({
+                $id: 'app_header',
+                navbarCtrl: "<img class='-col-2' src='/resource/img/btn_nav_backward.png'/>",
+                navbarCtrlFn: function(){
+                    history.go(-1);
+                },
+                navbarInfo: '',
+                appTitle: decodeURI(location.href.split('avalonTitle=')[1].split('&')[0]),
+                navbarMenu: "<img class='-col-12' src='/resource/img/icon_nav_claim.png'/>",
+                navbarMenuFn: function(){
+                    location.href= '/';
+                },
+                navbarFilter: "<img class='-col-12' src='/resource/img/icon_top_filter.png'/>",
+                navbarFilterFn: function(){
+                    avalon.vmodels.drug_list.fuckFilter(!avalon.vmodels.drug_list.filter);
+                },
+            })
+            avalon.scan()
+        })
+        require(['avalon'], function(avalon){
+            var drug_list= avalon.define({
+                $id: "drug_list",
+                drugList: <%- drugList %>,
+                flagList: [
+                    {tag: 'OTC', flag: 0},
+                    {tag: '处方药', flag: 0},
+                    {tag: '西药', flag: 0},
+                    {tag: '中成药', flag: 0},
+                    {tag: '医保药', flag: 0},
+                ],
+                fuckFlag: function(obj){
+                    obj.flag= Math.pow((obj.flag)-1, 2);
+                },
+                filter: false,
+                fuckFilter: function(bool){
+                    drug_list.filter= bool;
+                },
+            })
+            avalon.scan()
+        })
+//        require(['avalon'], function(avalon){
+//            var list_filter= avalon.define({
+//                $id: 'list_filter',
+//                flagList: [
+//                    {tag: 'OTC', flag: 0},
+//                    {tag: '处方药', flag: 0},
+//                    {tag: '西药', flag: 0},
+//                    {tag: '中成药', flag: 0},
+//                    {tag: '医保药', flag: 0},
+//                ],
+//                fuckFlag: function(index){
+//                    Math.pow(list_filter.flagList[index].flag-1, 2)
+//                },
+//            })
+//            avalon.scan()
+//        })
+    </script>
+</body>

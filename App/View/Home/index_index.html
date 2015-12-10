@@ -1,0 +1,352 @@
+<% include ../tpl/common_head.html %>
+
+<body class="main-store ms-controller" ms-controller='app_index'>
+<!--section main-store-->
+    <section class="main-store ">
+        <nav class="zyo-nav main-nav row-12 box-100" ms-controller='app_footer'>
+            <div class="col-10 pull-left">
+                <div class="zyo-pdleft">
+                    <form class="zyo-search col-11" action="" method="get">
+                        <input class="col-12 search-input-round text-black zyo-pdtop zyo-pdbottom" type='search' placeholder='输入药店、药品、症状、疾病等' name="search" required='reqiured'/>
+                    </form>
+                </div>
+            </div>
+            <div class="col-2 pull-left row-12">
+                <a href='/user'><img class="circle center-block" ms-attr-src="user.avatar" data-onerror='this.src="/resource/img/placeholder_unuser_avatar.png"' height=38 width=38 /></a>
+            </div>
+            <div class="clear"></div>
+        </nav>
+        <div class="main-store-top">
+            <div class="zyo-box tool-nav" style="padding:0;">
+                <a ms-repeat-ej='tools' ms-attr-href='ej.url' ms-data-id=''>
+                    <div class="col-3 pull-left text-center tool-blocks btn-link">
+                        <br>
+                        <div class="red-tip-lg" ms-data-badge="ej.badge" ms-if='!!parseInt(ej.badge)'></div>
+                        <p class='p' ms-css-background='green' ms-css-min-height='44'>
+                            <img class='icon-tool-icon'  ms-attr-src='ej.src' />
+                        </p>
+                        <p class='p center-block' ms-text='ej.text'></p>
+                    </div>
+                </a>
+                <div class="clear"></div>
+            </div>
+        </div>
+<!--
+        <label class="zyo-label-check">
+            <input class="" type="checkbox" />勾选框demo
+        </label>
+-->
+        <div class="main-ads-banner zyo-box box-160" ms-if='relationAd.adName'>
+            <a ms-href='relationAd.adUrl'>
+                <div class="container">
+                    <img class="col-12" ms-attr-src="relationAd.adPic" onerror='this.src="/resource/img/img_loaded_failed.png"' />
+                </div>
+            </a>
+        </div>
+        <div class="main-hot-chemists" ms-if='storeEmployeeList.length>0'>
+            <div class='zyo-box zyo-pdleft'>
+                <p class="p text-left text-gray">热门药师</p>
+                <dl>
+                    <dd class="dd-box btn-link" ms-repeat-el='storeEmployeeList'>
+                        <div class='col-10 pull-left'>
+                            <a ms-attr-href='"/tool/chemist/detail?chemistId="+el.uid'>
+                                <div class="col-4 pull-left">
+                                    <img class='col-10 circle' ms-attr-src='el.avatar||"/resource/img/icon_userphoto_loading.png"' maxheight='80' onerror='this.src="/resource/img/img_loaded_failed.png"' />
+                                </div>
+                                <div class="col-8 pull-left">
+                                    <p class='p small'>
+                                        <span class="big pull-left" ms-text='el.userName'></span>
+                                        <small class="text-white badge-sm zyo-bg-info pull-left" ms-css-margin='"-2px auto auto 4px"' ms-if='el.userType==0'>执业药师</small>
+                                        <small class="text-white badge-sm zyo-bg-info pull-left" ms-css-margin='"-2px auto auto 4px"' ms-if='el.userType==1'>店员</small>
+                                        <small class="text-white badge-sm zyo-bg-yes pull-left" ms-css-margin='"-2px auto auto 4px"' ms-if='el.onLine'>在线</small>
+                                        <small class="text-white badge-sm zyo-bg-disabled pull-left" ms-css-margin='"-2px auto auto 4px"' ms-if='!el.onLine'>离线</small>
+                                        <div class="clear"></div>
+                                    </p>
+                                    <p class="p">
+                                        <small>
+                                            <img class='' src='/resource/img/icon_chemist_servcount.png' height=15 /><span ms-text='el.serviceNum||"0"'>
+                                            <span ms-text='el.serviceNum||"0"'></span>人
+                                        </small>
+                                        <small ms-if='el.userRank'>
+                                            <img class='' src='/resource/img/icon_chemist_levelcount.png' height=15 />
+                                            <span ms-text='el.userRank'></span>
+                                        </small>
+                                    </p>
+                                    <p class="text-gray">
+                                        <small ms-text='el.signature||"未留言"'></small>
+                                    </p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class='col-2 pull-right'><a ms-attr-href='"/message#/talk/to="+el.uid' ms-click='talkTo(el)'>
+                            <div class="col-10 pull-right text-right">
+                                <img class="col-9 pull-right" src="/resource/img/btn_tabmsg_active.png" ms-css-padding-top='"50%"' onerror='this.src="/resource/img/img_loaded_failed.png"' />
+                            </div>
+                            <div class="clear"></div>
+                        </a></div>
+                        <div class="clear"></div>
+                    </dd>
+                </dl>
+            </div>
+            <a href="/tool/chemist">
+                <div class='zyo-box zyo-box-last zyo-pdleft link-right-arrow btn-link'>更多热门药师</div>
+            </a>
+        </div>
+        <div class="main-hot-stores" ms-if='storeInfoList.length>0'>
+            <div class='zyo-box zyo-pdleft'>
+                <p class="p text-left text-gray">热门药店</p>
+                <dl>
+                    <dd class="dd-box btn-link" ms-repeat-el='storeInfoList' ms-data-if-loop='$index<3'>
+                        <a ms-attr-href='"/tool/store/detail?storeId="+el.storeId'>
+                            <p class='p' ms-text='el.storeName'></p>
+                            <div class="p small">
+                                <small class="text-white badge-sm zyo-bg-warning" ms-if='el.tag4==1'>送货上门</small>
+                                <small class="text-white badge-sm zyo-bg-warning" ms-if='el.tag3==1'>24H</small>
+                                <small class="text-white badge-sm zyo-bg-info" ms-if='el.tag1==1'>医保店</small>
+                                <small class="text-white badge-sm zyo-bg-grass" ms-if='el.tag2==1'>坐堂医生</small>
+                                <small class="text-white badge-sm zyo-bg-yes" ms-if='el.tag5==1'>中草药</small>
+                                <small class="text-white badge-sm zyo-bg-primary" ms-if='el.tag6==1'>熬</small>
+                                <small class="text-white badge-sm zyo-bg-info" ms-if='el.isCoupon==1'>券</small>
+                            </div>
+                            <div class="col-8 pull-left" >
+                                <span class="pull-left" style="margin:0;padding:0;margin-right:.25em;" ms-repeat-ej=[1,2,3,4,5]>
+                                    <img class="" src='/resource/img/icon_starfull.png' ms-if='el.rank>ej' height=14 />
+                                    <img class="" src='/resource/img/icon_starhalf.png' ms-if='el.rank==ej' height=14 />
+                                    <img class="" src='/resource/img/icon_starnull.png' ms-if='el.rank<ej' height=14 />
+                                </span>
+                                <div class="col-4- pull-left"><span ms-text='el.commentNum'></span>评</div>
+                                <div class="clear"></div>
+                            </div>
+                            <div class="pull-right text-right"><span ms-text='el.distance'></span></div>
+                            <div class="clear"></div>
+                        </a>
+                    </dd>
+                </dl>
+            </div>
+            <a href="/tool/store">
+                <div class='zyo-box zyo-box-last box-88 link-right-arrow btn-link'>更多热门药店</div>
+            </a>
+        </div>
+        <div class="main-center-banner" ms-if='operationAreaList1.dataId'>
+            <a 
+               ms-data-href='operationAreaList1.dataUrl.split("params=")[1]' 
+               ms-attr-href='"/tool/info/detail?dataId="+ JSON.parse(operationAreaList1.dataUrl.split("params=")[1]).dataId+ "&dataType="+ JSON.parse(operationAreaList1.dataUrl.split("params=")[1]).type+"&isAlbum="+ JSON.parse(operationAreaList1.dataUrl.split("params=")[1]).dataType'>
+                <div class="zyo-box box-160 btn-link">
+                    <div class='col-4 pull-left'>
+                         <img class="col-11 center-block" ms-attr-src='operationAreaList1.dataPic' max-height='50px' onerror='this.src="/resource/img/img_loaded_failed.png"' />
+                    </div>
+                    <div class="col-8 pull-left zyo-pdtop">
+                        <p class="p" ms-text='operationAreaList1.dataTitle'></p>
+                        <p class="text-gray"><small ms-text='operationAreaList1.dataIntro'></small></p>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </a>
+        </div>
+        <div class="main-cross-banner" ms-if='operationAreaList2.length>0' >
+            <div class="zyo-box box-80 container">
+                <div class="zyo-box col-6 pull-left zyo-box-first btn-link" ms-repeat-el='operationAreaList2'>
+                    <a 
+                       ms-attr-href='"/tool/info/detail?dataId="+ JSON.parse(el.dataUrl.split("params=")[1]).dataId+ "&dataType="+ JSON.parse(el.dataUrl.split("params=")[1]).type+"&isAlbum="+ JSON.parse(el.dataUrl.split("params=")[1]).dataType' 
+                       ms-data-href='el.dataUrl.split("params=")[1]'>
+                        <div class='col-7 pull-left'>
+                            <p class='p b' ms-css-color='el.dataColor' ms-text='el.dataTitle'></p>
+                            <p class='small text-gray' ms-text='el.dataIntro'></p>
+                        </div>
+                        <img class='col-4 pull-left circle' ms-attr-src='el.dataPic||"/resource/img/img_loading.png"' onerror='this.src="/resource/img/img_loaded_failed.png"' />
+                    </a>
+                    <div class='clear'></div>
+                </div>
+                <div class='clear'></div>
+            </div>
+        </div>
+        <div class="main-bottom-box" ms-if-loop='operationAreaList3.length'>
+            <div class="zyo-box container">
+                <div class="col-4 pull-left ">
+                    <a 
+                       ms-data-href='operationAreaList3[0].dataUrl.split("params=")[1]'
+                       ms-attr-href='"/tool/info/detail?dataId="+ JSON.parse(operationAreaList3[0].dataUrl.split("params=")[1]).dataId+ "&dataType="+ JSON.parse(operationAreaList3[0].dataUrl.split("params=")[1]).type+"&isAlbum="+ JSON.parse(operationAreaList3[0].dataUrl.split("params=")[1]).dataType' >
+                        <div class="col-11 text-center main-bottom-block ">
+                            <div class=" text-center">
+                                <div class="row-12 box-200"></div>
+                                <div class="row-12 box-100" ms-text='operationAreaList3[0].dataIntro'></div>
+                                <div class="row-12 box-100 small text-gray" ms-text='operationAreaList3[0].dataIntro'></div>
+                                <div class="">
+                                    <img class="col-12" ms-attr-src="operationAreaList3[0].dataPic" onerror='this.src="/resource/img/img_loaded_failed.png"' height="56" />
+                                </div>
+                                <div class="row-12 box-200"></div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-8 pull-left ">
+                    <div class="col-6 pull-left" ms-repeat-el=[1,2,3,4]>
+                        <a 
+                            ms-data-href='operationAreaList3[el].dataUrl.split("params=")[1]'
+                            ms-attr-href='"/tool/info/detail?dataId="+ JSON.parse(operationAreaList3[el].dataUrl.split("params=")[1]).dataId+ "&dataType="+ JSON.parse(operationAreaList3[el].dataUrl.split("params=")[1]).type+"&isAlbum="+ JSON.parse(operationAreaList3[el].dataUrl.split("params=")[1]).dataType' >
+                            <div class='col-12 pull-left text-center main-bottom-block'>
+                                <div class="row-12 box-80"></div>
+                                <div class="row-12 box-88" ms-text='operationAreaList3[el].dataIntro'></div>
+                                <div class="row-12 box-88 small text-gray" ms-text='operationAreaList3[el].dataIntro'></div>
+                                <div class="text-center">
+                                    <img class="col-12" ms-attr-src="operationAreaList3[el].dataPic" onerror='this.src="/resource/img/img_loaded_failed.png"' height="64" />
+                                </div>
+                                <div class="row-12 box-80"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+        <div class="" ms-data-src='"/login/index.html"'></div>
+    </section>
+<!--section main-store-->
+    
+	<script type="text/javascript">
+//        require(['baidu_tongji'], function(){})
+//        require(['baidu_map'], function(){})
+//        require(['tencent_map'], function(){
+//            //http://lbs.qq.com/tool/component-geolocation.html
+//        })
+        function bmapInit(){
+//            http://developer.baidu.com/map/index.php?title=webcomponent/guide/geo
+            var lbsGeo = document.createElement('lbs-geo');
+            lbsGeo.addEventListener("geofail",function(evt){ //注册事件
+                alert("fail");
+            });
+            lbsGeo.addEventListener("geosuccess",function(evt){ //注册
+                var addr = evt.detail.coords;
+                var x = addr.lng;
+                var y = addr.lat;
+                avalon.log(x+','+y);
+                avalon.log(x+','+y);
+            });
+            avalon.log('BD geo')
+            lbsGeo.setAttribute("enable-modified","true");
+            lbsGeo.setAttribute("id","geo");
+            document.body.appendChild(lbsGeo);
+        }
+        require(['zyoIMpack'], function(){
+//            console.log('zyoIMpack required~')
+        })
+		require(['avalon'], function(avalon){
+            var app_index= avalon.define({
+                $id: 'app_index',
+                tools: [
+                    {src:"/resource/img/index_tool_icon_1.png", url:"tool/store", text:"药店", badge: ""},
+                    {src:"/resource/img/index_tool_icon_2.png", url:"tool/chemist", text:"药师", badge: ""},
+//                    {src:"/resource/img/index_tool_icon_3.png", url:"tool/info", text:"资讯", badge: ""},
+                    {src:"/resource/img/index_tool_icon_4.png", url:"/message", text:"消息", badge: "0"},
+//                    {src:"/resource/img/index_tool_icon_5.png", url:"tool/common", text:"常见病症", badge: ""},
+//                    {src:"/resource/img/index_tool_icon_6.png", url:"tool/special", text:"大病罕见病", badge: ""},
+//                    {src:"/resource/img/index_tool_icon_7.png", url:"tool/drug", text:"药品大全", badge: ""},
+                    {src:"/resource/img/index_tool_icon_8.png", url:"tool/pocket", text:"口袋体检", badge: ""}
+                ],
+                relationAd: <%- data_relationAd %>,
+                storeEmployeeList: <%- data_storeEmployeeList %>,
+                storeInfoList: [],
+                operationAreaList1: <%- data_operationAreaList1 %>,
+                operationAreaList2: <%- data_operationAreaList2 %>,
+                operationAreaList3: <%- data_operationAreaList3 %>,
+                update: function(data){//传入body.data
+                    app_index.relationAd= data.relationAd;
+                    app_index.storeEmployeeList= data.storeEmployeeList;
+                    app_index.storeInfoList= data.storeInfoList;
+                    app_index.operationAreaList1= data.operationAreaList1;
+                    app_index.operationAreaList2= data.operationAreaList2;
+                    app_index.operationAreaList3= data.operationAreaList3;
+                    avalon.log('error above~')
+                    app_index.showControlInfo= data.showControlInfo;
+                    avalon.log('updated:',data,app_index.storeInfoList)
+                },
+                talkTo: function(obj){
+                    if(avalon.vmodels.app_footer.user.uid){//if user logined
+                        console.log(obj.uid, avalon.vmodels.app_footer.user.uid);
+                        //session user_list
+                        var stamp= new Date()
+                        var newest= {
+                            "time":stamp.toLocaleString(),
+                            "stamp":stamp.getTime(),
+                            "content":"您好，很高兴为您服务，请问您有什么问题需要咨询？",
+                            "status":'',
+                            "type":1
+                        };
+                        var _user= {
+                            "uid":obj.uid,
+                            "nickname":obj.userName,
+                            "avatar":obj.avatar,
+                            "newest":newest
+                        };
+                        try{
+                            var user_list= JSON.parse(sessionStorage.user_list)
+                            for(var i= 0, l= user_list.length; i< l; i++){
+                                if(user_list[i].uid== _user.uid){
+                                    user_list.splice(i,1)
+                                    user_list.reverse()
+                                    user_list.push(_user)
+                                    user_list.reverse()
+                                    avalon.log(1221, _user.newest.content)
+                                }
+                            }
+                            user_list.unshift(newest)
+                        }
+                        catch(e){
+                            var user_list= [];
+                            user_list.push(_user)
+                            sessionStorage.user_list= JSON.stringify(user_list)
+                        }
+                        //endof session user_list
+                        //session msg_list
+                        var _msg= {
+                            avatar: obj.avatar,
+                            from: avalon.vmodels.app_footer.user.uid,
+                            to: obj.uid,
+                            message: "您好，很高兴为您服务，请问您有什么问题需要咨询？",
+                            name: obj.userName,
+                            phone: obj.cellPhone,
+                            type: 1,
+                            userType: obj.userType
+                        }
+                        try{
+                            var _sess_list_name= JSON.parse(sessionStorage['_'+avalon.vmodels.app_footer.user.uid+'_'+obj.uid]);
+                            _sess_list_name.unshift(_msg)
+                        }
+                        catch(e){
+                            var _sess_list_name= [];
+                            _sess_list_name.push(_msg)
+                        }
+                        //endof session msg_list
+                    }
+                }
+            })
+            avalon.scan()
+        })
+        require(['usergeo'], function(){
+        })
+        require(['Ajax', 'cookie'], function(Ajax){
+            var update= function(){
+                var usercity= getCookie('usercity')
+                var userlat= getCookie('userlat')
+                var userlng= getCookie('userlng')
+                Ajax(
+                    'get',
+                    '/index/ajax',
+                    'city='+usercity+'&lat='+ userlat+ '&lng='+ userlng,
+                    function(json){
+                        var res= JSON.parse(json);
+                        avalon.vmodels.app_index.update(res.data);
+                    }
+                )
+            }
+            if(getCookie('userlat') && getCookie('userlng')){
+                update()
+            }
+            else{
+                return
+            }
+        })
+	</script>
+            
+    <% include ../tpl/common_footer.html %>
+</body>

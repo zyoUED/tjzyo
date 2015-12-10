@@ -1,0 +1,90 @@
+<% include ../tpl/common_head.html %>
+<!--    <link rel="stylesheet" href="/resource/module/owl.carousel/owl-carousel/owl.carousel.css" />-->
+<!--    <link rel="stylesheet" href="/resource/module/owl.carousel/owl-carousel/owl.theme.css" />-->
+    <style>
+        .swiper-download .swiper-pagination-bullet{background: none;border: 1px solid lightgray;opacity: .9;}
+        .swiper-download .swiper-pagination-bullet-active{background: lightgray;}
+        .swiper-container-horizontal>.swiper-pagination{top: 370px;bottom: auto;}
+    </style>
+
+<body class='app-download ms-controller' ms-controller='app_download'>
+    <% include ../tpl/common_header.html %>
+    
+    <div class="p" ms-if='!window.yaodian'></div>
+    <div class="zyo-box zyo-box-last col-12">
+        <!-- Swiper -->
+        <div class="swiper-download">
+            <div class="swiper-wrapper row-12 box-800">
+                <div class="swiper-slide">
+                    <img class='' src="/resource/img/app_download_car_1.png" alt="下载掌上药店APP" width='100%' height='' />
+                </div>
+                <div class="swiper-slide">
+                    <img class='' src="/resource/img/app_download_car_2.png" alt="下载掌上药店APP" width='100%' height='' />
+                </div>
+                <div class="swiper-slide">
+                    <img class='' src="/resource/img/app_download_car_3.png" alt="下载掌上药店APP" width='100%' height='' />
+                </div>
+            </div>
+            <!-- Add Pagination -->
+            <div class="swiper-pagination zyo-pdtop"></div>
+<!--            <p><br></p>-->
+        </div>
+        <!--endof Swiper-->
+        <div class="col-12 text-center">
+            <br>
+            <button class="btn btn-zyo-yes text-white col-6 zyo-pdtop zyo-pdbottom b big" style="border-radius:2px;" ms-click='downloadZyo()'><h3 class=" zyo-pdtop zyo-pdbottom">立即下载</h3></button>
+            <p><br></p>
+        </div>
+    </div>
+
+    <script>
+        require(['swiper', 'css!../module/swiper/css/swiper.min'], function(){
+            var swiper = new Swiper('.swiper-download', {
+                pagination: '.swiper-pagination',
+                paginationClickable: true
+            });
+        })
+        require(['avalon'], function(avalon){
+            var app_header= avalon.define({
+                $id: 'app_header',
+                navbarCtrl: "<img class='-col-2' src='/resource/img/btn_nav_backward.png'/>",
+                navbarCtrlFn: function(){
+                    history.go(-1);
+                },
+                navbarFilter:'',
+                appTitle: '客户端下载',
+                navbarMenu: "<img class='pull-right' src='/resource/img/icon_nav_claim.png'/>",
+                navbarMenuFn: function(){
+                    location.href= '/';
+                }
+            })
+            avalon.scan()
+        })
+        require(['avalon'], function(){// "../module/avalon.oniui/carousel/avalon.carousel"
+            var app_download = avalon.define({
+                $id: 'app_download',
+                downloadZyo: function(){
+                    //在微信中跳转
+                    if(!!window.navigator.userAgent.match('MicroMessenger')){// == 'micromessenger'
+                        self.location.href= 'http://a.app.qq.com/o/simple.jsp?pkgname=com.manle.phone.android.yaodian';
+                    }
+                    //已安装掌药APP
+                    else if(!!window.yaodian){
+                        self.location.href= 'yaodian://lkhealth.cn/openwith';
+//                        window.yaodian.startDownloadApk(app_url)
+                    }
+                    //浏览器直接下载
+                    else{
+                        try{
+                            self.location.href= 'yaodian://lkhealth.cn/openwith';
+                        }
+                        catch(e){
+                            self.location.href= 'http://phone.lkhealth.net/ydzx/zy_guanwang.apk';
+                        }
+                    }
+                },
+            })
+            avalon.scan()
+        })
+    </script>
+</body>

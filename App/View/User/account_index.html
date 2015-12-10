@@ -1,0 +1,64 @@
+<% include ../tpl/common_head.html %>
+
+<body class='user-acount' ms-controller='my_favorate'>
+    <% include ../tpl/common_header.html %>
+    <p class="zyo-pdbottom"></p>
+    <section class="user-acount box-800">
+        <div class="zyo-box">
+            <p class="zyo-pdleft pull-left">账户安全等级
+                <span class="text-danger b" ms-text='parseInt(userinfo.isBD)+ parseInt(userinfo.isPW)==2? "高": parseInt(userinfo.isBD)+ parseInt(userinfo.isPW)==1? "中": "低"'></span>
+            </p>
+            <p class="pull-right small text-gray zyo-pdright">请设置以下项目保护账号</p>
+            <div class="clear"></div>
+        </div>
+        <small class="text-gray zyo-pdleft">绑定的手机号，就是您的登陆账号</small>
+        <div class="zyo-box btn-link">
+            <a><div class="link-right-arrow zyo-pdright">
+                <p class="zyo-pdleft pull-left">已绑定手机号
+                    <span class="text-gray b" ms-text='userinfo.cellPhone|truncate(1,"*********")'></span>
+                </p>
+                <p class="col-3 pull-right text-right small text-gray zyo-pdright" style="margin-top:3px;">更换</p>
+            </div></a>
+            <div class="clear"></div>
+        </div>
+        <div class="zyo-box zyo-box-last btn-link">
+            <a><div class="link-right-arrow zyo-pdright">
+                <p class="zyo-pdleft pull-left">设置账户密码
+                    <span class="text-gray b" ms-text='"********"'></span>
+                </p>
+                <p class="col-3 pull-right text-right small text-gray zyo-pdright" style="margin-top:3px;">修改</p>
+            </div></a>
+            <div class="clear"></div>
+        </div>
+    </section>
+    <br>
+    
+    <script>
+        require(['avalon'], function(avalon){
+            var my_favorate= avalon.define({
+                $id: 'my_favorate',
+                userinfo: <%- userInfo? userInfo:'""' %>,
+            })
+            avalon.scan()
+//            avalon.vmodels.my_favorate.userinfo.cellPhone= '139****6666'
+        })
+        require(['avalon'], function(avalon){
+            var app_header= avalon.define({
+                $id: 'app_header',
+                navbarCtrl: "<img class='-col-2' src='/resource/img/btn_nav_backward.png'/>",
+                navbarCtrlFn: function(){
+                    history.go(-1);
+                },
+                appTitle: '我的账户',
+                navbarMenu: "<img class='pull-right' src='/resource/img/icon_nav_claim.png'/>",
+                navbarMenuFn: function(){
+                    location.href= '/';
+                },
+                navbarFilter: '',
+            })
+            avalon.scan()
+        })
+    </script>
+    <% include ../tpl/common_footer.html %>
+
+</body>
