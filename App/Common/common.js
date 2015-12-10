@@ -1,2473 +1,2473 @@
 //这里定义一些全局通用的函数，该文件会被自动加载
 global.sessionController = function(self, callback){
-    self.session("userInfo").then(function(user){
-        if(isEmpty(user)){//无用户数据
-            self.assign({
-                'logined':false,//是否登录
-                'nologin':true,//是否未登录
-                'userInfo': null,
-                'uid':'',
-                'username':'',
-                'useravatar':''
-            });
-            console.log("common nologin\n");
-            callback&& callback(user);
-        }
-        else{
-            //获取用户信息
-            var uid= self.http.cookie.userid;
-            var api_url = zyoAPI.user_info+"&uid="+uid;
-            console.log("api_url:\n"+api_url);
-            request(api_url, function( error, response, body){
-                console.log(api_url)
-                var res = JSON.parse(body);
-                self.assign({
-                    'logined': true,//是否登录
-                    'nologin': false,//是否未登录
-                    'userInfo': JSON.stringify(res.data.userInfo),
-                    'uid': uid,
-                    'username': res.data.userInfo.userName,
-                    'useravatar': res.data.userInfo.avatar
-                });
-                //存入session
-                self.session("userInfo", JSON.stringify(res.data)).then(function(){
-                    console.log('referer:\n', self.http.cookie.http_referer)
-                });
-                console.log("common logined\n");
-                callback&& callback(user);
-            });
-            //endof获取用户信息
-        }
-    });
+  self.session("userInfo").then(function(user){
+    if(isEmpty(user)){//无用户数据
+      self.assign({
+        'logined':false,//是否登录
+        'nologin':true,//是否未登录
+        'userInfo': null,
+        'uid':'',
+        'username':'',
+        'useravatar':''
+      });
+      console.log("common nologin\n");
+      callback&& callback(user);
+    }
+    else{
+      //获取用户信息
+      var uid= self.http.cookie.userid;
+      var api_url = zyoAPI.user_info+"&uid="+uid;
+      console.log("api_url:\n"+api_url);
+      request(api_url, function( error, response, body){
+        console.log(api_url)
+        var res = JSON.parse(body);
+        self.assign({
+          'logined': true,//是否登录
+          'nologin': false,//是否未登录
+          'userInfo': JSON.stringify(res.data.userInfo),
+          'uid': uid,
+          'username': res.data.userInfo.userName,
+          'useravatar': res.data.userInfo.avatar
+        });
+        //存入session
+        self.session("userInfo", JSON.stringify(res.data)).then(function(){
+          console.log('referer:\n', self.http.cookie.http_referer)
+        });
+        console.log("common logined\n");
+        callback&& callback(user);
+      });
+      //endof获取用户信息
+    }
+  });
 }
 //全局API
 global.HTTP_URL="http://api.lkhealth.net/index.php?r=";
 global.HTTP_URL="http://testapi.lkhealth.net/index.php?r=";
 global.zyoAPI = ({
-    //app首页接口 &city=%E5%8C%97%E4%BA%AC%E5%B8%82&lat=32.9867&lng=121.98657
-    store_home: HTTP_URL+'store/storeHome',
-    //资讯详情接口
-    news_detail:HTTP_URL+'news/newsdetail',
-    //药品单页接口 &drugId=1&lat=31.1485519424&lng=121.364367476&uid=[2312]
-    drug_main:HTTP_URL+'drug/drug',
-    //药品详情接口 &drugId=1
-    drug_detail:HTTP_URL+'drug/getdrugexplanation',
-    //症状单页接口 &symptomId=1&uid=1
-    symptom_main:HTTP_URL+'drug/symptom',
-    //症状详情接口
-    symptom_detail:HTTP_URL+'drug/getsymptomexplanation',
-    //疾病单页接口 //&diseaseId=1&uid=1
-    disease_main:HTTP_URL+'drug/disease',
-    //疾病详情接口
-    disease_detail:HTTP_URL+'drug/getdiseaseexplanation',
-    //化验指标详情接口
-    assay_detail:HTTP_URL+'news/assaydetail',
-    //店员详情接口
-    shopper_detail:HTTP_URL+'employee/employeeInfo',
-    //获取验证码 cellphone=xxx&type=xxx  0注册1找回密码2绑定手机
-    user_code:HTTP_URL+'user/getcellphonecode',
-    //用户登陆接口 &userName=username&passWord=md5_pwd
-    user_login:HTTP_URL+'user/login',
-    //用户信息接口 &uid=953144
-    user_info:HTTP_URL+'user/myinfoindex',
-    //个人信息接口 &uid=883270
-    user_detail: HTTP_URL+ 'user/userinfo',
-    //修改个人信息接口 &uid=883270&userName=小姚&birthday=1999-09-09&city=上海
-    user_detail_save: HTTP_URL+ 'user/updateuserinfo',
-    //注册 code=xxx&cellphone=xxx&passwrod=xxx md5
-    user_register:HTTP_URL+'user/reg',
-    //用户关注的药剂师 &uid=1
-    focus_chemist: HTTP_URL+ 'r=user/myFocus',
-    //体检工具列表接口 start=0&row=20
-    medical_tool:HTTP_URL+'drug/medicaltool',
-    //掌药药品分类接口 no params
-    drug_classify:HTTP_URL+'drug/getdrugclassify',
-    //症状关联更多药品接口 &symptomId=55
-    moredrug_symptom:HTTP_URL+'drug/getmoredrugwithsymptomlist',
-    //药店列表接口 &lat=31.3166130000&lng=120.5807360000&sort=1&city=%E8%8B%8F%E5%B7%9E
-    store_list:HTTP_URL+'store/storelist',
-    //药店详情接口 &storeId=891[&uid=883270]
-    store_detail:HTTP_URL+'store/storedetail',
-    //关注/收藏接口 &dataId=123456&uid=88&favType=[goods:商品，store:网店，mall:实体店，drug:药品，symptom:症状，disease:疾病，doctor:大夫，hospital:医院，pharmacist:药剂师，expert:专题]
-    store_collect:HTTP_URL+'store/collect',
-    //取消关注/收藏接口 &dataId=123456&uid=88&favType=[goods:商品，store:网店，mall:实体店，drug:药品，symptom:症状，disease:疾病，doctor:大夫，hospital:医院，pharmacist:药剂师，expert:专题]
-    store_uncollect:HTTP_URL+'store/cancelcollect',
-    //药店评论列表接口 &storeId=257372
-    store_comments_list:HTTP_URL+'store/scommentlist',
-    //药店商品分类接口 &storeId=278881
-    store_category:HTTP_URL+'store/goodscategory',
-    //常见病接口 &uid=[7645]
-    common_disease:HTTP_URL+'drug/getcommondisease',
-    //大病罕见病接口 &uid=7645
-    rare_disease:HTTP_URL+'drug/rareDisease',
-    //店员/药剂师列表接口 &city=上海&lat=31.24071&lng=121.437389&uid=[]&start=0&rows=10
-    chemist_list:HTTP_URL+'employee/employeeList',
-    //店员/药剂师详情接口 &uid=45445
-    chemist_detail:HTTP_URL+'employee/employeeInfo',
-    //头条资讯列表接口 &start=[20]&rows=[10]
-    topnews_list:HTTP_URL+'news/topnewslist',
-    //H5频道资讯频道、列表接口 &channelId=33&channelType=0
-    topnews_list_m:HTTP_URL+'h5/news/getnews',
-    //频道列表接口 &city=[%E8%8B%8F%E5%B7%9E%E5%B8%82]
-    channel_list:HTTP_URL+'news/channelList',
-    //频道资讯列表接口 &channelId=33&channelType=0
-    infonews_list:HTTP_URL+'news/channelinfolist',
-    //用户关注药师列表 &uid=1
-    my_focus_chemist:HTTP_URL+'user/myFocus',
-    //用户关注药店列表 &dataId=123456&uid=199&favType=mall
-    my_focus_drugstore:HTTP_URL+'store/collectlist',
-    //用户关注药师接口 &uid=1008243&userId=1
-    chemist_focus:HTTP_URL+'employee/focusEmployee',
-    //用户取消关注药店接口 &dataId=123456&uid=199&favType=mall
-    chemist_cancel_focus:HTTP_URL+'employee/cancelFocusEmployee',
+//app首页接口 &city=%E5%8C%97%E4%BA%AC%E5%B8%82&lat=32.9867&lng=121.98657
+store_home: HTTP_URL+'store/storeHome',
+//资讯详情接口
+news_detail:HTTP_URL+'news/newsdetail',
+//药品单页接口 &drugId=1&lat=31.1485519424&lng=121.364367476&uid=[2312]
+drug_main:HTTP_URL+'drug/drug',
+//药品详情接口 &drugId=1
+drug_detail:HTTP_URL+'drug/getdrugexplanation',
+//症状单页接口 &symptomId=1&uid=1
+symptom_main:HTTP_URL+'drug/symptom',
+//症状详情接口
+symptom_detail:HTTP_URL+'drug/getsymptomexplanation',
+//疾病单页接口 //&diseaseId=1&uid=1
+disease_main:HTTP_URL+'drug/disease',
+//疾病详情接口
+disease_detail:HTTP_URL+'drug/getdiseaseexplanation',
+//化验指标详情接口
+assay_detail:HTTP_URL+'news/assaydetail',
+//店员详情接口
+shopper_detail:HTTP_URL+'employee/employeeInfo',
+//获取验证码 cellphone=xxx&type=xxx  0注册1找回密码2绑定手机
+user_code:HTTP_URL+'user/getcellphonecode',
+//用户登陆接口 &userName=username&passWord=md5_pwd
+user_login:HTTP_URL+'user/login',
+//用户信息接口 &uid=953144
+user_info:HTTP_URL+'user/myinfoindex',
+//个人信息接口 &uid=883270
+user_detail: HTTP_URL+ 'user/userinfo',
+//修改个人信息接口 &uid=883270&userName=小姚&birthday=1999-09-09&city=上海
+user_detail_save: HTTP_URL+ 'user/updateuserinfo',
+//注册 code=xxx&cellphone=xxx&passwrod=xxx md5
+user_register:HTTP_URL+'user/reg',
+//用户关注的药剂师 &uid=1
+focus_chemist: HTTP_URL+ 'r=user/myFocus',
+//体检工具列表接口 start=0&row=20
+medical_tool:HTTP_URL+'drug/medicaltool',
+//掌药药品分类接口 no params
+drug_classify:HTTP_URL+'drug/getdrugclassify',
+//症状关联更多药品接口 &symptomId=55
+moredrug_symptom:HTTP_URL+'drug/getmoredrugwithsymptomlist',
+//药店列表接口 &lat=31.3166130000&lng=120.5807360000&sort=1&city=%E8%8B%8F%E5%B7%9E
+store_list:HTTP_URL+'store/storelist',
+//药店详情接口 &storeId=891[&uid=883270]
+store_detail:HTTP_URL+'store/storedetail',
+//关注/收藏接口 &dataId=123456&uid=88&favType=[goods:商品，store:网店，mall:实体店，drug:药品，symptom:症状，disease:疾病，doctor:大夫，hospital:医院，pharmacist:药剂师，expert:专题]
+store_collect:HTTP_URL+'store/collect',
+//取消关注/收藏接口 &dataId=123456&uid=88&favType=[goods:商品，store:网店，mall:实体店，drug:药品，symptom:症状，disease:疾病，doctor:大夫，hospital:医院，pharmacist:药剂师，expert:专题]
+store_uncollect:HTTP_URL+'store/cancelcollect',
+//药店评论列表接口 &storeId=257372
+store_comments_list:HTTP_URL+'store/scommentlist',
+//药店商品分类接口 &storeId=278881
+store_category:HTTP_URL+'store/goodscategory',
+//常见病接口 &uid=[7645]
+common_disease:HTTP_URL+'drug/getcommondisease',
+//大病罕见病接口 &uid=7645
+rare_disease:HTTP_URL+'drug/rareDisease',
+//店员/药剂师列表接口 &city=上海&lat=31.24071&lng=121.437389&uid=[]&start=0&rows=10
+chemist_list:HTTP_URL+'employee/employeeList',
+//店员/药剂师详情接口 &uid=45445
+chemist_detail:HTTP_URL+'employee/employeeInfo',
+//头条资讯列表接口 &start=[20]&rows=[10]
+topnews_list:HTTP_URL+'news/topnewslist',
+//H5频道资讯频道、列表接口 &channelId=33&channelType=0
+topnews_list_m:HTTP_URL+'h5/news/getnews',
+//频道列表接口 &city=[%E8%8B%8F%E5%B7%9E%E5%B8%82]
+channel_list:HTTP_URL+'news/channelList',
+//频道资讯列表接口 &channelId=33&channelType=0
+infonews_list:HTTP_URL+'news/channelinfolist',
+//用户关注药师列表 &uid=1
+my_focus_chemist:HTTP_URL+'user/myFocus',
+//用户关注药店列表 &dataId=123456&uid=199&favType=mall
+my_focus_drugstore:HTTP_URL+'store/collectlist',
+//用户关注药师接口 &uid=1008243&userId=1
+chemist_focus:HTTP_URL+'employee/focusEmployee',
+//用户取消关注药店接口 &dataId=123456&uid=199&favType=mall
+chemist_cancel_focus:HTTP_URL+'employee/cancelFocusEmployee',
 })
 
 global.chineseLaL= ({
-    country:{
-        name: "中国",
-        provinces:{
-            name: "上海",
-            city: [
-                {name:"上海", longitude: "121.48", latitude: "31.22"},
-                {name:"嘉定", longitude: "121.24", latitude: "31.4"},
-                {name:"宝山", longitude: "121.48", latitude: "31.41"},
-            ]
-        }
-    /*
-    <city name="川沙" longitude="121.7" latitude="31.19"/>
-    <city name="南汇" longitude="121.76" latitude="31.05"/>
-    <city name="奉贤" longitude="121.46" latitude="30.92"/>
-    <city name="松江" longitude="121.24" latitude="31"/>
-    <city name="金山" longitude="121.16" latitude="30.89"/>
-    <city name="青浦" longitude="121.1" latitude="31.15"/>
-    <city name="崇明" longitude="121.4" latitude="31.73"/>
-  </provinces>
-  <provinces name="云南">
-    <city name="昆明" longitude="102.73" latitude="25.04"/>
-    <city name="富民" longitude="102.48" latitude="25.21"/>
-    <city name="晋宁" longitude="102.58" latitude="24.68"/>
-    <city name="呈贡" longitude="102.79" latitude="24.9"/>
-    <city name="安宁" longitude="102.44" latitude="24.95"/>
-    <city name="昭通" longitude="103.7" latitude="29.32"/>
-    <city name="永善" longitude="103.63" latitude="28.22"/>
-    <city name="大关" longitude="103.91" latitude="27.74"/>
-    <city name="彝良" longitude="104.06" latitude="27.61"/>
-    <city name="鲁甸" longitude="103.54" latitude="27.21"/>
-    <city name="绥江" longitude="103.97" latitude="28.58"/>
-    <city name="盐津" longitude="104.28" latitude="28.08"/>
-    <city name="威信" longitude="105.05" latitude="27.85"/>
-    <city name="镇雄" longitude="104.86" latitude="27.42"/>
-    <city name="巧家" longitude="102.92" latitude="26.9"/>
-    <city name="永富" longitude="104.38" latitude="28.62"/>
-    <city name="曲靖" longitude="103.79" latitude="25.51"/>
-    <city name="宣威" longitude="104.09" latitude="26.24"/>
-    <city name="富源" longitude="104.24" latitude="25.67"/>
-    <city name="师宗" longitude="103.97" latitude="24.85"/>
-    <city name="嵩明" longitude="103.03" latitude="25.35"/>
-    <city name="会泽" longitude="103.27" latitude="26.41"/>
-    <city name="沽益" longitude="103.82" latitude="25.62"/>
-    <city name="罗平" longitude="104.3" latitude="24.88"/>
-    <city name="陆良" longitude="104.64" latitude="25.04"/>
-    <city name="宜良" longitude="103.12" latitude="24.9"/>
-    <city name="马龙" longitude="103.61" latitude="25.41"/>
-    <city name="路南" longitude="103.24" latitude="24.77"/>
-    <city name="寻甸" longitude="103.25" latitude="25.56"/>
-    <city name="玉溪" longitude="102.52" latitude="24.35"/>
-    <city name="华宁" longitude="102.93" latitude="24.26"/>
-    <city name="通海" longitude="102.75" latitude="24.09"/>
-    <city name="澄江" longitude="102.91" latitude="24.68"/>
-    <city name="江川" longitude="102.73" latitude="24.27"/>
-    <city name="易门" longitude="102.15" latitude="24.67"/>
-    <city name="元江" longitude="102" latitude="23.59"/>
-    <city name="新平" longitude="101.98" latitude="24.06"/>
-    <city name="峨山" longitude="102.38" latitude="24.16"/>
-    <city name="思茅" longitude="101" latitude="22.79"/>
-    <city name="普洱" longitude="101.03" latitude="23.07"/>
-    <city name="镇沅" longitude="100.88" latitude="23.9"/>
-    <city name="景东" longitude="100.82" latitude="24.42"/>
-    <city name="景谷" longitude="100.71" latitude="23.5"/>
-    <city name="黑江" longitude="101.71" latitude="23.4"/>
-    <city name="澜沦" longitude="99.97" latitude="22.55"/>
-    <city name="西盟" longitude="99.47" latitude="22.73"/>
-    <city name="江城" longitude="101.88" latitude="22.58"/>
-    <city name="孟连" longitude="99.55" latitude="22.32"/>
-    <city name="临沦" longitude="100.09" latitude="23.88"/>
-    <city name="云县" longitude="100.12" latitude="24.44"/>
-    <city name="镇康" longitude="99.02" latitude="23.92"/>
-    <city name="永德" longitude="99.25" latitude="24.03"/>
-    <city name="凤庆" longitude="99.92" latitude="24.58"/>
-    <city name="双江" longitude="99.85" latitude="23.45"/>
-    <city name="沧源" longitude="99.24" latitude="23.15"/>
-    <city name="耿马" longitude="99.41" latitude="23.56"/>
-    <city name="保由" longitude="99.18" latitude="25.12"/>
-    <city name="施甸" longitude="99.15" latitude="24.69"/>
-    <city name="腾冲" longitude="98.51" latitude="25.01"/>
-    <city name="昌宁" longitude="99.61" latitude="24.82"/>
-    <city name="龙陵" longitude="98.7" latitude="24.58"/>
-    <city name="丽江" longitude="100.25" latitude="26.86"/>
-    <city name="华坪" longitude="101.24" latitude="26.63"/>
-    <city name="永胜" longitude="100.76" latitude="26.71"/>
-    <city name="宁蒗" longitude="100.82" latitude="27.29"/>
-    <city name="文山" longitude="104.24" latitude="23.37"/>
-    <city name="广南" longitude="105.09" latitude="24.05"/>
-    <city name="西畴" longitude="104.68" latitude="23.42"/>
-    <city name="麻栗坡" longitude="104.71" latitude="23.12"/>
-    <city name="马关" longitude="104.4" latitude="23.01"/>
-    <city name="丘北" longitude="104.19" latitude="24.03"/>
-    <city name="砚山" longitude="104.35" latitude="23.62"/>
-    <city name="富宁" longitude="105.6" latitude="23.62"/>
-    <city name="个旧" longitude="102.43" latitude="23.35"/>
-    <city name="弥勒" longitude="103.43" latitude="24.41"/>
-    <city name="蒙自" longitude="103.41" latitude="23.36"/>
-    <city name="元阳" longitude="102.81" latitude="23.17"/>
-    <city name="红河" longitude="102.42" latitude="23.35"/>
-    <city name="石屏" longitude="102.48" latitude="23.73"/>
-    <city name="泸西" longitude="103.76" latitude="24.52"/>
-    <city name="金平" longitude="103.24" latitude="22.77"/>
-    <city name="开远" longitude="103.23" latitude="23.7"/>
-    <city name="绿春" longitude="102.42" latitude="23.01"/>
-    <city name="建水" longitude="102.79" latitude="23.64"/>
-    <city name="河口" longitude="103.98" latitude="22.52"/>
-    <city name="屏边" longitude="103.67" latitude="22.68"/>
-    <city name="景淇" longitude="100.79" latitude="22"/>
-    <city name="勐海" longitude="100.5" latitude="21.95"/>
-    <city name="勐腊" longitude="101.56" latitude="21.48"/>
-    <city name="楚雄" longitude="101.54" latitude="25.01"/>
-    <city name="元谋" longitude="101.85" latitude="25.7"/>
-    <city name="武定" longitude="102.36" latitude="25.55"/>
-    <city name="禄丰" longitude="102.08" latitude="25.15"/>
-    <city name="南华" longitude="101.26" latitude="25.21"/>
-    <city name="大姚" longitude="101.34" latitude="25.73"/>
-    <city name="永仁" longitude="101.7" latitude="26.07"/>
-    <city name="禄劝" longitude="102.45" latitude="25.58"/>
-    <city name="牟定" longitude="101.58" latitude="25.32"/>
-    <city name="双柏" longitude="101.67" latitude="24.68"/>
-    <city name="姚安" longitude="101.24" latitude="25.4"/>
-    <city name="下关" longitude="100.24" latitude="25.45"/>
-    <city name="剑川" longitude="99.88" latitude="26.53"/>
-    <city name="洱源" longitude="99.94" latitude="26.1"/>
-    <city name="宾川" longitude="100.55" latitude="25.82"/>
-    <city name="弥渡" longitude="100.52" latitude="25.34"/>
-    <city name="永平" longitude="99.52" latitude="25.45"/>
-    <city name="鹤庆" longitude="100.18" latitude="26.55"/>
-    <city name="大理" longitude="100.19" latitude="25.69"/>
-    <city name="漾濞" longitude="99.98" latitude="25.68"/>
-    <city name="云龙" longitude="99.39" latitude="25.9"/>
-    <city name="祥云" longitude="100.56" latitude="25.48"/>
-    <city name="巍山" longitude="100.33" latitude="25.23"/>
-    <city name="南涧" longitude="100.51" latitude="25.04"/>
-    <city name="潞西" longitude="98.6" latitude="24.41"/>
-    <city name="陇川" longitude="97.96" latitude="24.33"/>
-    <city name="盈江" longitude="97.93" latitude="24.69"/>
-    <city name="畹町" longitude="98.08" latitude="24.08"/>
-    <city name="瑞丽" longitude="97.83" latitude="24"/>
-    <city name="梁河" longitude="98.3" latitude="24.78"/>
-    <city name="泸水" longitude="98.82" latitude="25.97"/>
-    <city name="碧江" longitude="98.95" latitude="26.55"/>
-    <city name="福贡" longitude="98.92" latitude="26.89"/>
-    <city name="兰坪" longitude="99.29" latitude="26.49"/>
-    <city name="贡山" longitude="98.65" latitude="27.73"/>
-    <city name="中甸" longitude="99.72" latitude="27.78"/>
-    <city name="德钦" longitude="98.93" latitude="28.49"/>
-    <city name="维西" longitude="99.27" latitude="27.15"/>
-  </provinces>
-  <provinces name="其它岛屿">
-    <city name="钓鱼岛" longitude="123.33" latitude="25"/>
-    <city name="黄岩岛" longitude="117.51" latitude="15.07"/>
-  </provinces>
-  <provinces name="内蒙古">
-    <city name="呼和浩特" longitude="111.65" latitude="40.82"/>
-    <city name="上默特左旗" longitude="111.13" latitude="40.72"/>
-    <city name="托克托" longitude="111.15" latitude="40.28"/>
-    <city name="包头" longitude="110" latitude="40.58"/>
-    <city name="上默特右旗" longitude="110.52" latitude="40.55"/>
-    <city name="固阳" longitude="110.03" latitude="41.03"/>
-    <city name="乌海" longitude="106.82" latitude="39.67"/>
-    <city name="集宁" longitude="113.08" latitude="41.03"/>
-    <city name="兴和" longitude="113.97" latitude="40.88"/>
-    <city name="清水河" longitude="111.65" latitude="39.92"/>
-    <city name="武川" longitude="111.42" latitude="41.12"/>
-    <city name="卓资" longitude="112.52" latitude="40.93"/>
-    <city name="商都" longitude="113.53" latitude="41.58"/>
-    <city name="丰镇" longitude="113.15" latitude="40.45"/>
-    <city name="凉城" longitude="112.48" latitude="40.52"/>
-    <city name="和林格尔" longitude="111.8" latitude="40.4"/>
-    <city name="化德" longitude="114" latitude="41.9"/>
-    <city name="察哈尔右翼后旗" longitude="113.15" latitude="41.85"/>
-    <city name="察哈尔右翼中旗" longitude="112.62" latitude="41.28"/>
-    <city name="察哈尔右翼前旗" longitude="113.18" latitude="40.78"/>
-    <city name="四子王旗" longitude="111.68" latitude="41.37"/>
-    <city name="达尔罕茂明安联合旗" longitude="110.42" latitude="41.72"/>
-    <city name="二连浩特" longitude="111.96" latitude="43.65"/>
-    <city name="阿巴哈纳尔旗" longitude="116.08" latitude="43.95"/>
-    <city name="多伦" longitude="116.48" latitude="42.18"/>
-    <city name="阿巴嘎旗" longitude="114.97" latitude="44.03"/>
-    <city name="西乌珠穆沁旗" longitude="117.58" latitude="44.6"/>
-    <city name="东乌珠穆沁旗" longitude="116.97" latitude="45.53"/>
-    <city name="苏尼特左旗" longitude="113.7" latitude="43.85"/>
-    <city name="苏尼特右旗" longitude="112.95" latitude="42.47"/>
-    <city name="太仆寺旗" longitude="115.3" latitude="41.9"/>
-    <city name="正镶白旗" longitude="115" latitude="42.32"/>
-    <city name="正蓝旗" longitude="116.02" latitude="42.25"/>
-    <city name="镶黄旗" longitude="113.83" latitude="42.25"/>
-    <city name="海拉尔" longitude="119.73" latitude="29.22"/>
-    <city name="满洲里" longitude="117.47" latitude="49.58"/>
-    <city name="陈巴尔虎旗" longitude="119.45" latitude="49.33"/>
-    <city name="额尔古纳右旗" longitude="120.08" latitude="50.45"/>
-    <city name="额尔古纳左旗" longitude="121.52" latitude="50.8"/>
-    <city name="喜桂图旗" longitude="120.73" latitude="49.3"/>
-    <city name="阿荣旗" longitude="123.5" latitude="48.13"/>
-    <city name="布特哈旗" longitude="122.78" latitude="47.98"/>
-    <city name="新巴尔虎左旗" longitude="116.82" latitude="48.67"/>
-    <city name="新巴尔虎右旗" longitude="118.23" latitude="48.22"/>
-    <city name="鄂伦春自治旗" longitude="123.7" latitude="50.58"/>
-    <city name="莫力达瓦达斡尔族自治旗" longitude="124.5" latitude="48.47"/>
-    <city name="鄂温克族自治旗" longitude="119.75" latitude="49.13"/>
-    <city name="通辽" longitude="122.28" latitude="43.63"/>
-    <city name="开鲁" longitude="121.32" latitude="43.62"/>
-    <city name="科尔沁左翼后旗" longitude="122.35" latitude="42.97"/>
-    <city name="科尔沁左翼中旗" longitude="123.28" latitude="44.13"/>
-    <city name="库伦旗" longitude="121.75" latitude="42.72"/>
-    <city name="奈曼旗" longitude="120.65" latitude="42.85"/>
-    <city name="扎鲁特旗" longitude="120.87" latitude="44.55"/>
-    <city name="赤峰" longitude="118.87" latitude="42.28"/>
-    <city name="宁城" longitude="119.32" latitude="41.62"/>
-    <city name="林西" longitude="118.02" latitude="43.62"/>
-    <city name="喀喇沁旗" longitude="118.67" latitude="41.95"/>
-    <city name="敖汉旗" longitude="119.87" latitude="42.3"/>
-    <city name="翁牛特旗" longitude="119" latitude="42.97"/>
-    <city name="巴林右旗" longitude="118.65" latitude="43.52"/>
-    <city name="巴林左旗" longitude="119.35" latitude="43.98"/>
-    <city name="阿鲁科尔沁旗" longitude="120.05" latitude="43.97"/>
-    <city name="克什克腾旗" longitude="117.48" latitude="43.28"/>
-    <city name="伊克昭盟" longitude="110" latitude="39.83"/>
-    <city name="东胜县" longitude="110" latitude="39.83"/>
-    <city name="准格尔旗" longitude="111.13" latitude="39.68"/>
-    <city name="乌审旗" longitude="109.03" latitude="38.38"/>
-    <city name="伊金霍洛旗" longitude="109.77" latitude="39.25"/>
-    <city name="鄂托克旗" longitude="107.97" latitude="39.12"/>
-    <city name="鄂托克前旗" longitude="107.43" latitude="38.18"/>
-    <city name="杭锦旗" longitude="108.7" latitude="39.83"/>
-    <city name="达拉特旗" longitude="110.02" latitude="40.42"/>
-    <city name="临河" longitude="107.37" latitude="40.78"/>
-    <city name="五原" longitude="108.28" latitude="41.12"/>
-    <city name="磴口" longitude="106.98" latitude="40.33"/>
-    <city name="杭锦后旗" longitude="107.12" latitude="40.88"/>
-    <city name="乌拉特中旗" longitude="108.52" latitude="41.55"/>
-    <city name="乌拉特前旗" longitude="108.65" latitude="40.75"/>
-    <city name="乌拉特后旗" longitude="108.52" latitude="40.88"/>
-    <city name="阿拉善左旗" longitude="105.68" latitude="38.85"/>
-    <city name="阿拉善右旗" longitude="101.68" latitude="39.2"/>
-    <city name="额济纳旗" longitude="100.88" latitude="41.9"/>
-    <city name="乌兰浩特" longitude="122.08" latitude="46.07"/>
-    <city name="突泉" longitude="121.5" latitude="45.4"/>
-    <city name="科尔沁右翼前旗" longitude="122.03" latitude="46.12"/>
-    <city name="科尔沁右翼中旗" longitude="121.47" latitude="45.05"/>
-  </provinces>
-  <provinces name="北京">
-    <city name="北京" longitude="116.46" latitude="39.92"/>
-    <city name="平谷" longitude="117.1" latitude="40.13"/>
-    <city name="密云" longitude="116.85" latitude="40.37"/>
-    <city name="顺义" longitude="116.65" latitude="40.13"/>
-    <city name="通县" longitude="116.67" latitude="39.92"/>
-    <city name="怀柔" longitude="116.62" latitude="40.32"/>
-    <city name="大兴" longitude="116.33" latitude="39.73"/>
-    <city name="房山" longitude="115.98" latitude="39.72"/>
-    <city name="延庆" longitude="115.97" latitude="40.47"/>
-    <city name="昌平" longitude="116.2" latitude="40.22"/>
-  </provinces>
-  <provinces name="吉林">
-    <city name="长春" longitude="125.35" latitude="43.88"/>
-    <city name="吉林" longitude="126.57" latitude="43.87"/>
-    <city name="农安" longitude="125.15" latitude="44.45"/>
-    <city name="德惠" longitude="125.68" latitude="44.52"/>
-    <city name="榆树" longitude="126.55" latitude="44.83"/>
-    <city name="九台" longitude="126.83" latitude="44.15"/>
-    <city name="双阳" longitude="125.68" latitude="43.53"/>
-    <city name="永吉" longitude="126.57" latitude="43.87"/>
-    <city name="舒兰" longitude="126.97" latitude="44.4"/>
-    <city name="蛟河" longitude="127.33" latitude="43.75"/>
-    <city name="桦甸" longitude="126.72" latitude="42.97"/>
-    <city name="磐石" longitude="126.03" latitude="42.93"/>
-    <city name="延吉" longitude="129.52" latitude="42.93"/>
-    <city name="汪清" longitude="129.75" latitude="43.32"/>
-    <city name="珲春" longitude="130.35" latitude="42.85"/>
-    <city name="图们" longitude="129.83" latitude="42.98"/>
-    <city name="和龙" longitude="129" latitude="42.52"/>
-    <city name="安图" longitude="128.3" latitude="42.58"/>
-    <city name="敦化" longitude="128.18" latitude="43.35"/>
-    <city name="通化" longitude="125.92" latitude="41.49"/>
-    <city name="柳河" longitude="125.7" latitude="40.88"/>
-    <city name="海龙" longitude="125.65" latitude="42.53"/>
-    <city name="辉南" longitude="126.03" latitude="42.68"/>
-    <city name="靖宇" longitude="126.8" latitude="42.38"/>
-    <city name="浑江" longitude="126.4" latitude="41.97"/>
-    <city name="抚松" longitude="127.27" latitude="42.33"/>
-    <city name="集安" longitude="126.17" latitude="41.15"/>
-    <city name="长白" longitude="128.17" latitude="41.43"/>
-    <city name="四平" longitude="124.37" latitude="43.17"/>
-    <city name="梨树" longitude="124.33" latitude="43.32"/>
-    <city name="怀德" longitude="124.82" latitude="43.5"/>
-    <city name="伊通" longitude="125.32" latitude="43.33"/>
-    <city name="辽源" longitude="125.15" latitude="42.97"/>
-    <city name="东丰" longitude="125.5" latitude="42.68"/>
-    <city name="双辽" longitude="123.5" latitude="43.52"/>
-    <city name="白城" longitude="122.82" latitude="45.63"/>
-    <city name="大安" longitude="124.18" latitude="45.5"/>
-    <city name="扶余" longitude="124.82" latitude="45.2"/>
-    <city name="乾安" longitude="124.02" latitude="45"/>
-    <city name="长岭" longitude="123.97" latitude="44.3"/>
-    <city name="通榆" longitude="123.13" latitude="44.82"/>
-    <city name="洮安" longitude="122.75" latitude="45.35"/>
-  </provinces>
-  <provinces name="四川">
-    <city name="成都" longitude="104.06" latitude="30.67"/>
-    <city name="金堂" longitude="104.32" latitude="30.88"/>
-    <city name="双流" longitude="104.94" latitude="30.57"/>
-    <city name="蒲江" longitude="103.29" latitude="30.2"/>
-    <city name="郫县" longitude="103.86" latitude="30.8"/>
-    <city name="新都" longitude="104.13" latitude="30.82"/>
-    <city name="来易" longitude="102.15" latitude="26.9"/>
-    <city name="盐边" longitude="101.56" latitude="26.9"/>
-    <city name="温江" longitude="103.81" latitude="30.97"/>
-    <city name="灌县" longitude="103.61" latitude="31.04"/>
-    <city name="彭县" longitude="103.94" latitude="30.99"/>
-    <city name="什邡" longitude="104.16" latitude="31.13"/>
-    <city name="广汉" longitude="104.25" latitude="30.99"/>
-    <city name="新津" longitude="103.78" latitude="30.42"/>
-    <city name="邛崃" longitude="103.47" latitude="30.42"/>
-    <city name="大邑" longitude="103.53" latitude="30.58"/>
-    <city name="崇庆" longitude="103.69" latitude="30.63"/>
-    <city name="绵阳" longitude="104.73" latitude="31.48"/>
-    <city name="江油" longitude="104.7" latitude="31.8"/>
-    <city name="青川" longitude="105.21" latitude="32.59"/>
-    <city name="平武" longitude="104.52" latitude="32.42"/>
-    <city name="光元" longitude="105.86" latitude="32.44"/>
-    <city name="旺苍" longitude="106.33" latitude="32.25"/>
-    <city name="剑阁" longitude="105.45" latitude="32.03"/>
-    <city name="梓潼" longitude="105.16" latitude="31.64"/>
-    <city name="三台" longitude="105.06" latitude="31.1"/>
-    <city name="盐亭" longitude="105.35" latitude="31.23"/>
-    <city name="射洪" longitude="105.31" latitude="30.9"/>
-    <city name="遂宁" longitude="105.58" latitude="30.52"/>
-    <city name="蓬溪" longitude="105.74" latitude="30.78"/>
-    <city name="中江" longitude="104.68" latitude="31.06"/>
-    <city name="德阳" longitude="104.37" latitude="31.13"/>
-    <city name="绵竹" longitude="104.19" latitude="31.32"/>
-    <city name="安县" longitude="104.41" latitude="31.64"/>
-    <city name="北川" longitude="104.44" latitude="31.89"/>
-    <city name="内江" longitude="105.04" latitude="29.59"/>
-    <city name="乐至" longitude="105.02" latitude="30.3"/>
-    <city name="安岳" longitude="105.3" latitude="30.12"/>
-    <city name="威远" longitude="104.7" latitude="29.57"/>
-    <city name="资中" longitude="104.85" latitude="29.81"/>
-    <city name="资阳" longitude="104.6" latitude="30.19"/>
-    <city name="简阳" longitude="104.53" latitude="30.38"/>
-    <city name="隆昌" longitude="105.25" latitude="29.64"/>
-    <city name="宜宾" longitude="104.56" latitude="29.77"/>
-    <city name="富顺" longitude="104.97" latitude="29.24"/>
-    <city name="南溪" longitude="104.96" latitude="28.87"/>
-    <city name="江安" longitude="105.06" latitude="28.71"/>
-    <city name="纳溪" longitude="105.38" latitude="28.77"/>
-    <city name="泸县" longitude="105.46" latitude="28.96"/>
-    <city name="合江" longitude="105.78" latitude="28.79"/>
-    <city name="泸州" longitude="105.39" latitude="28.91"/>
-    <city name="古蔺" longitude="105.79" latitude="28.03"/>
-    <city name="叙水" longitude="105.44" latitude="28.19"/>
-    <city name="长宁" longitude="104.91" latitude="28.6"/>
-    <city name="兴文" longitude="105.06" latitude="28.36"/>
-    <city name="琪县" longitude="104.81" latitude="28.38"/>
-    <city name="高县" longitude="104.52" latitude="28.4"/>
-    <city name="筠连" longitude="104.53" latitude="28.16"/>
-    <city name="屏由" longitude="104.15" latitude="28.68"/>
-    <city name="乐由" longitude="103.73" latitude="29.59"/>
-    <city name="夹江" longitude="103.59" latitude="29.75"/>
-    <city name="洪雅" longitude="103.38" latitude="29.95"/>
-    <city name="丹棱" longitude="103.53" latitude="30.04"/>
-    <city name="青神" longitude="103.81" latitude="29.86"/>
-    <city name="眉由" longitude="103.81" latitude="30.05"/>
-    <city name="彭由" longitude="103.83" latitude="30.22"/>
-    <city name="井研" longitude="104.06" latitude="29.67"/>
-    <city name="仁寿" longitude="104.09" latitude="30"/>
-    <city name="犍为" longitude="103.93" latitude="29.21"/>
-    <city name="沐川" longitude="103.98" latitude="28.96"/>
-    <city name="娥眉" longitude="103.5" latitude="29.62"/>
-    <city name="马边" longitude="103.53" latitude="28.87"/>
-    <city name="峨边" longitude="103.25" latitude="29.23"/>
-    <city name="金口" longitude="103.13" latitude="29.24"/>
-    <city name="涪陵" longitude="107.36" latitude="29.7"/>
-    <city name="垫江" longitude="107.34" latitude="30.36"/>
-    <city name="丰都" longitude="107.7" latitude="29.89"/>
-    <city name="石柱" longitude="108.13" latitude="29.98"/>
-    <city name="秀山" longitude="108.97" latitude="28.47"/>
-    <city name="西阳" longitude="108.75" latitude="28.85"/>
-    <city name="黔江" longitude="108.81" latitude="29.53"/>
-    <city name="彭水" longitude="108.19" latitude="29.29"/>
-    <city name="武隆" longitude="108.72" latitude="29.29"/>
-    <city name="南川" longitude="107.13" latitude="29.15"/>
-    <city name="万县" longitude="108.35" latitude="30.83"/>
-    <city name="开县" longitude="108.39" latitude="31.23"/>
-    <city name="城口" longitude="108.67" latitude="31.98"/>
-    <city name="巫溪" longitude="109.6" latitude="31.42"/>
-    <city name="巫山" longitude="109.86" latitude="31.1"/>
-    <city name="奉节" longitude="109.52" latitude="31.06"/>
-    <city name="云阳" longitude="108.89" latitude="30.99"/>
-    <city name="忠县" longitude="108.03" latitude="30.33"/>
-    <city name="梁平" longitude="107.78" latitude="30.66"/>
-    <city name="南允" longitude="106.06" latitude="30.8"/>
-    <city name="苍溪" longitude="105.96" latitude="31.75"/>
-    <city name="阆中" longitude="105.97" latitude="31.75"/>
-    <city name="仪陇" longitude="106.38" latitude="31.52"/>
-    <city name="南部" longitude="106.03" latitude="31.34"/>
-    <city name="西允" longitude="105.84" latitude="31.01"/>
-    <city name="营山" longitude="106.57" latitude="31.07"/>
-    <city name="蓬安" longitude="106.44" latitude="31.04"/>
-    <city name="广安" longitude="106.61" latitude="30.48"/>
-    <city name="岳池" longitude="106.43" latitude="30.55"/>
-    <city name="武胜" longitude="106.3" latitude="30.38"/>
-    <city name="华云" longitude="106.74" latitude="30.41"/>
-    <city name="达县" longitude="107.49" latitude="31.23"/>
-    <city name="万源" longitude="108.06" latitude="32.07"/>
-    <city name="宜汉" longitude="107.71" latitude="31.39"/>
-    <city name="开江" longitude="107.87" latitude="31.1"/>
-    <city name="邻水" longitude="106.91" latitude="30.36"/>
-    <city name="大竹" longitude="107.21" latitude="30.75"/>
-    <city name="渠县" longitude="106.94" latitude="30.85"/>
-    <city name="南江" longitude="106.83" latitude="32.36"/>
-    <city name="巴中" longitude="106.73" latitude="31.86"/>
-    <city name="平昌" longitude="107.11" latitude="31.59"/>
-    <city name="通江" longitude="108.24" latitude="31.95"/>
-    <city name="百沙" longitude="108.18" latitude="32"/>
-    <city name="雅安" longitude="102.97" latitude="29.97"/>
-    <city name="芦山" longitude="102.91" latitude="30.17"/>
-    <city name="名山" longitude="103.06" latitude="30.09"/>
-    <city name="荣经" longitude="102.81" latitude="29.79"/>
-    <city name="汉源" longitude="102.66" latitude="29.4"/>
-    <city name="石棉" longitude="102.38" latitude="29.21"/>
-    <city name="天全" longitude="102.78" latitude="30.09"/>
-    <city name="宝兴" longitude="102.84" latitude="30.36"/>
-    <city name="马尔康" longitude="102.22" latitude="31.92"/>
-    <city name="红原" longitude="102.55" latitude="31.79"/>
-    <city name="阿坝" longitude="101.72" latitude="31.93"/>
-    <city name="若尔盖" longitude="102.94" latitude="33.62"/>
-    <city name="黑水" longitude="102.95" latitude="32.06"/>
-    <city name="松潘" longitude="103.61" latitude="32.64"/>
-    <city name="南坪" longitude="104.19" latitude="33.23"/>
-    <city name="汶川" longitude="103.61" latitude="31.46"/>
-    <city name="理县" longitude="103.16" latitude="31.42"/>
-    <city name="小金" longitude="102.34" latitude="30.97"/>
-    <city name="金川" longitude="102.03" latitude="31.48"/>
-    <city name="壤塘" longitude="100.97" latitude="32.3"/>
-    <city name="茂汶" longitude="103.89" latitude="31.67"/>
-    <city name="康定" longitude="101.95" latitude="30.04"/>
-    <city name="炉霍" longitude="100.65" latitude="31.38"/>
-    <city name="甘孜" longitude="99.96" latitude="31.64"/>
-    <city name="新龙" longitude="100.28" latitude="30.96"/>
-    <city name="白玉" longitude="98.83" latitude="32.23"/>
-    <city name="德格" longitude="98.57" latitude="31.81"/>
-    <city name="石渠" longitude="98.06" latitude="33.01"/>
-    <city name="色达" longitude="100.35" latitude="32.3"/>
-    <city name="泸定" longitude="102.25" latitude="29.92"/>
-    <city name="丹巴" longitude="101.87" latitude="30.85"/>
-    <city name="九龙" longitude="101.53" latitude="29.01"/>
-    <city name="雅江" longitude="101" latitude="30.03"/>
-    <city name="道孚" longitude="101.14" latitude="30.99"/>
-    <city name="理塘" longitude="100.28" latitude="30.03"/>
-    <city name="乡城" longitude="99.78" latitude="28.93"/>
-    <city name="稻城" longitude="100.31" latitude="29.04"/>
-    <city name="巴塘" longitude="99" latitude="30"/>
-    <city name="得荣" longitude="99.25" latitude="28.71"/>
-    <city name="西昌" longitude="102.29" latitude="27.92"/>
-    <city name="昭觉" longitude="102.83" latitude="28.03"/>
-    <city name="甘洛" longitude="102.74" latitude="28.96"/>
-    <city name="雷波" longitude="103.62" latitude="28.21"/>
-    <city name="宁南" longitude="102.76" latitude="27.07"/>
-    <city name="会东" longitude="102.55" latitude="26.74"/>
-    <city name="会理" longitude="102.21" latitude="26.67"/>
-    <city name="德昌" longitude="102.15" latitude="27.4"/>
-    <city name="美姑" longitude="103.14" latitude="28.33"/>
-    <city name="金阳" longitude="103.22" latitude="27.73"/>
-    <city name="布拖" longitude="102.8" latitude="27.7"/>
-    <city name="普格" longitude="102.52" latitude="27.38"/>
-    <city name="喜德" longitude="102.42" latitude="28.33"/>
-    <city name="越西" longitude="102.49" latitude="28.66"/>
-    <city name="盐源" longitude="101.51" latitude="27.42"/>
-    <city name="冕宁" longitude="102.15" latitude="28.58"/>
-    <city name="木里" longitude="101.25" latitude="27.9"/>
-  </provinces>
-  <provinces name="天津">
-    <city name="天津" longitude="117.2" latitude="39.13"/>
-    <city name="宁河" longitude="117.83" latitude="39.33"/>
-    <city name="静海" longitude="116.92" latitude="38.93"/>
-    <city name="蓟县" longitude="117.4" latitude="40.05"/>
-    <city name="宝坻" longitude="117.3" latitude="39.75"/>
-    <city name="武清" longitude="117.05" latitude="39.4"/>
-  </provinces>
-  <provinces name="宁夏回族自治区">
-    <city name="银川" longitude="106.27" latitude="38.47"/>
-    <city name="永宁" longitude="106.24" latitude="38.28"/>
-    <city name="贺兰" longitude="106.35" latitude="38.55"/>
-    <city name="石嘴山" longitude="106.39" latitude="39.04"/>
-    <city name="平罗" longitude="106.54" latitude="38.91"/>
-    <city name="陶乐" longitude="106.69" latitude="38.82"/>
-    <city name="吴忠" longitude="106.21" latitude="37.99"/>
-    <city name="同心" longitude="105.94" latitude="36.97"/>
-    <city name="灵武" longitude="106.34" latitude="38.1"/>
-    <city name="中宁" longitude="105.66" latitude="37.48"/>
-    <city name="盐池" longitude="107.41" latitude="37.78"/>
-    <city name="中卫" longitude="105.18" latitude="37.51"/>
-    <city name="青铜峡" longitude="106.07" latitude="38.02"/>
-    <city name="固原" longitude="106.28" latitude="36.01"/>
-    <city name="西吉" longitude="105.7" latitude="35.97"/>
-    <city name="泾源" longitude="106.33" latitude="35.5"/>
-    <city name="海原" longitude="105.64" latitude="36.56"/>
-    <city name="隆德" longitude="106.11" latitude="35.63"/>
-  </provinces>
-  <provinces name="安徽">
-    <city name="合肥" longitude="117.27" latitude="31.86"/>
-    <city name="长丰" longitude="117.16" latitude="32.47"/>
-    <city name="淮南" longitude="116.98" latitude="32.62"/>
-    <city name="凤台" longitude="116.71" latitude="32.68"/>
-    <city name="淮北" longitude="116.77" latitude="33.97"/>
-    <city name="濉溪" longitude="116.76" latitude="33.92"/>
-    <city name="芜湖" longitude="118.38" latitude="31.33"/>
-    <city name="铜陵" longitude="117.82" latitude="30.93"/>
-    <city name="蚌埠" longitude="117.34" latitude="32.93"/>
-    <city name="马鞍山" longitude="118.48" latitude="31.56"/>
-    <city name="安庆" longitude="117.03" latitude="30.52"/>
-    <city name="宿州" longitude="116.97" latitude="33.63"/>
-    <city name="宿县" longitude="116.97" latitude="33.63"/>
-    <city name="砀山" longitude="116.34" latitude="34.42"/>
-    <city name="萧县" longitude="116.93" latitude="34.19"/>
-    <city name="吴壁" longitude="117.55" latitude="33.55"/>
-    <city name="泗县" longitude="117.89" latitude="33.49"/>
-    <city name="五河" longitude="117.87" latitude="33.14"/>
-    <city name="固镇" longitude="117.32" latitude="33.33"/>
-    <city name="怀远" longitude="117.19" latitude="32.95"/>
-    <city name="滁州" longitude="118.31" latitude="32.33"/>
-    <city name="嘉山" longitude="117.98" latitude="32.78"/>
-    <city name="天长" longitude="119" latitude="32.68"/>
-    <city name="来安" longitude="118.44" latitude="32.44"/>
-    <city name="全椒" longitude="118.27" latitude="32.1"/>
-    <city name="定远" longitude="117.68" latitude="32.52"/>
-    <city name="凤阳" longitude="117.4" latitude="32.86"/>
-    <city name="巢湖" longitude="117.87" latitude="31.62"/>
-    <city name="巢县" longitude="117.87" latitude="31.62"/>
-    <city name="肥东" longitude="117.47" latitude="31.89"/>
-    <city name="含山" longitude="118.11" latitude="31.7"/>
-    <city name="和县" longitude="118.37" latitude="31.7"/>
-    <city name="无为" longitude="117.75" latitude="31.3"/>
-    <city name="卢江" longitude="117.29" latitude="31.23"/>
-    <city name="宣城" longitude="118.73" latitude="31.95"/>
-    <city name="当涂" longitude="118.49" latitude="31.55"/>
-    <city name="郎溪" longitude="119.17" latitude="31.14"/>
-    <city name="广德" longitude="119.41" latitude="30.89"/>
-    <city name="泾县" longitude="118.41" latitude="30.68"/>
-    <city name="南陵" longitude="118.32" latitude="30.91"/>
-    <city name="繁昌" longitude="118.21" latitude="31.07"/>
-    <city name="宁国" longitude="118.95" latitude="30.62"/>
-    <city name="青阳" longitude="117.84" latitude="30.64"/>
-    <city name="屯溪" longitude="118.31" latitude="29.72"/>
-    <city name="休宁" longitude="118.19" latitude="29.81"/>
-    <city name="旌得" longitude="118.53" latitude="30.28"/>
-    <city name="绩溪" longitude="118.57" latitude="30.07"/>
-    <city name="歙县" longitude="118.44" latitude="29.88"/>
-    <city name="祁门" longitude="117.7" latitude="29.86"/>
-    <city name="黟县" longitude="117.92" latitude="29.93"/>
-    <city name="太平" longitude="118.13" latitude="30.28"/>
-    <city name="石台" longitude="117.48" latitude="30.19"/>
-    <city name="桐城" longitude="116.94" latitude="31.04"/>
-    <city name="纵阳" longitude="117.21" latitude="30.69"/>
-    <city name="怀宁" longitude="116.63" latitude="30.41"/>
-    <city name="望江" longitude="116.69" latitude="30.12"/>
-    <city name="宿松" longitude="116.13" latitude="30.15"/>
-    <city name="太湖" longitude="116.27" latitude="30.42"/>
-    <city name="岳西" longitude="116.36" latitude="30.84"/>
-    <city name="潜山" longitude="116.53" latitude="30.62"/>
-    <city name="东至" longitude="116.99" latitude="30.08"/>
-    <city name="贵池" longitude="117.48" latitude="30.66"/>
-    <city name="六安" longitude="116.49" latitude="31.73"/>
-    <city name="霍丘" longitude="116.27" latitude="32.32"/>
-    <city name="寿县" longitude="116.78" latitude="32.57"/>
-    <city name="肥西" longitude="117.15" latitude="31.7"/>
-    <city name="舒城" longitude="116.94" latitude="31.45"/>
-    <city name="霍山" longitude="116.32" latitude="31.38"/>
-    <city name="金寨" longitude="115.87" latitude="31.67"/>
-    <city name="阜阳" longitude="115.81" latitude="32.89"/>
-    <city name="毫县" longitude="116.76" latitude="33.86"/>
-    <city name="涡阳" longitude="116.21" latitude="33.49"/>
-    <city name="蒙城" longitude="116.55" latitude="33.25"/>
-    <city name="利辛" longitude="116.19" latitude="33.12"/>
-    <city name="颖上" longitude="116.26" latitude="32.62"/>
-    <city name="阜南" longitude="115.6" latitude="32.63"/>
-    <city name="临泉" longitude="115.24" latitude="33.06"/>
-    <city name="界首" longitude="115.34" latitude="33.24"/>
-    <city name="太和" longitude="115.61" latitude="33.16"/>
-  </provinces>
-  <provinces name="山东">
-    <city name="济南" longitude="117" latitude="36.65"/>
-    <city name="历城" longitude="117.07" latitude="36.69"/>
-    <city name="长清" longitude="116.73" latitude="36.55"/>
-    <city name="章丘" longitude="117.53" latitude="36.72"/>
-    <city name="青岛" longitude="120.33" latitude="36.07"/>
-    <city name="崂山" longitude="120.42" latitude="36.15"/>
-    <city name="胶南" longitude="119.97" latitude="35.88"/>
-    <city name="即墨" longitude="120.45" latitude="36.38"/>
-    <city name="胶县" longitude="120" latitude="36.28"/>
-    <city name="淄博" longitude="118.05" latitude="36.78"/>
-    <city name="枣庄" longitude="117.57" latitude="34.86"/>
-    <city name="滕县" longitude="117.17" latitude="35.09"/>
-    <city name="东营" longitude="118.49" latitude="37.46"/>
-    <city name="垦利" longitude="118.54" latitude="37.59"/>
-    <city name="利津" longitude="118.25" latitude="37.49"/>
-    <city name="德州" longitude="116.29" latitude="37.45"/>
-    <city name="宁津" longitude="116.8" latitude="37.64"/>
-    <city name="乐陵" longitude="117.22" latitude="37.74"/>
-    <city name="商河" longitude="117.15" latitude="37.31"/>
-    <city name="济阳" longitude="117.2" latitude="36.97"/>
-    <city name="禹城" longitude="116.66" latitude="36.95"/>
-    <city name="夏津" longitude="116" latitude="36.95"/>
-    <city name="陵县" longitude="116.58" latitude="37.34"/>
-    <city name="庆云" longitude="117.37" latitude="37.37"/>
-    <city name="临邑" longitude="116.86" latitude="37.2"/>
-    <city name="齐河" longitude="116.76" latitude="36.79"/>
-    <city name="平原" longitude="116.44" latitude="37.16"/>
-    <city name="武城" longitude="116.08" latitude="37.2"/>
-    <city name="滨州" longitude="118.03" latitude="37.36"/>
-    <city name="滨县" longitude="117.97" latitude="37.47"/>
-    <city name="广饶" longitude="118.41" latitude="37.04"/>
-    <city name="桓台" longitude="118.12" latitude="36.95"/>
-    <city name="邹平" longitude="117.75" latitude="36.89"/>
-    <city name="阳信" longitude="117.58" latitude="37.65"/>
-    <city name="沾化" longitude="118.14" latitude="37.7"/>
-    <city name="博兴" longitude="118.12" latitude="37.12"/>
-    <city name="高青" longitude="117.66" latitude="37.18"/>
-    <city name="惠民" longitude="117.51" latitude="17.49"/>
-    <city name="无棣" longitude="117.58" latitude="37.73"/>
-    <city name="潍坊" longitude="119.1" latitude="36.62"/>
-    <city name="潍县" longitude="119.22" latitude="36.77"/>
-    <city name="平度" longitude="119.97" latitude="36.77"/>
-    <city name="诸城" longitude="119.42" latitude="35.99"/>
-    <city name="安丘" longitude="119.2" latitude="36.42"/>
-    <city name="临朐" longitude="118.53" latitude="36.5"/>
-    <city name="寿光" longitude="118.73" latitude="36.86"/>
-    <city name="昌邑" longitude="119.41" latitude="36.86"/>
-    <city name="高密" longitude="119.75" latitude="36.38"/>
-    <city name="五莲" longitude="119.2" latitude="35.74"/>
-    <city name="昌乐" longitude="118.83" latitude="36.69"/>
-    <city name="高都" longitude="118.47" latitude="36.69"/>
-    <city name="烟台" longitude="121.39" latitude="37.52"/>
-    <city name="牟平" longitude="121.59" latitude="37.38"/>
-    <city name="文登" longitude="122.05" latitude="37.2"/>
-    <city name="海阳" longitude="121.17" latitude="36.76"/>
-    <city name="莱阳" longitude="120.71" latitude="36.97"/>
-    <city name="栖霞" longitude="120.83" latitude="37.28"/>
-    <city name="掖县" longitude="119.93" latitude="37.18"/>
-    <city name="长岛" longitude="120.73" latitude="37.91"/>
-    <city name="威海" longitude="122.1" latitude="37.5"/>
-    <city name="福山" longitude="121.27" latitude="37.49"/>
-    <city name="荣成" longitude="122.41" latitude="37.16"/>
-    <city name="乳山" longitude="121.52" latitude="36.89"/>
-    <city name="莱西" longitude="120.53" latitude="36.86"/>
-    <city name="招远" longitude="120.38" latitude="37.35"/>
-    <city name="黄县" longitude="120.51" latitude="37.64"/>
-    <city name="蓬莱" longitude="120.75" latitude="37.8"/>
-    <city name="临沂" longitude="118.35" latitude="35.05"/>
-    <city name="沂水" longitude="118.64" latitude="35.78"/>
-    <city name="日照" longitude="119.46" latitude="35.42"/>
-    <city name="临沭" longitude="118.73" latitude="34.89"/>
-    <city name="仓山" longitude="118.03" latitude="34.84"/>
-    <city name="平邑" longitude="117.63" latitude="35.49"/>
-    <city name="沂源" longitude="118.17" latitude="36.18"/>
-    <city name="沂南" longitude="118.47" latitude="35.54"/>
-    <city name="营县" longitude="118.83" latitude="35.57"/>
-    <city name="莒南" longitude="118.83" latitude="35.17"/>
-    <city name="郯城" longitude="118.35" latitude="34.61"/>
-    <city name="费县" longitude="117.97" latitude="35.26"/>
-    <city name="蒙阴" longitude="117.95" latitude="35.7"/>
-    <city name="泰安" longitude="117.13" latitude="36.18"/>
-    <city name="莱芜" longitude="117.67" latitude="36.19"/>
-    <city name="肥城" longitude="116.76" latitude="36.24"/>
-    <city name="平阴" longitude="116.46" latitude="36.29"/>
-    <city name="新汶" longitude="117.67" latitude="35.86"/>
-    <city name="新泰" longitude="117.76" latitude="35.91"/>
-    <city name="宁阳" longitude="116.8" latitude="35.76"/>
-    <city name="东平" longitude="116.3" latitude="35.91"/>
-    <city name="济宁" longitude="116.59" latitude="35.38"/>
-    <city name="兖州" longitude="116.83" latitude="35.54"/>
-    <city name="泗水" longitude="117.27" latitude="35.65"/>
-    <city name="鱼台" longitude="116.65" latitude="35"/>
-    <city name="嘉祥" longitude="116.34" latitude="35.41"/>
-    <city name="汶上" longitude="116.49" latitude="35.71"/>
-    <city name="曲阜" longitude="116.98" latitude="35.59"/>
-    <city name="邹县" longitude="116.97" latitude="35.39"/>
-    <city name="微山" longitude="117.12" latitude="34.8"/>
-    <city name="金乡" longitude="116.32" latitude="35.07"/>
-    <city name="荷泽" longitude="115.43" latitude="35.24"/>
-    <city name="郓城" longitude="115.94" latitude="35.59"/>
-    <city name="巨野" longitude="116.08" latitude="35.38"/>
-    <city name="单县" longitude="116.07" latitude="34.82"/>
-    <city name="曹县" longitude="115.53" latitude="34.83"/>
-    <city name="鄄城" longitude="115.5" latitude="35.57"/>
-    <city name="梁山" longitude="116.1" latitude="35.8"/>
-    <city name="成武" longitude="115.88" latitude="34.97"/>
-    <city name="定陶" longitude="115.57" latitude="35.07"/>
-    <city name="东明" longitude="115.08" latitude="35.31"/>
-    <city name="聊城" longitude="115.97" latitude="36.45"/>
-    <city name="高唐" longitude="116.23" latitude="36.86"/>
-    <city name="东阿" longitude="116.23" latitude="36.32"/>
-    <city name="莘县" longitude="115.67" latitude="36.24"/>
-    <city name="临清" longitude="115.72" latitude="36.68"/>
-    <city name="茌平" longitude="116.27" latitude="36.58"/>
-    <city name="阳谷" longitude="115.78" latitude="36.11"/>
-    <city name="冠县" longitude="115.45" latitude="35.47"/>
-  </provinces>
-  <provinces name="山西">
-    <city name="太原" longitude="112.53" latitude="37.87"/>
-    <city name="阳曲" longitude="112.65" latitude="38.05"/>
-    <city name="娄烦" longitude="111.78" latitude="38.05"/>
-    <city name="清徐" longitude="112.33" latitude="37.62"/>
-    <city name="大同" longitude="113.3" latitude="40.12"/>
-    <city name="阳泉" longitude="113.57" latitude="37.85"/>
-    <city name="长治" longitude="113.08" latitude="36.18"/>
-    <city name="天镇" longitude="114.08" latitude="40.42"/>
-    <city name="灵丘" longitude="114.2" latitude="39.47"/>
-    <city name="怀仁" longitude="113.1" latitude="39.82"/>
-    <city name="山阴" longitude="112.82" latitude="39.52"/>
-    <city name="平鲁" longitude="112.12" latitude="39.53"/>
-    <city name="右玉" longitude="112.33" latitude="40.18"/>
-    <city name="阳高" longitude="113.72" latitude="40.38"/>
-    <city name="广灵" longitude="113.27" latitude="39.75"/>
-    <city name="浑源" longitude="113.68" latitude="39.7"/>
-    <city name="应县" longitude="113.18" latitude="39.58"/>
-    <city name="朔县" longitude="112.42" latitude="39.32"/>
-    <city name="左云" longitude="112.67" latitude="40.02"/>
-    <city name="忻县" longitude="112.7" latitude="38.38"/>
-    <city name="代县" longitude="112.97" latitude="39.07"/>
-    <city name="五台" longitude="113.32" latitude="38.72"/>
-    <city name="静乐" longitude="111.9" latitude="38.37"/>
-    <city name="保德" longitude="111.09" latitude="38.01"/>
-    <city name="河曲" longitude="111.17" latitude="39.38"/>
-    <city name="神池" longitude="112.17" latitude="39.1"/>
-    <city name="原平" longitude="112.7" latitude="38.73"/>
-    <city name="繁峙" longitude="113.28" latitude="39.2"/>
-    <city name="定襄" longitude="112.95" latitude="38.5"/>
-    <city name="岢岚" longitude="111.58" latitude="38.7"/>
-    <city name="五寨" longitude="111.82" latitude="38.93"/>
-    <city name="偏关" longitude="111.47" latitude="39.45"/>
-    <city name="宁武" longitude="112.28" latitude="39"/>
-    <city name="榆次" longitude="112.72" latitude="37.68"/>
-    <city name="孟县" longitude="113.37" latitude="38.01"/>
-    <city name="昔阳" longitude="113.68" latitude="37.62"/>
-    <city name="左权" longitude="113.35" latitude="37.07"/>
-    <city name="太谷" longitude="112.53" latitude="37.42"/>
-    <city name="平遥" longitude="112.18" latitude="37.2"/>
-    <city name="灵石" longitude="111.77" latitude="36.83"/>
-    <city name="寿阳" longitude="113.17" latitude="37.88"/>
-    <city name="平定" longitude="113.62" latitude="37.79"/>
-    <city name="和顺" longitude="113.55" latitude="37.33"/>
-    <city name="榆社" longitude="112.97" latitude="37.08"/>
-    <city name="祁县" longitude="112.33" latitude="37.36"/>
-    <city name="介休" longitude="111.88" latitude="37.03"/>
-    <city name="离石" longitude="111.13" latitude="37.53"/>
-    <city name="兴县" longitude="111.22" latitude="38.47"/>
-    <city name="方由" longitude="111.24" latitude="37.86"/>
-    <city name="岚县" longitude="111.62" latitude="38.28"/>
-    <city name="交城" longitude="112.14" latitude="37.55"/>
-    <city name="文水" longitude="112.02" latitude="37.42"/>
-    <city name="汾阳" longitude="111.75" latitude="37.27"/>
-    <city name="孝义" longitude="111.8" latitude="37.12"/>
-    <city name="交口" longitude="111.2" latitude="36.97"/>
-    <city name="石楼" longitude="110.83" latitude="37"/>
-    <city name="中阳" longitude="111.17" latitude="37.37"/>
-    <city name="临县" longitude="110.95" latitude="37.95"/>
-    <city name="柳林" longitude="110.85" latitude="37.45"/>
-    <city name="襄垣" longitude="113.02" latitude="36.55"/>
-    <city name="黎城" longitude="113.4" latitude="36.56"/>
-    <city name="壶关" longitude="113.23" latitude="35.11"/>
-    <city name="高平" longitude="112.88" latitude="35.48"/>
-    <city name="阳城" longitude="112.38" latitude="35.84"/>
-    <city name="长子" longitude="112.87" latitude="36.13"/>
-    <city name="沁源" longitude="112.32" latitude="36.5"/>
-    <city name="潞城" longitude="113.22" latitude="36.33"/>
-    <city name="武乡" longitude="112.83" latitude="36.83"/>
-    <city name="平顺" longitude="113.43" latitude="36.19"/>
-    <city name="陵川" longitude="113.27" latitude="35.78"/>
-    <city name="晋城" longitude="112.83" latitude="35.52"/>
-    <city name="沁水" longitude="112.15" latitude="35.67"/>
-    <city name="屯留" longitude="112.87" latitude="36.32"/>
-    <city name="沁县" longitude="112.68" latitude="36.75"/>
-    <city name="临汾" longitude="111.5" latitude="36.08"/>
-    <city name="汾西" longitude="111.53" latitude="36.63"/>
-    <city name="安泽" longitude="112.2" latitude="36.15"/>
-    <city name="古县" longitude="111.9" latitude="36.29"/>
-    <city name="翼城" longitude="111.68" latitude="35.73"/>
-    <city name="曲沃" longitude="111.33" latitude="35.63"/>
-    <city name="吉县" longitude="110.65" latitude="36.12"/>
-    <city name="大宁" longitude="110.72" latitude="36.47"/>
-    <city name="侯马" longitude="111.45" latitude="35.03"/>
-    <city name="永和" longitude="110.64" latitude="36.62"/>
-    <city name="洪洞" longitude="111.68" latitude="36.25"/>
-    <city name="霍县" longitude="111.72" latitude="36.57"/>
-    <city name="浮山" longitude="111.83" latitude="35.97"/>
-    <city name="襄汾" longitude="111.43" latitude="35.86"/>
-    <city name="乡宁" longitude="110.8" latitude="35.97"/>
-    <city name="蒲县" longitude="111.07" latitude="36.42"/>
-    <city name="运城" longitude="110.97" latitude="35.03"/>
-    <city name="闻喜" longitude="111.2" latitude="35.37"/>
-    <city name="垣曲" longitude="111.63" latitude="35.3"/>
-    <city name="芮城" longitude="110.68" latitude="34.71"/>
-    <city name="临猗" longitude="110.78" latitude="35.15"/>
-    <city name="新绛" longitude="111.22" latitude="35.62"/>
-    <city name="河津" longitude="110.7" latitude="35.58"/>
-    <city name="夏县" longitude="111.22" latitude="35.12"/>
-    <city name="绛县" longitude="111.58" latitude="35.48"/>
-    <city name="平陆" longitude="111.2" latitude="34.12"/>
-    <city name="永济" longitude="110.42" latitude="34.88"/>
-    <city name="万荣" longitude="110.83" latitude="110.83"/>
-    <city name="稷山" longitude="110.97" latitude="35.6"/>
-  </provinces>
-  <provinces name="广东">
-    <city name="广州" longitude="113.23" latitude="23.16"/>
-    <city name="花县" longitude="113.19" latitude="23.4"/>
-    <city name="新十" longitude="114.2" latitude="24.09"/>
-    <city name="增城" longitude="113.81" latitude="23.13"/>
-    <city name="从化" longitude="113.55" latitude="23.57"/>
-    <city name="龙门" longitude="114.25" latitude="23.75"/>
-    <city name="番禺" longitude="113.36" latitude="22.95"/>
-    <city name="海口" longitude="110.35" latitude="20.02"/>
-    <city name="汕头" longitude="116.69" latitude="23.39"/>
-    <city name="洪江" longitude="110.38" latitude="21.2"/>
-    <city name="茂名" longitude="110.88" latitude="21.68"/>
-    <city name="佛山" longitude="113.11" latitude="23.05"/>
-    <city name="江门" longitude="113.06" latitude="22.61"/>
-    <city name="深圳" longitude="114.07" latitude="22.62"/>
-    <city name="宝安" longitude="113.85" latitude="22.58"/>
-    <city name="珠海" longitude="113.52" latitude="22.3"/>
-    <city name="韶关" longitude="113.62" latitude="24.84"/>
-    <city name="曲江" longitude="113.58" latitude="24.68"/>
-    <city name="乐昌" longitude="113.35" latitude="25.14"/>
-    <city name="仁化" longitude="113.73" latitude="25.11"/>
-    <city name="南雄" longitude="114.33" latitude="25.14"/>
-    <city name="始兴" longitude="114.08" latitude="24.78"/>
-    <city name="翁源" longitude="114.13" latitude="24.36"/>
-    <city name="佛岗" longitude="113.52" latitude="23.86"/>
-    <city name="英德" longitude="113.38" latitude="24.17"/>
-    <city name="清远" longitude="113.01" latitude="23.7"/>
-    <city name="阳山" longitude="112.65" latitude="24.48"/>
-    <city name="连县" longitude="112.4" latitude="24.77"/>
-    <city name="连山" longitude="112.07" latitude="24.59"/>
-    <city name="连南" longitude="112.28" latitude="24.77"/>
-    <city name="惠州" longitude="114.4" latitude="23.09"/>
-    <city name="惠阳" longitude="114.4" latitude="23.09"/>
-    <city name="博罗" longitude="114.28" latitude="23.18"/>
-    <city name="河源" longitude="114.68" latitude="23.73"/>
-    <city name="连平" longitude="114.48" latitude="24.39"/>
-    <city name="和平" longitude="114.89" latitude="24.45"/>
-    <city name="龙川" longitude="115.25" latitude="24.09"/>
-    <city name="紫金" longitude="115.18" latitude="23.64"/>
-    <city name="惠东" longitude="114.7" latitude="22.97"/>
-    <city name="东莞" longitude="113.75" latitude="23.04"/>
-    <city name="梅州" longitude="116.1" latitude="24.55"/>
-    <city name="梅县" longitude="116.1" latitude="24.55"/>
-    <city name="平远" longitude="117.9" latitude="24.59"/>
-    <city name="蕉岭" longitude="116.18" latitude="24.66"/>
-    <city name="大埔" longitude="116.7" latitude="24.34"/>
-    <city name="丰顺" longitude="116.18" latitude="23.78"/>
-    <city name="五华" longitude="115.75" latitude="23.93"/>
-    <city name="兴宁" longitude="115.75" latitude="24.15"/>
-    <city name="潮州" longitude="116.63" latitude="23.68"/>
-    <city name="澄海" longitude="116.8" latitude="23.48"/>
-    <city name="潮安" longitude="116.63" latitude="23.68"/>
-    <city name="饶平" longitude="117.01" latitude="23.7"/>
-    <city name="南澳" longitude="117.03" latitude="23.44"/>
-    <city name="潮阳" longitude="116.61" latitude="23.27"/>
-    <city name="惠来" longitude="116.29" latitude="23.07"/>
-    <city name="陆丰" longitude="117.64" latitude="22.95"/>
-    <city name="海丰" longitude="117.33" latitude="22.98"/>
-    <city name="普宁" longitude="116.17" latitude="23.29"/>
-    <city name="揭西" longitude="115.82" latitude="23.45"/>
-    <city name="揭阳" longitude="116.35" latitude="23.55"/>
-    <city name="南海" longitude="113.11" latitude="23.05"/>
-    <city name="三水" longitude="112.89" latitude="23.18"/>
-    <city name="顺德" longitude="113.24" latitude="22.84"/>
-    <city name="中山" longitude="113.38" latitude="22.52"/>
-    <city name="斗门" longitude="113.25" latitude="22.2"/>
-    <city name="新会" longitude="113.02" latitude="22.52"/>
-    <city name="鹤山" longitude="112.94" latitude="22.76"/>
-    <city name="开平" longitude="112.68" latitude="22.36"/>
-    <city name="台山" longitude="112.78" latitude="22.27"/>
-    <city name="恩平" longitude="112.29" latitude="22.21"/>
-    <city name="高明" longitude="112.76" latitude="21.71"/>
-    <city name="廉江" longitude="110.27" latitude="21.63"/>
-    <city name="化州" longitude="110.59" latitude="21.64"/>
-    <city name="高州" longitude="110.83" latitude="21.95"/>
-    <city name="信宜" longitude="110.9" latitude="22.36"/>
-    <city name="阳春" longitude="111.78" latitude="22.16"/>
-    <city name="阳江" longitude="111.95" latitude="21.85"/>
-    <city name="电白" longitude="110.99" latitude="21.52"/>
-    <city name="吴川" longitude="110.78" latitude="21.43"/>
-    <city name="徐闻" longitude="110.17" latitude="20.34"/>
-    <city name="海康" longitude="110.07" latitude="20.91"/>
-    <city name="遂溪" longitude="110.24" latitude="21.39"/>
-    <city name="肇庆" longitude="112.44" latitude="23.05"/>
-    <city name="高要" longitude="112.44" latitude="23.05"/>
-    <city name="怀集" longitude="112.18" latitude="23.93"/>
-    <city name="广宁" longitude="112.43" latitude="23.14"/>
-    <city name="四会" longitude="112.68" latitude="23.36"/>
-    <city name="新兴" longitude="112.2" latitude="22.68"/>
-    <city name="云浮" longitude="112.02" latitude="22.93"/>
-    <city name="罗定" longitude="111.56" latitude="22.77"/>
-    <city name="郁南" longitude="111.51" latitude="23.23"/>
-    <city name="德庆" longitude="111.75" latitude="23.15"/>
-    <city name="封开" longitude="111.48" latitude="23.45"/>
-  </provinces>
-  <provinces name="广西">
-    <city name="南宁" longitude="108.33" latitude="22.84"/>
-    <city name="柳州" longitude="109.4" latitude="24.33"/>
-    <city name="桂林" longitude="110.28" latitude="25.29"/>
-    <city name="梧州" longitude="111.34" latitude="23.51"/>
-    <city name="凭祥" longitude="106.75" latitude="22.11"/>
-    <city name="邕宁" longitude="108.49" latitude="22.74"/>
-    <city name="武鸣" longitude="108.27" latitude="23.17"/>
-    <city name="马山" longitude="108.2" latitude="23.73"/>
-    <city name="上林" longitude="108.59" latitude="23.44"/>
-    <city name="宾阳" longitude="108.8" latitude="23.22"/>
-    <city name="横县" longitude="109.2" latitude="22.69"/>
-    <city name="扶绥" longitude="107.92" latitude="22.65"/>
-    <city name="崇左" longitude="107.37" latitude="22.42"/>
-    <city name="宁明" longitude="107.08" latitude="22.12"/>
-    <city name="龙州" longitude="106.84" latitude="22.36"/>
-    <city name="大新" longitude="107.21" latitude="22.85"/>
-    <city name="天等" longitude="107.12" latitude="23.08"/>
-    <city name="隆安" longitude="107.68" latitude="23.18"/>
-    <city name="河池" longitude="108.06" latitude="24.7"/>
-    <city name="环江" longitude="108.26" latitude="24.83"/>
-    <city name="罗城" longitude="108.9" latitude="24.79"/>
-    <city name="宜山" longitude="108.64" latitude="24.47"/>
-    <city name="东兰" longitude="107.36" latitude="24.53"/>
-    <city name="凤山" longitude="107.05" latitude="24.55"/>
-    <city name="天峨" longitude="107.16" latitude="25.01"/>
-    <city name="南丹" longitude="107.54" latitude="24.98"/>
-    <city name="都安" longitude="108.09" latitude="23.94"/>
-    <city name="巴马" longitude="107.25" latitude="24.15"/>
-    <city name="合山" longitude="108.89" latitude="23.82"/>
-    <city name="柳城" longitude="109.24" latitude="24.67"/>
-    <city name="融安" longitude="109.37" latitude="24.24"/>
-    <city name="鹿寨" longitude="109.74" latitude="24.49"/>
-    <city name="象州" longitude="109.7" latitude="23.98"/>
-    <city name="武宜" longitude="109.66" latitude="23.6"/>
-    <city name="柳江" longitude="109.34" latitude="24.27"/>
-    <city name="来宾" longitude="109.24" latitude="23.76"/>
-    <city name="忻城" longitude="108.66" latitude="24.07"/>
-    <city name="融水" longitude="109.24" latitude="25.07"/>
-    <city name="三江" longitude="109.58" latitude="25.8"/>
-    <city name="金秀" longitude="110.18" latitude="24.14"/>
-    <city name="临桂" longitude="110.22" latitude="25.22"/>
-    <city name="灵川" longitude="110.33" latitude="25.42"/>
-    <city name="兴安" longitude="110.66" latitude="25.6"/>
-    <city name="资源" longitude="110.66" latitude="26.03"/>
-    <city name="全州" longitude="111.06" latitude="25.96"/>
-    <city name="灌阳" longitude="111.14" latitude="25.49"/>
-    <city name="恭城" longitude="110.81" latitude="24.85"/>
-    <city name="平乐" longitude="110.66" latitude="24.64"/>
-    <city name="荔浦" longitude="110.38" latitude="24.51"/>
-    <city name="永福" longitude="109.98" latitude="24.99"/>
-    <city name="龙胜" longitude="110.02" latitude="25.78"/>
-    <city name="苍悟" longitude="111.22" latitude="23.51"/>
-    <city name="钟山" longitude="111.3" latitude="24.53"/>
-    <city name="富川" longitude="110.26" latitude="24.83"/>
-    <city name="贺县" longitude="111.54" latitude="24.44"/>
-    <city name="岑溪" longitude="111" latitude="22.95"/>
-    <city name="藤县" longitude="110.9" latitude="23.36"/>
-    <city name="蒙山" longitude="110.54" latitude="24.22"/>
-    <city name="昭平" longitude="110.8" latitude="24.18"/>
-    <city name="玉林" longitude="110.14" latitude="22.64"/>
-    <city name="桂平" longitude="110.07" latitude="23.38"/>
-    <city name="平南" longitude="110.4" latitude="23.55"/>
-    <city name="容县" longitude="110.53" latitude="22.87"/>
-    <city name="北流" longitude="110.33" latitude="22.71"/>
-    <city name="陆川" longitude="110.25" latitude="22.33"/>
-    <city name="博白" longitude="109.98" latitude="22.27"/>
-    <city name="贵县" longitude="109.6" latitude="23.11"/>
-    <city name="北海" longitude="109.12" latitude="21.49"/>
-    <city name="钦州" longitude="108.61" latitude="21.96"/>
-    <city name="灵山" longitude="109.29" latitude="22.44"/>
-    <city name="浦北" longitude="109.56" latitude="22.27"/>
-    <city name="合浦" longitude="109.2" latitude="21.33"/>
-    <city name="上思" longitude="107.98" latitude="22.16"/>
-    <city name="防城" longitude="108.35" latitude="21.78"/>
-    <city name="百色" longitude="106.62" latitude="23.91"/>
-    <city name="凌云" longitude="106.55" latitude="24.35"/>
-    <city name="乐业" longitude="106.56" latitude="24.78"/>
-    <city name="田阳" longitude="106.9" latitude="23.75"/>
-    <city name="田东" longitude="107.12" latitude="23.62"/>
-    <city name="平果" longitude="107.59" latitude="23.33"/>
-    <city name="德保" longitude="106.6" latitude="23.34"/>
-    <city name="靖西" longitude="106.41" latitude="23.15"/>
-    <city name="那坡" longitude="105.85" latitude="23.42"/>
-    <city name="西林" longitude="105.08" latitude="24.51"/>
-    <city name="田林" longitude="106.24" latitude="24.31"/>
-    <city name="隆林" longitude="105.34" latitude="24.8"/>
-  </provinces>
-  <provinces name="新疆">
-    <city name="乌鲁木齐" longitude="87.68" latitude="43.77"/>
-    <city name="克拉玛依" longitude="84.77" latitude="45.59"/>
-    <city name="石河子" longitude="85.94" latitude="44.27"/>
-    <city name="吐鲁番" longitude="89.19" latitude="42.91"/>
-    <city name="托克逊" longitude="88.63" latitude="42.77"/>
-    <city name="鄯善" longitude="90.25" latitude="42.82"/>
-    <city name="哈密" longitude="93.44" latitude="42.78"/>
-    <city name="伊吾" longitude="94.65" latitude="43.28"/>
-    <city name="巴里坤" longitude="93" latitude="43.6"/>
-    <city name="库尔勒" longitude="86.06" latitude="41.68"/>
-    <city name="和静" longitude="86.35" latitude="42.31"/>
-    <city name="和硕" longitude="86.84" latitude="42.23"/>
-    <city name="博湖" longitude="86.53" latitude="41.95"/>
-    <city name="尉梨" longitude="86.24" latitude="41.36"/>
-    <city name="轮台" longitude="84.25" latitude="41.77"/>
-    <city name="焉耆" longitude="86.55" latitude="42.05"/>
-    <city name="和田" longitude="79.94" latitude="37.12"/>
-    <city name="民丰" longitude="82.63" latitude="37.07"/>
-    <city name="策勒" longitude="80.78" latitude="37.04"/>
-    <city name="于田" longitude="81.63" latitude="36.86"/>
-    <city name="洛浦" longitude="80.17" latitude="37.12"/>
-    <city name="皮山" longitude="78.29" latitude="37.06"/>
-    <city name="墨玉" longitude="79.74" latitude="37.31"/>
-    <city name="阿克苏" longitude="80.29" latitude="41.15"/>
-    <city name="温宿" longitude="80.24" latitude="41.29"/>
-    <city name="拜城" longitude="81.84" latitude="41.82"/>
-    <city name="库车" longitude="82.97" latitude="41.68"/>
-    <city name="新和" longitude="82.63" latitude="41.55"/>
-    <city name="沙雅" longitude="82.9" latitude="41.25"/>
-    <city name="阿瓦提" longitude="80.34" latitude="40.64"/>
-    <city name="柯平" longitude="79.06" latitude="40.55"/>
-    <city name="乌什" longitude="79.25" latitude="41.22"/>
-    <city name="咯什" longitude="75.94" latitude="39.52"/>
-    <city name="巴楚" longitude="78.59" latitude="39.78"/>
-    <city name="枷师" longitude="76.78" latitude="39.46"/>
-    <city name="乐普湖" longitude="76.67" latitude="39.23"/>
-    <city name="麦盖提" longitude="77.62" latitude="38.95"/>
-    <city name="莎车" longitude="77.25" latitude="38.45"/>
-    <city name="泽普" longitude="77.26" latitude="38.2"/>
-    <city name="叶城" longitude="77.42" latitude="37.89"/>
-    <city name="疏勒" longitude="76.05" latitude="39.41"/>
-    <city name="英吉沙" longitude="76.17" latitude="38.91"/>
-    <city name="疏附" longitude="75.83" latitude="39.42"/>
-    <city name="塔什库尔干" longitude="75.22" latitude="75.22"/>
-    <city name="阿图什" longitude="76.12" latitude="39.73"/>
-    <city name="阿合奇" longitude="78.42" latitude="41.91"/>
-    <city name="阿克陶" longitude="75.94" latitude="39.14"/>
-    <city name="乌恰" longitude="75.18" latitude="39.7"/>
-    <city name="昌吉" longitude="87.31" latitude="44.05"/>
-    <city name="阜康" longitude="87.94" latitude="44.14"/>
-    <city name="奇台" longitude="89.52" latitude="44.02"/>
-    <city name="吉木萨尔" longitude="89.14" latitude="44"/>
-    <city name="米泉" longitude="87.68" latitude="43.97"/>
-    <city name="玛纳斯" longitude="86.22" latitude="44.28"/>
-    <city name="呼图壁" longitude="86.92" latitude="44.18"/>
-    <city name="木垒" longitude="90.34" latitude="43.8"/>
-    <city name="博乐" longitude="82.1" latitude="44.93"/>
-    <city name="精河" longitude="82.92" latitude="44.67"/>
-    <city name="温泉" longitude="81.08" latitude="44.95"/>
-    <city name="伊宁" longitude="81.33" latitude="43.91"/>
-    <city name="尼勒克" longitude="82.53" latitude="43.82"/>
-    <city name="新源" longitude="83.27" latitude="43.41"/>
-    <city name="巩留" longitude="82.23" latitude="43.35"/>
-    <city name="奎屯" longitude="84.89" latitude="44.45"/>
-    <city name="特克斯" longitude="81.81" latitude="43.23"/>
-    <city name="昭苏" longitude="81.08" latitude="43.15"/>
-    <city name="霍城" longitude="80.87" latitude="44.07"/>
-    <city name="察布察尔" longitude="81.12" latitude="43.82"/>
-    <city name="塔城" longitude="82.96" latitude="46.74"/>
-    <city name="额敏" longitude="83.62" latitude="46.52"/>
-    <city name="乌苏" longitude="84.62" latitude="44.45"/>
-    <city name="托里" longitude="83.59" latitude="45.92"/>
-    <city name="裕民" longitude="82.94" latitude="46.21"/>
-    <city name="沙湾" longitude="85.56" latitude="44.29"/>
-    <city name="和布克赛尔" longitude="85.13" latitude="46.78"/>
-    <city name="阿勒泰" longitude="88.14" latitude="47.86"/>
-    <city name="青河" longitude="90.37" latitude="46.71"/>
-    <city name="富蕴" longitude="89.44" latitude="47.05"/>
-    <city name="福海" longitude="87.51" latitude="47.15"/>
-    <city name="吉木乃" longitude="85.84" latitude="47.42"/>
-    <city name="布尔津" longitude="86.92" latitude="47.7"/>
-    <city name="哈巴河" longitude="86.41" latitude="48.05"/>
-  </provinces>
-  <provinces name="江苏">
-    <city name="南京" longitude="118.78" latitude="32.04"/>
-    <city name="江宁" longitude="118.83" latitude="31.95"/>
-    <city name="六合" longitude="118.83" latitude="32.36"/>
-    <city name="江浦" longitude="118.62" latitude="32.07"/>
-    <city name="徐州" longitude="117.2" latitude="34.26"/>
-    <city name="连云港" longitude="119.16" latitude="34.59"/>
-    <city name="南通" longitude="120.86" latitude="32.01"/>
-    <city name="苏州" longitude="120.62" latitude="31.32"/>
-    <city name="无锡" longitude="120.29" latitude="31.59"/>
-    <city name="常州" longitude="119.95" latitude="31.79"/>
-    <city name="丰县" longitude="116.57" latitude="34.79"/>
-    <city name="沛县" longitude="116.93" latitude="34.73"/>
-    <city name="赣榆" longitude="119.11" latitude="34.83"/>
-    <city name="东海" longitude="118.75" latitude="34.54"/>
-    <city name="新沂" longitude="118.33" latitude="34.38"/>
-    <city name="邳县" longitude="117.97" latitude="34.3"/>
-    <city name="睢宁" longitude="117.94" latitude="33.89"/>
-    <city name="铜山" longitude="117.2" latitude="34.26"/>
-    <city name="清江" longitude="119.02" latitude="33.59"/>
-    <city name="灌云" longitude="119.23" latitude="34.3"/>
-    <city name="灌南" longitude="119.36" latitude="34.09"/>
-    <city name="沭阳" longitude="118.79" latitude="34.12"/>
-    <city name="宿迁" longitude="118.3" latitude="33.96"/>
-    <city name="泗阳" longitude="118.68" latitude="33.73"/>
-    <city name="盱眙" longitude="118.05" latitude="33"/>
-    <city name="涟水" longitude="119.26" latitude="33.77"/>
-    <city name="淮阴" longitude="119.02" latitude="33.62"/>
-    <city name="淮安" longitude="119.15" latitude="33.5"/>
-    <city name="洪泽" longitude="118.85" latitude="33.28"/>
-    <city name="泗洪" longitude="118.23" latitude="33.46"/>
-    <city name="金湖" longitude="119.02" latitude="33.01"/>
-    <city name="盐城" longitude="120.13" latitude="33.38"/>
-    <city name="滨海" longitude="119.84" latitude="34.01"/>
-    <city name="阜宁" longitude="119.79" latitude="33.78"/>
-    <city name="射阳" longitude="120.26" latitude="33.77"/>
-    <city name="建湖" longitude="119.77" latitude="33.46"/>
-    <city name="响水" longitude="119.56" latitude="34.2"/>
-    <city name="大丰" longitude="120.45" latitude="33.19"/>
-    <city name="东台" longitude="120.31" latitude="32.84"/>
-    <city name="海安" longitude="120.45" latitude="32.57"/>
-    <city name="如皋" longitude="120.56" latitude="32.39"/>
-    <city name="如东" longitude="121.18" latitude="32.33"/>
-    <city name="启东" longitude="121.66" latitude="31.8"/>
-    <city name="海门" longitude="121.15" latitude="31.89"/>
-    <city name="南通" longitude="121.05" latitude="32.08"/>
-    <city name="扬州" longitude="119.42" latitude="32.39"/>
-    <city name="宝应" longitude="119.32" latitude="33.23"/>
-    <city name="兴化" longitude="119.82" latitude="32.93"/>
-    <city name="高邮" longitude="119.45" latitude="32.78"/>
-    <city name="泰兴" longitude="120.02" latitude="32.16"/>
-    <city name="泰县" longitude="120.15" latitude="32.51"/>
-    <city name="泰州" longitude="119.9" latitude="32.49"/>
-    <city name="靖江" longitude="120.26" latitude="32.03"/>
-    <city name="江都" longitude="119.55" latitude="32.43"/>
-    <city name="邗江" longitude="119.42" latitude="32.39"/>
-    <city name="仪征" longitude="119.16" latitude="32.27"/>
-    <city name="镇江" longitude="119.44" latitude="32.2"/>
-    <city name="丹徒" longitude="119.44" latitude="32.2"/>
-    <city name="扬中" longitude="119.81" latitude="32.24"/>
-    <city name="丹阳" longitude="119.55" latitude="32"/>
-    <city name="武进" longitude="119.95" latitude="31.78"/>
-    <city name="宜兴" longitude="119.82" latitude="31.36"/>
-    <city name="金坛" longitude="119.56" latitude="31.74"/>
-    <city name="溧阳" longitude="119.48" latitude="31.43"/>
-    <city name="句容" longitude="119.16" latitude="31.95"/>
-    <city name="溧水" longitude="119.02" latitude="31.65"/>
-    <city name="高淳" longitude="118.87" latitude="31.32"/>
-    <city name="江阴" longitude="120.26" latitude="31.91"/>
-    <city name="沙洲" longitude="120.55" latitude="31.86"/>
-    <city name="常熟" longitude="120.74" latitude="31.64"/>
-    <city name="太仓" longitude="121.1" latitude="31.45"/>
-    <city name="昆山" longitude="120.95" latitude="31.39"/>
-    <city name="吴县" longitude="120.62" latitude="31.32"/>
-    <city name="吴江" longitude="120.63" latitude="31.16"/>
-  </provinces>
-  <provinces name="江西">
-    <city name="南昌" longitude="115.89" latitude="28.68"/>
-    <city name="新建" longitude="115.8" latitude="28.69"/>
-    <city name="景德镇" longitude="117.22" latitude="29.3"/>
-    <city name="萍乡" longitude="113.85" latitude="27.6"/>
-    <city name="九江" longitude="115.97" latitude="29.71"/>
-    <city name="彭泽" longitude="116.56" latitude="29.9"/>
-    <city name="湖口" longitude="116.23" latitude="29.75"/>
-    <city name="都昌" longitude="116.19" latitude="29.29"/>
-    <city name="星子" longitude="116.03" latitude="29.47"/>
-    <city name="永修" longitude="115.82" latitude="29.04"/>
-    <city name="德安" longitude="115.75" latitude="29.33"/>
-    <city name="瑞昌" longitude="115.65" latitude="29.68"/>
-    <city name="武宁" longitude="115.09" latitude="29.26"/>
-    <city name="修永" longitude="114.55" latitude="29.04"/>
-    <city name="上饶" longitude="117.97" latitude="28.47"/>
-    <city name="婺源" longitude="117.83" latitude="29.25"/>
-    <city name="德兴" longitude="117.58" latitude="28.96"/>
-    <city name="玉山" longitude="118.25" latitude="28.68"/>
-    <city name="广丰" longitude="118.2" latitude="28.45"/>
-    <city name="铅山" longitude="117.71" latitude="28.32"/>
-    <city name="横峰" longitude="117.62" latitude="28.42"/>
-    <city name="鹰潭" longitude="117.02" latitude="28.23"/>
-    <city name="贵溪" longitude="117.2" latitude="28.3"/>
-    <city name="余江" longitude="116.82" latitude="28.22"/>
-    <city name="万年" longitude="117.08" latitude="28.7"/>
-    <city name="乐平" longitude="117.12" latitude="28.97"/>
-    <city name="波阳" longitude="116.68" latitude="29"/>
-    <city name="于干" longitude="116.69" latitude="28.7"/>
-    <city name="弋阳" longitude="117.43" latitude="28.42"/>
-    <city name="宜春" longitude="114.38" latitude="27.81"/>
-    <city name="万载" longitude="114.44" latitude="28.11"/>
-    <city name="铜鼓" longitude="114.37" latitude="28.53"/>
-    <city name="宜丰" longitude="114.78" latitude="28.4"/>
-    <city name="上高" longitude="114.91" latitude="28.25"/>
-    <city name="安义" longitude="115.55" latitude="28.86"/>
-    <city name="奉新" longitude="115.38" latitude="28.71"/>
-    <city name="高安" longitude="115.38" latitude="28.42"/>
-    <city name="丰城" longitude="115.7" latitude="28.19"/>
-    <city name="清江" longitude="115.54" latitude="28.07"/>
-    <city name="新余" longitude="114.92" latitude="27.81"/>
-    <city name="分宜" longitude="114.68" latitude="27.82"/>
-    <city name="靖安" longitude="115.37" latitude="28.88"/>
-    <city name="抚州" longitude="116.34" latitude="28"/>
-    <city name="临川" longitude="116.29" latitude="27.95"/>
-    <city name="金溪" longitude="116.77" latitude="27.92"/>
-    <city name="资溪" longitude="117.06" latitude="27.7"/>
-    <city name="黎川" longitude="116.91" latitude="27.3"/>
-    <city name="南丰" longitude="116.52" latitude="27.22"/>
-    <city name="南城" longitude="116.62" latitude="27.56"/>
-    <city name="宜黄" longitude="116.2" latitude="27.55"/>
-    <city name="崇仁" longitude="116.05" latitude="27.75"/>
-    <city name="乐安" longitude="115.82" latitude="27.44"/>
-    <city name="东乡" longitude="116.61" latitude="28.23"/>
-    <city name="进贤" longitude="116.26" latitude="28.37"/>
-    <city name="吉安" longitude="114.97" latitude="27.12"/>
-    <city name="新干" longitude="115.4" latitude="27.77"/>
-    <city name="峡江" longitude="115.15" latitude="27.56"/>
-    <city name="吉水" longitude="115.14" latitude="27.22"/>
-    <city name="永丰" longitude="115.42" latitude="27.33"/>
-    <city name="泰和" longitude="114.88" latitude="26.81"/>
-    <city name="万安" longitude="114.77" latitude="26.47"/>
-    <city name="遂川" longitude="114.5" latitude="26.33"/>
-    <city name="宁冈" longitude="113.97" latitude="26.71"/>
-    <city name="永新" longitude="114.23" latitude="26.96"/>
-    <city name="莲花" longitude="113.94" latitude="27.14"/>
-    <city name="安福" longitude="114.62" latitude="27.39"/>
-    <city name="井冈山" longitude="114.17" latitude="26.57"/>
-    <city name="赣州" longitude="114.92" latitude="25.85"/>
-    <city name="广昌" longitude="116.32" latitude="26.84"/>
-    <city name="石城" longitude="116.32" latitude="26.34"/>
-    <city name="宁都" longitude="116" latitude="26.46"/>
-    <city name="兴国" longitude="115.33" latitude="26.32"/>
-    <city name="于都" longitude="115.39" latitude="25.96"/>
-    <city name="瑞金" longitude="116.02" latitude="25.89"/>
-    <city name="会昌" longitude="115.79" latitude="25.58"/>
-    <city name="安远" longitude="115.41" latitude="25.15"/>
-    <city name="寻乌" longitude="115.64" latitude="24.96"/>
-    <city name="定南" longitude="115.02" latitude="24.7"/>
-    <city name="龙南" longitude="114.79" latitude="24.91"/>
-    <city name="全南" longitude="114.53" latitude="24.76"/>
-    <city name="信丰" longitude="114.94" latitude="25.39"/>
-    <city name="赣县" longitude="114.02" latitude="25.85"/>
-    <city name="南康" longitude="114.75" latitude="25.66"/>
-    <city name="上犹" longitude="114.55" latitude="25.8"/>
-    <city name="崇义" longitude="114.31" latitude="25.69"/>
-    <city name="大余" longitude="114.36" latitude="25.39"/>
-  </provinces>
-  <provinces name="河北">
-    <city name="石家庄" longitude="114.48" latitude="38.03"/>
-    <city name="唐山" longitude="118.02" latitude="39.63"/>
-    <city name="行唐" longitude="114.54" latitude="38.42"/>
-    <city name="灵寿" longitude="114.38" latitude="38.31"/>
-    <city name="束鹿" longitude="115.18" latitude="37.94"/>
-    <city name="晋县" longitude="115.03" latitude="38.03"/>
-    <city name="藁城" longitude="114.84" latitude="38.03"/>
-    <city name="高邑" longitude="114.58" latitude="37.62"/>
-    <city name="赵县" longitude="114.78" latitude="37.76"/>
-    <city name="井陉" longitude="114.13" latitude="38.03"/>
-    <city name="获鹿" longitude="114.03" latitude="38.08"/>
-    <city name="新乐" longitude="114.67" latitude="38.33"/>
-    <city name="正定" longitude="114.56" latitude="38.13"/>
-    <city name="深泽" longitude="115.2" latitude="38.2"/>
-    <city name="无极" longitude="114.96" latitude="38.16"/>
-    <city name="赞皇" longitude="114.35" latitude="37.65"/>
-    <city name="元氏" longitude="114.5" latitude="37.74"/>
-    <city name="栾城" longitude="114.64" latitude="38.87"/>
-    <city name="平山" longitude="114.24" latitude="38.2"/>
-    <city name="邯郸" longitude="114.47" latitude="36.6"/>
-    <city name="永年" longitude="114.5" latitude="36.77"/>
-    <city name="曲周" longitude="114.92" latitude="36.78"/>
-    <city name="馆陶" longitude="115.4" latitude="36.47"/>
-    <city name="魏县" longitude="114.94" latitude="36.37"/>
-    <city name="成安" longitude="114.68" latitude="36.43"/>
-    <city name="大名" longitude="115.14" latitude="36.28"/>
-    <city name="涉县" longitude="113.67" latitude="36.57"/>
-    <city name="鸡泽" longitude="113.85" latitude="36.95"/>
-    <city name="丘县" longitude="115.18" latitude="36.84"/>
-    <city name="广平" longitude="114.94" latitude="36.49"/>
-    <city name="肥乡" longitude="114.8" latitude="36.56"/>
-    <city name="临漳" longitude="114.62" latitude="36.35"/>
-    <city name="磁县" longitude="114.37" latitude="36.37"/>
-    <city name="武安" longitude="114.2" latitude="36.7"/>
-    <city name="邢台" longitude="114.48" latitude="37.05"/>
-    <city name="柏乡" longitude="114.68" latitude="37.49"/>
-    <city name="宁普" longitude="114.9" latitude="37.62"/>
-    <city name="隆尧" longitude="114.75" latitude="37.35"/>
-    <city name="临西" longitude="115.5" latitude="36.87"/>
-    <city name="南官" longitude="115.37" latitude="37.37"/>
-    <city name="巨鹿" longitude="115.03" latitude="37.22"/>
-    <city name="任县" longitude="114.68" latitude="37.11"/>
-    <city name="沙河" longitude="114.52" latitude="36.94"/>
-    <city name="临城" longitude="114.5" latitude="37.43"/>
-    <city name="内丘" longitude="114.5" latitude="37.28"/>
-    <city name="新河" longitude="115.22" latitude="37.53"/>
-    <city name="清河" longitude="115.67" latitude="37.07"/>
-    <city name="威县" longitude="115.08" latitude="36.97"/>
-    <city name="广宗" longitude="115.14" latitude="37.06"/>
-    <city name="平乡" longitude="115.02" latitude="37.06"/>
-    <city name="南和" longitude="114.71" latitude="37"/>
-    <city name="保定" longitude="115.48" latitude="38.85"/>
-    <city name="涞水" longitude="115.71" latitude="39.39"/>
-    <city name="涿县" longitude="115.98" latitude="39.48"/>
-    <city name="定兴" longitude="115.78" latitude="39.28"/>
-    <city name="容城" longitude="115.86" latitude="39.06"/>
-    <city name="安新" longitude="115.92" latitude="38.92"/>
-    <city name="蠡县" longitude="115.58" latitude="38.49"/>
-    <city name="博野" longitude="115.46" latitude="38.46"/>
-    <city name="定县" longitude="114.02" latitude="38.52"/>
-    <city name="阜平" longitude="114.18" latitude="38.85"/>
-    <city name="唐县" longitude="114.97" latitude="38.75"/>
-    <city name="涞源" longitude="114.67" latitude="39.37"/>
-    <city name="易县" longitude="115.49" latitude="39.35"/>
-    <city name="新城" longitude="115.84" latitude="39.34"/>
-    <city name="雄县" longitude="116.1" latitude="38.98"/>
-    <city name="徐水" longitude="115.65" latitude="39.02"/>
-    <city name="高阳" longitude="115.78" latitude="38.68"/>
-    <city name="安国" longitude="115.3" latitude="38.41"/>
-    <city name="清苑" longitude="115.47" latitude="38.76"/>
-    <city name="望都" longitude="115.14" latitude="38.71"/>
-    <city name="曲阳" longitude="114.68" latitude="38.62"/>
-    <city name="完县" longitude="115.12" latitude="38.84"/>
-    <city name="满城" longitude="115.45" latitude="38.95"/>
-    <city name="张家口" longitude="114.87" latitude="40.82"/>
-    <city name="康保" longitude="114.6" latitude="41.87"/>
-    <city name="赤城" longitude="115.82" latitude="40.92"/>
-    <city name="怀来" longitude="115.54" latitude="40.4"/>
-    <city name="蔚县" longitude="114.53" latitude="39.83"/>
-    <city name="宣化" longitude="115.03" latitude="40.63"/>
-    <city name="张北" longitude="114.7" latitude="41.15"/>
-    <city name="沽源" longitude="115.68" latitude="41.68"/>
-    <city name="崇礼" longitude="115.25" latitude="40.98"/>
-    <city name="涿鹿" longitude="115.2" latitude="40.37"/>
-    <city name="阳原" longitude="114.15" latitude="40.12"/>
-    <city name="怀安" longitude="114.38" latitude="40.67"/>
-    <city name="尚义" longitude="113.95" latitude="41.05"/>
-    <city name="万全" longitude="114.73" latitude="40.84"/>
-    <city name="承德" longitude="117.93" latitude="40.97"/>
-    <city name="围场" longitude="117.72" latitude="41.95"/>
-    <city name="平泉" longitude="118.68" latitude="41.02"/>
-    <city name="宽城" longitude="118.47" latitude="40.62"/>
-    <city name="兴隆" longitude="117.48" latitude="40.42"/>
-    <city name="滦平" longitude="117.53" latitude="40.95"/>
-    <city name="隆化" longitude="117.7" latitude="41.32"/>
-    <city name="青龙" longitude="118.93" latitude="40.43"/>
-    <city name="丰宁" longitude="116.63" latitude="41.2"/>
-    <city name="秦皇岛" longitude="119.57" latitude="39.95"/>
-    <city name="迁西" longitude="118.3" latitude="40.15"/>
-    <city name="迁安" longitude="118.69" latitude="40.02"/>
-    <city name="昌黎" longitude="119.15" latitude="39.72"/>
-    <city name="卢龙" longitude="118.85" latitude="39.89"/>
-    <city name="滦南" longitude="118.67" latitude="39.49"/>
-    <city name="玉田" longitude="117.9" latitude="39.9"/>
-    <city name="唐海" longitude="118.54" latitude="39.31"/>
-    <city name="遵化" longitude="117.97" latitude="40.2"/>
-    <city name="抚宁" longitude="119.22" latitude="39.88"/>
-    <city name="乐亭" longitude="118.9" latitude="39.43"/>
-    <city name="滦县" longitude="118.73" latitude="39.74"/>
-    <city name="丰南" longitude="118.1" latitude="39.58"/>
-    <city name="丰润" longitude="118.13" latitude="39.82"/>
-    <city name="廊坊" longitude="116.7" latitude="39.53"/>
-    <city name="安次" longitude="116.69" latitude="39.52"/>
-    <city name="三河" longitude="117.06" latitude="39.97"/>
-    <city name="香河" longitude="117" latitude="39.76"/>
-    <city name="霸县" longitude="116.38" latitude="39.12"/>
-    <city name="固安" longitude="116.29" latitude="39.44"/>
-    <city name="大城" longitude="116.63" latitude="38.7"/>
-    <city name="文安" longitude="116.45" latitude="38.87"/>
-    <city name="永清" longitude="116.48" latitude="39.32"/>
-    <city name="大厂" longitude="116.98" latitude="39.98"/>
-    <city name="沧州" longitude="116.83" latitude="38.33"/>
-    <city name="黄骅" longitude="117.33" latitude="38.4"/>
-    <city name="盐山" longitude="117.22" latitude="38.07"/>
-    <city name="吴桥" longitude="116.37" latitude="37.65"/>
-    <city name="东光" longitude="116.52" latitude="37.89"/>
-    <city name="肃宁" longitude="115.82" latitude="38.43"/>
-    <city name="河间" longitude="116.07" latitude="38.45"/>
-    <city name="泊头" longitude="116.56" latitude="38.08"/>
-    <city name="交河" longitude="116.27" latitude="38.02"/>
-    <city name="青县" longitude="116.8" latitude="38.58"/>
-    <city name="海兴" longitude="117.85" latitude="38.17"/>
-    <city name="南皮" longitude="116.7" latitude="38.05"/>
-    <city name="任丘" longitude="116.08" latitude="38.72"/>
-    <city name="献县" longitude="116.12" latitude="38.2"/>
-    <city name="孟村" longitude="117.1" latitude="38.06"/>
-    <city name="衡水" longitude="115.72" latitude="37.72"/>
-    <city name="饶阳" longitude="115.74" latitude="38.24"/>
-    <city name="阜城" longitude="116.14" latitude="37.87"/>
-    <city name="景县" longitude="116.26" latitude="37.69"/>
-    <city name="枣强" longitude="115.72" latitude="37.52"/>
-    <city name="深县" longitude="115.56" latitude="38.02"/>
-    <city name="安平" longitude="115.5" latitude="38.22"/>
-    <city name="武强" longitude="115.96" latitude="38.03"/>
-    <city name="武邑" longitude="115.9" latitude="37.81"/>
-    <city name="故城" longitude="115.96" latitude="37.36"/>
-    <city name="冀县" longitude="115.56" latitude="37.59"/>
-  </provinces>
-  <provinces name="河南">
-    <city name="郑州" longitude="113.65" latitude="34.76"/>
-    <city name="荥阳" longitude="113.35" latitude="34.79"/>
-    <city name="开封" longitude="114.35" latitude="34.79"/>
-    <city name="平顶山" longitude="113.29" latitude="33.75"/>
-    <city name="洛阳" longitude="112.44" latitude="34.7"/>
-    <city name="焦作" longitude="113.21" latitude="35.24"/>
-    <city name="鹤壁" longitude="114.17" latitude="35.9"/>
-    <city name="杞县" longitude="114.77" latitude="34.56"/>
-    <city name="尉氏" longitude="114.17" latitude="34.41"/>
-    <city name="新郑" longitude="113.71" latitude="34.4"/>
-    <city name="登封" longitude="113.02" latitude="34.46"/>
-    <city name="通许" longitude="114.46" latitude="34.48"/>
-    <city name="中牟" longitude="114" latitude="34.73"/>
-    <city name="密县" longitude="113.35" latitude="34.51"/>
-    <city name="巩县" longitude="112.96" latitude="34.76"/>
-    <city name="兰考" longitude="114.81" latitude="34.69"/>
-    <city name="新乡" longitude="113.85" latitude="35.31"/>
-    <city name="汲县" longitude="114.05" latitude="35.44"/>
-    <city name="封丘" longitude="114.04" latitude="35.03"/>
-    <city name="获嘉" longitude="113.63" latitude="35.27"/>
-    <city name="温贺" longitude="113.06" latitude="34.94"/>
-    <city name="济源" longitude="112.57" latitude="35.08"/>
-    <city name="博爱" longitude="113.05" latitude="35.16"/>
-    <city name="辉县" longitude="113.77" latitude="35.46"/>
-    <city name="延津" longitude="114.19" latitude="35.14"/>
-    <city name="原阳" longitude="113.96" latitude="35.05"/>
-    <city name="武陟" longitude="113.38" latitude="35.1"/>
-    <city name="孟县" longitude="112.77" latitude="34.92"/>
-    <city name="沁阳" longitude="112.92" latitude="35.08"/>
-    <city name="修武" longitude="113.42" latitude="35.24"/>
-    <city name="安阳" longitude="114.35" latitude="36.1"/>
-    <city name="南乐" longitude="115.21" latitude="36.08"/>
-    <city name="范县" longitude="115.46" latitude="35.9"/>
-    <city name="台前" longitude="115.83" latitude="36"/>
-    <city name="滑县" longitude="114.52" latitude="35.57"/>
-    <city name="浚县" longitude="114.54" latitude="35.67"/>
-    <city name="淇县" longitude="114.17" latitude="35.6"/>
-    <city name="内黄" longitude="114.88" latitude="35.95"/>
-    <city name="清丰" longitude="115.1" latitude="35.89"/>
-    <city name="濮阳" longitude="114.98" latitude="35.71"/>
-    <city name="长垣" longitude="114.67" latitude="35.19"/>
-    <city name="汤阴" longitude="114.35" latitude="35.92"/>
-    <city name="林县" longitude="113.81" latitude="36.06"/>
-    <city name="商丘" longitude="115.65" latitude="34.44"/>
-    <city name="夏邑" longitude="116.13" latitude="34.22"/>
-    <city name="柘城" longitude="115.29" latitude="34.08"/>
-    <city name="睢县" longitude="115.04" latitude="34.46"/>
-    <city name="虞城" longitude="115.87" latitude="34.4"/>
-    <city name="永城" longitude="116.37" latitude="33.94"/>
-    <city name="宁陵" longitude="115.31" latitude="34.44"/>
-    <city name="民权" longitude="115.13" latitude="34.65"/>
-    <city name="周口" longitude="114.63" latitude="33.63"/>
-    <city name="商水" longitude="114.59" latitude="33.54"/>
-    <city name="扶沟" longitude="114.38" latitude="34.05"/>
-    <city name="鹿邑" longitude="115.48" latitude="33.86"/>
-    <city name="淮阳" longitude="114.88" latitude="33.74"/>
-    <city name="沈丘" longitude="115.06" latitude="33.41"/>
-    <city name="西华" longitude="114.5" latitude="33.79"/>
-    <city name="太康" longitude="114.85" latitude="34.06"/>
-    <city name="郸城" longitude="115.17" latitude="33.63"/>
-    <city name="项城" longitude="114.9" latitude="33.44"/>
-    <city name="许昌" longitude="113.81" latitude="34.02"/>
-    <city name="鄢县" longitude="114.17" latitude="34.11"/>
-    <city name="郾城" longitude="113.98" latitude="33.6"/>
-    <city name="襄城" longitude="113.46" latitude="33.86"/>
-    <city name="鲁山" longitude="112.88" latitude="33.74"/>
-    <city name="郏县" longitude="113.19" latitude="33.98"/>
-    <city name="漯河" longitude="114.02" latitude="33.56"/>
-    <city name="长葛" longitude="113.77" latitude="34.22"/>
-    <city name="临颖" longitude="113.94" latitude="33.81"/>
-    <city name="舞阳" longitude="113.58" latitude="33.44"/>
-    <city name="叶县" longitude="113.35" latitude="33.62"/>
-    <city name="宝丰" longitude="113.04" latitude="33.86"/>
-    <city name="禹县" longitude="113.47" latitude="34.16"/>
-    <city name="驻马店" longitude="114.02" latitude="32.98"/>
-    <city name="确山" longitude="114.02" latitude="32.83"/>
-    <city name="西平" longitude="114" latitude="33.38"/>
-    <city name="汝南" longitude="114.35" latitude="33"/>
-    <city name="新蔡" longitude="114.97" latitude="32.75"/>
-    <city name="泌阳" longitude="113.31" latitude="32.72"/>
-    <city name="遂平" longitude="113.98" latitude="33.15"/>
-    <city name="上蔡" longitude="114.26" latitude="33.25"/>
-    <city name="平舆" longitude="114.62" latitude="32.97"/>
-    <city name="正阳" longitude="114.38" latitude="32.62"/>
-    <city name="信阳" longitude="114.08" latitude="32.13"/>
-    <city name="息县" longitude="114.72" latitude="32.35"/>
-    <city name="固始" longitude="115.68" latitude="32.17"/>
-    <city name="潢川" longitude="115.04" latitude="32.13"/>
-    <city name="新县" longitude="114.83" latitude="31.62"/>
-    <city name="罗山" longitude="114.53" latitude="32.21"/>
-    <city name="淮滨" longitude="115.41" latitude="32.44"/>
-    <city name="商城" longitude="115.42" latitude="31.81"/>
-    <city name="光山" longitude="114.91" latitude="32.02"/>
-    <city name="南阳" longitude="112.53" latitude="33.01"/>
-    <city name="方城" longitude="112.98" latitude="33.25"/>
-    <city name="唐河" longitude="112.83" latitude="32.7"/>
-    <city name="新野" longitude="112.36" latitude="32.51"/>
-    <city name="邓县" longitude="112.08" latitude="32.68"/>
-    <city name="淅川" longitude="111.47" latitude="33.14"/>
-    <city name="南召" longitude="112.4" latitude="33.49"/>
-    <city name="社旗" longitude="112.92" latitude="33.05"/>
-    <city name="桐柏" longitude="113.4" latitude="32.37"/>
-    <city name="镇平" longitude="112.23" latitude="33.03"/>
-    <city name="内乡" longitude="111.83" latitude="33.05"/>
-    <city name="西峡" longitude="111.5" latitude="33.31"/>
-    <city name="三门峡" longitude="111.19" latitude="34.76"/>
-    <city name="孟津" longitude="112.42" latitude="34.84"/>
-    <city name="临汝" longitude="112.83" latitude="34.17"/>
-    <city name="汝阳" longitude="112.46" latitude="34.16"/>
-    <city name="嵩县" longitude="112.07" latitude="34.14"/>
-    <city name="栾川" longitude="111.6" latitude="33.81"/>
-    <city name="灵宝" longitude="110.85" latitude="34.52"/>
-    <city name="渑池" longitude="111.75" latitude="34.76"/>
-    <city name="义马" longitude="111.92" latitude="34.73"/>
-    <city name="偃师" longitude="112.77" latitude="34.73"/>
-    <city name="伊川" longitude="112.42" latitude="34.43"/>
-    <city name="宜阳" longitude="112.15" latitude="34.51"/>
-    <city name="洛宁" longitude="111.65" latitude="34.39"/>
-    <city name="卢氏" longitude="111.03" latitude="34.06"/>
-    <city name="陕县" longitude="111.19" latitude="34.76"/>
-    <city name="新安" longitude="112.14" latitude="34.75"/>
-  </provinces>
-  <provinces name="浙江">
-    <city name="杭州" longitude="120.19" latitude="30.26"/>
-    <city name="余杭" longitude="120.3" latitude="30.43"/>
-    <city name="富阳" longitude="119.95" latitude="30.07"/>
-    <city name="建德" longitude="119.27" latitude="29.49"/>
-    <city name="临安" longitude="119.72" latitude="30.23"/>
-    <city name="萧山" longitude="120.25" latitude="30.16"/>
-    <city name="桐庐" longitude="119.64" latitude="29.8"/>
-    <city name="淳安" longitude="119.05" latitude="29.61"/>
-    <city name="宁波" longitude="121.56" latitude="29.86"/>
-    <city name="镇海" longitude="121.72" latitude="29.96"/>
-    <city name="温州" longitude="120.65" latitude="28.01"/>
-    <city name="瓯海" longitude="120.65" latitude="28.01"/>
-    <city name="永喜" longitude="120.68" latitude="28.16"/>
-    <city name="洞头" longitude="121.12" latitude="27.84"/>
-    <city name="平阳" longitude="120.55" latitude="27.68"/>
-    <city name="泰顺" longitude="119.7" latitude="27.57"/>
-    <city name="乐清" longitude="120.94" latitude="28.14"/>
-    <city name="瑞安" longitude="120.62" latitude="27.8"/>
-    <city name="文成" longitude="120.08" latitude="27.08"/>
-    <city name="苍南" longitude="120.36" latitude="27.53"/>
-    <city name="湖州" longitude="120.1" latitude="30.86"/>
-    <city name="平湖" longitude="121.02" latitude="30.7"/>
-    <city name="桐乡" longitude="120.54" latitude="30.64"/>
-    <city name="安吉" longitude="119.68" latitude="30.68"/>
-    <city name="嘉善" longitude="120.92" latitude="30.84"/>
-    <city name="嘉兴" longitude="120.76" latitude="30.77"/>
-    <city name="海盐" longitude="120.92" latitude="30.53"/>
-    <city name="海宁" longitude="120.69" latitude="30.53"/>
-    <city name="德清" longitude="120.08" latitude="30.54"/>
-    <city name="长兴" longitude="119.91" latitude="30.01"/>
-    <city name="定海" longitude="122.11" latitude="30.03"/>
-    <city name="岱山" longitude="122.2" latitude="30.26"/>
-    <city name="嵊四" longitude="122.45" latitude="30.72"/>
-    <city name="普陀" longitude="122.3" latitude="29.97"/>
-    <city name="鄞县" longitude="121.56" latitude="29.86"/>
-    <city name="象山" longitude="121.8" latitude="29.48"/>
-    <city name="奉化" longitude="121.41" latitude="29.66"/>
-    <city name="慈溪" longitude="121.23" latitude="30.18"/>
-    <city name="宁海" longitude="121.42" latitude="29.3"/>
-    <city name="余姚" longitude="121.16" latitude="30.04"/>
-    <city name="绍兴" longitude="120.58" latitude="30.01"/>
-    <city name="新昌" longitude="120.89" latitude="29.49"/>
-    <city name="诸暨" longitude="120.23" latitude="29.71"/>
-    <city name="上虞" longitude="120.87" latitude="30.03"/>
-    <city name="嵊县" longitude="120.81" latitude="29.6"/>
-    <city name="椒江" longitude="121.44" latitude="28.67"/>
-    <city name="临海" longitude="121.13" latitude="28.8"/>
-    <city name="三门" longitude="121.38" latitude="29.11"/>
-    <city name="温岭" longitude="121.36" latitude="28.36"/>
-    <city name="仙居" longitude="120.73" latitude="28.85"/>
-    <city name="天台" longitude="121.03" latitude="29.15"/>
-    <city name="黄岩" longitude="121.27" latitude="28.64"/>
-    <city name="玉环" longitude="121.23" latitude="28.14"/>
-    <city name="丽水" longitude="119.92" latitude="28.45"/>
-    <city name="青田" longitude="120.28" latitude="28.45"/>
-    <city name="庆无" longitude="119.06" latitude="27.61"/>
-    <city name="遂昌" longitude="119.25" latitude="28.59"/>
-    <city name="缙云" longitude="120.6" latitude="28.66"/>
-    <city name="云和" longitude="119.56" latitude="28.12"/>
-    <city name="龙泉" longitude="119.13" latitude="28.08"/>
-    <city name="松阳" longitude="119.48" latitude="28.46"/>
-    <city name="金华" longitude="119.64" latitude="29.12"/>
-    <city name="浦江" longitude="119.88" latitude="29.46"/>
-    <city name="东阳" longitude="120.23" latitude="29.27"/>
-    <city name="武义" longitude="119.81" latitude="28.9"/>
-    <city name="江山" longitude="118.61" latitude="28.74"/>
-    <city name="开化" longitude="118.39" latitude="29.15"/>
-    <city name="衢州" longitude="118.88" latitude="28.97"/>
-    <city name="兰溪" longitude="119.48" latitude="29.19"/>
-    <city name="义乌" longitude="120.06" latitude="29.32"/>
-    <city name="永康" longitude="120.02" latitude="28.92"/>
-    <city name="常山" longitude="118.5" latitude="28.9"/>
-  </provinces>
-  <provinces name="海南">
-    <city name="海口" longitude="110.35" latitude="20.02"/>
-    <city name="琼山" longitude="110.33" latitude="19.98"/>
-    <city name="文昌" longitude="110.72" latitude="19.61"/>
-    <city name="定安" longitude="110.31" latitude="19.68"/>
-    <city name="琼海" longitude="110.46" latitude="19.25"/>
-    <city name="万宁" longitude="110.39" latitude="18.8"/>
-    <city name="屯昌" longitude="110.1" latitude="19.36"/>
-    <city name="澄迈" longitude="110" latitude="19.75"/>
-    <city name="儋县" longitude="109.57" latitude="19.52"/>
-    <city name="临高" longitude="109.69" latitude="19.91"/>
-    <city name="保亭" longitude="109.7" latitude="18.64"/>
-    <city name="白沙" longitude="109.44" latitude="19.23"/>
-    <city name="琼中" longitude="109.83" latitude="19.05"/>
-    <city name="陵水" longitude="110.02" latitude="18.48"/>
-    <city name="崖县" longitude="109.5" latitude="18.25"/>
-    <city name="乐东" longitude="109.17" latitude="18.73"/>
-    <city name="东方" longitude="108.64" latitude="19.09"/>
-    <city name="昌江" longitude="109.03" latitude="19.25"/>
-  </provinces>
-  <provinces name="港澳台">
-    <city name="香港" longitude="114.1" latitude="22.2"/>
-    <city name="澳门" longitude="113.33" latitude="22.13"/>
-    <city name="台北" longitude="121.5" latitude="25.05"/>
-    <city name="高雄" longitude="120.37" latitude="22.64"/>
-    <city name="基隆" longitude="121.73" latitude="25.14"/>
-    <city name="台中" longitude="120.67" latitude="24.15"/>
-    <city name="台南" longitude="120.19" latitude="22.98"/>
-    <city name="宜兰" longitude="121.75" latitude="24.75"/>
-    <city name="桃园" longitude="121.3" latitude="25"/>
-    <city name="新竹" longitude="120.96" latitude="24.81"/>
-  </provinces>
-  <provinces name="湖北">
-    <city name="武汉" longitude="114.31" latitude="30.52"/>
-    <city name="武昌" longitude="114.33" latitude="30.35"/>
-    <city name="汉阳" longitude="114.02" latitude="30.57"/>
-    <city name="黄石" longitude="115.09" latitude="30.2"/>
-    <city name="十堰" longitude="110.79" latitude="32.65"/>
-    <city name="沙市" longitude="112.24" latitude="30.32"/>
-    <city name="宜昌" longitude="111.3" latitude="30.7"/>
-    <city name="襄樊" longitude="112.14" latitude="30.02"/>
-    <city name="孝感" longitude="113.91" latitude="31.92"/>
-    <city name="黄陂" longitude="114.36" latitude="30.88"/>
-    <city name="汉川" longitude="113.59" latitude="30.63"/>
-    <city name="云梦" longitude="113.73" latitude="31.02"/>
-    <city name="应山" longitude="113.81" latitude="31.62"/>
-    <city name="大悟" longitude="114.09" latitude="31.56"/>
-    <city name="应城" longitude="113.6" latitude="30.94"/>
-    <city name="安陆" longitude="113.69" latitude="31.25"/>
-    <city name="鄂城" longitude="114.87" latitude="30.38"/>
-    <city name="黄冈" longitude="114.87" latitude="30.44"/>
-    <city name="新洲" longitude="114.8" latitude="31.84"/>
-    <city name="红安" longitude="114.61" latitude="31.29"/>
-    <city name="麻城" longitude="115" latitude="31.17"/>
-    <city name="罗川" longitude="115.37" latitude="30.79"/>
-    <city name="浠水" longitude="115.22" latitude="30.46"/>
-    <city name="蕲春" longitude="115.3" latitude="30.24"/>
-    <city name="黄梅" longitude="115.93" latitude="30.09"/>
-    <city name="广济" longitude="115.56" latitude="29.85"/>
-    <city name="英山" longitude="115.57" latitude="30.75"/>
-    <city name="咸宁" longitude="114.28" latitude="29.87"/>
-    <city name="阳新" longitude="115.22" latitude="29.83"/>
-    <city name="通山" longitude="114.52" latitude="29.6"/>
-    <city name="通城" longitude="113.8" latitude="29.23"/>
-    <city name="嘉鱼" longitude="113.91" latitude="29.97"/>
-    <city name="崇阳" longitude="114.04" latitude="29.54"/>
-    <city name="蒲圻" longitude="113.85" latitude="29.71"/>
-    <city name="荆门" longitude="112.19" latitude="31.02"/>
-    <city name="江陵" longitude="112.18" latitude="30.35"/>
-    <city name="钟祥" longitude="112.58" latitude="31.17"/>
-    <city name="京山" longitude="113.11" latitude="31.03"/>
-    <city name="监利" longitude="112.9" latitude="29.83"/>
-    <city name="石首" longitude="112.41" latitude="29.73"/>
-  </provinces>
-  <provinces name="湖南">
-    <city name="长沙" longitude="113" latitude="28.21"/>
-    <city name="望城" longitude="112.8" latitude="28.37"/>
-    <city name="株洲" longitude="113.16" latitude="27.83"/>
-    <city name="湘潭" longitude="112.91" latitude="27.87"/>
-    <city name="衡阳" longitude="112.61" latitude="26.89"/>
-    <city name="邵阳" longitude="111.5" latitude="27.22"/>
-    <city name="岳阳" longitude="113.09" latitude="29.37"/>
-    <city name="临湘" longitude="113.42" latitude="29.48"/>
-    <city name="平江" longitude="113.56" latitude="29.71"/>
-    <city name="泪罗" longitude="113.05" latitude="28.8"/>
-    <city name="湘阴" longitude="112.87" latitude="28.68"/>
-    <city name="华容" longitude="112.55" latitude="29.52"/>
-    <city name="浏阳" longitude="113.63" latitude="28.16"/>
-    <city name="醴陵" longitude="113.5" latitude="27.67"/>
-    <city name="攸县" longitude="113.32" latitude="27.01"/>
-    <city name="茶陵" longitude="113.54" latitude="26.79"/>
-    <city name="酃县" longitude="113.77" latitude="26.49"/>
-    <city name="湘乡" longitude="112.5" latitude="27.75"/>
-    <city name="郴州" longitude="113" latitude="25.79"/>
-    <city name="郴县" longitude="113" latitude="25.79"/>
-    <city name="安仁" longitude="113.27" latitude="26.71"/>
-    <city name="永兴" longitude="113.11" latitude="26.13"/>
-    <city name="资兴" longitude="113.39" latitude="25.95"/>
-    <city name="桂东" longitude="113.91" latitude="25.08"/>
-    <city name="汝城" longitude="113.68" latitude="25.54"/>
-    <city name="宜章" longitude="113.96" latitude="25.41"/>
-    <city name="临武" longitude="112.55" latitude="25.27"/>
-    <city name="嘉禾" longitude="112.35" latitude="25.56"/>
-    <city name="桂阳" longitude="112.72" latitude="25.73"/>
-    <city name="来阳" longitude="112.84" latitude="26.41"/>
-    <city name="衡南" longitude="112.61" latitude="26.89"/>
-    <city name="衡山" longitude="112.86" latitude="27.25"/>
-    <city name="衡东" longitude="112.95" latitude="27.1"/>
-    <city name="常宁" longitude="112.39" latitude="26.38"/>
-    <city name="祁阳" longitude="111.85" latitude="26.59"/>
-    <city name="祁东" longitude="112.14" latitude="26.8"/>
-    <city name="衡阳" longitude="112.39" latitude="26.98"/>
-    <city name="永州" longitude="111.63" latitude="26.22"/>
-    <city name="零陵" longitude="111.63" latitude="26.22"/>
-    <city name="新田" longitude="112.21" latitude="25.91"/>
-    <city name="宁远" longitude="111.95" latitude="25.6"/>
-    <city name="蓝山" longitude="112.16" latitude="25.37"/>
-    <city name="双牌" longitude="111.64" latitude="25.96"/>
-    <city name="江永" longitude="111.33" latitude="25.41"/>
-    <city name="道县" longitude="111.57" latitude="25.52"/>
-    <city name="东安" longitude="111.28" latitude="26.41"/>
-    <city name="江华" longitude="111.79" latitude="24.97"/>
-    <city name="新宁" longitude="110.84" latitude="26.44"/>
-    <city name="武冈" longitude="110.61" latitude="26.73"/>
-    <city name="隆回" longitude="111.04" latitude="27.13"/>
-    <city name="绥宁" longitude="110.14" latitude="25.59"/>
-    <city name="洞口" longitude="110.57" latitude="27.06"/>
-    <city name="城步" longitude="110.3" latitude="26.37"/>
-    <city name="娄底" longitude="111.96" latitude="27.71"/>
-    <city name="涟源" longitude="111.66" latitude="27.68"/>
-    <city name="新邵" longitude="111.46" latitude="27.33"/>
-    <city name="双峰" longitude="112.18" latitude="27.44"/>
-    <city name="冷水江" longitude="111.41" latitude="27.68"/>
-    <city name="邵东" longitude="111.73" latitude="27.25"/>
-    <city name="新化" longitude="111.29" latitude="27.73"/>
-    <city name="怀化" longitude="109.95" latitude="27.52"/>
-    <city name="黔阳" longitude="110.14" latitude="27.33"/>
-    <city name="辰溪" longitude="110.18" latitude="28.02"/>
-    <city name="沅陵" longitude="110.39" latitude="28.46"/>
-    <city name="溆浦" longitude="110.57" latitude="27.92"/>
-    <city name="会同" longitude="109.71" latitude="26.86"/>
-    <city name="靖县" longitude="109.68" latitude="26.57"/>
-    <city name="洪江" longitude="109.96" latitude="27.1"/>
-    <city name="芷江" longitude="109.78" latitude="27.44"/>
-    <city name="麻阳" longitude="109.79" latitude="27.87"/>
-    <city name="通道" longitude="109.77" latitude="26.16"/>
-    <city name="新晃" longitude="109.16" latitude="27.37"/>
-    <city name="吉首" longitude="109.71" latitude="28.3"/>
-    <city name="永顺" longitude="109.84" latitude="29"/>
-    <city name="桑植" longitude="110.16" latitude="29.38"/>
-    <city name="大庸" longitude="110.48" latitude="29.13"/>
-    <city name="古丈" longitude="109.91" latitude="28.62"/>
-    <city name="泸溪" longitude="110.73" latitude="28.29"/>
-    <city name="凤凰" longitude="109.43" latitude="27.92"/>
-    <city name="花垣" longitude="109.46" latitude="28.59"/>
-    <city name="保靖" longitude="109.64" latitude="28.7"/>
-    <city name="龙山" longitude="109.42" latitude="29.64"/>
-    <city name="常德" longitude="111.69" latitude="29.05"/>
-    <city name="临澧" longitude="111.64" latitude="29.44"/>
-    <city name="澧县" longitude="111.75" latitude="29.65"/>
-    <city name="安乡" longitude="112.16" latitude="29.41"/>
-    <city name="津市" longitude="111.87" latitude="29.64"/>
-    <city name="汉寿" longitude="111.97" latitude="28.9"/>
-    <city name="桃源" longitude="111.47" latitude="28.9"/>
-    <city name="慈利" longitude="111.09" latitude="29.41"/>
-    <city name="石门" longitude="111.35" latitude="29.59"/>
-    <city name="益阳" longitude="112.33" latitude="28.6"/>
-    <city name="南县" longitude="112.39" latitude="29.37"/>
-    <city name="沅江" longitude="112.36" latitude="28.83"/>
-    <city name="宁乡" longitude="112.55" latitude="28.27"/>
-    <city name="安化" longitude="111.2" latitude="28.38"/>
-    <city name="桃江" longitude="112.11" latitude="28.51"/>
-  </provinces>
-  <provinces name="甘肃">
-    <city name="兰州" longitude="103.73" latitude="36.03"/>
-    <city name="永登" longitude="103.25" latitude="36.73"/>
-    <city name="榆中" longitude="104.09" latitude="35.87"/>
-    <city name="永昌" longitude="101.94" latitude="38.23"/>
-    <city name="皋兰" longitude="103.97" latitude="36.32"/>
-    <city name="定西" longitude="104.57" latitude="35.57"/>
-    <city name="会宁" longitude="105.08" latitude="35.72"/>
-    <city name="陇西" longitude="104.61" latitude="34.98"/>
-    <city name="临洮" longitude="103.88" latitude="35.39"/>
-    <city name="靖远" longitude="104.71" latitude="36.54"/>
-    <city name="通渭" longitude="105.27" latitude="35.24"/>
-    <city name="渭源" longitude="104.19" latitude="35.17"/>
-    <city name="平凉" longitude="106.68" latitude="35.51"/>
-    <city name="灵台" longitude="107.61" latitude="35.1"/>
-    <city name="华亭" longitude="106.65" latitude="35.21"/>
-    <city name="静宁" longitude="105.73" latitude="35.51"/>
-    <city name="泾川" longitude="107.38" latitude="35.31"/>
-    <city name="崇信" longitude="107.05" latitude="35.27"/>
-    <city name="庄浪" longitude="106.06" latitude="35.2"/>
-    <city name="庆阳" longitude="107.88" latitude="36.03"/>
-    <city name="华池" longitude="108" latitude="36.44"/>
-    <city name="庄宁" longitude="108.43" latitude="35.5"/>
-    <city name="镇源" longitude="107.22" latitude="35.7"/>
-    <city name="环县" longitude="107.33" latitude="36.57"/>
-    <city name="合水" longitude="108.02" latitude="35.81"/>
-    <city name="宁县" longitude="107.94" latitude="35.17"/>
-    <city name="天水" longitude="105.69" latitude="34.6"/>
-    <city name="徽县" longitude="106.11" latitude="33.78"/>
-    <city name="礼县" longitude="105.15" latitude="34.22"/>
-    <city name="武山" longitude="104.88" latitude="34.69"/>
-    <city name="秦安" longitude="105.69" latitude="34.89"/>
-    <city name="清水" longitude="106.12" latitude="34.73"/>
-    <city name="两当" longitude="106.28" latitude="33.9"/>
-    <city name="西和" longitude="105.28" latitude="34.02"/>
-    <city name="甘谷" longitude="105.35" latitude="34.7"/>
-    <city name="漳县" longitude="104.48" latitude="34.87"/>
-    <city name="张家川" longitude="106.23" latitude="35"/>
-    <city name="武都" longitude="104.94" latitude="33.43"/>
-    <city name="宕昌" longitude="104.38" latitude="34.06"/>
-    <city name="康县" longitude="105.58" latitude="33.33"/>
-    <city name="成县" longitude="105.7" latitude="33.75"/>
-    <city name="文县" longitude="104.7" latitude="32.95"/>
-    <city name="临潭" longitude="103.35" latitude="34.69"/>
-    <city name="舟曲" longitude="104.38" latitude="33.81"/>
-    <city name="玛曲" longitude="102.04" latitude="33.97"/>
-    <city name="下河" longitude="102.46" latitude="35.21"/>
-    <city name="卓尼" longitude="103.54" latitude="34.61"/>
-    <city name="迭部" longitude="103.23" latitude="34.08"/>
-    <city name="碌曲" longitude="102.5" latitude="34.6"/>
-    <city name="临夏" longitude="103.22" latitude="35.62"/>
-    <city name="永靖" longitude="103.34" latitude="35.97"/>
-    <city name="和政" longitude="103.31" latitude="35.43"/>
-    <city name="康乐" longitude="103.68" latitude="35.39"/>
-    <city name="广河" longitude="103.54" latitude="35.46"/>
-    <city name="东乡" longitude="103.39" latitude="35.68"/>
-    <city name="岷县" longitude="104.04" latitude="34.41"/>
-    <city name="积石山" longitude="102.85" latitude="35.74"/>
-    <city name="武威" longitude="102.61" latitude="37.94"/>
-    <city name="民勤" longitude="103.08" latitude="38.62"/>
-    <city name="古浪" longitude="102.86" latitude="37.43"/>
-    <city name="景泰" longitude="104.05" latitude="37.14"/>
-    <city name="天祝" longitude="102.84" latitude="37.24"/>
-    <city name="张掖" longitude="100.46" latitude="38.93"/>
-    <city name="民乐" longitude="100.85" latitude="38.43"/>
-    <city name="临泽" longitude="100.17" latitude="39.14"/>
-    <city name="山丹" longitude="101.19" latitude="38.79"/>
-    <city name="高台" longitude="99.84" latitude="39.14"/>
-    <city name="肃南" longitude="99.57" latitude="38.86"/>
-    <city name="玉门" longitude="97.58" latitude="39.81"/>
-    <city name="酒泉" longitude="98.5" latitude="39.71"/>
-    <city name="敦煌" longitude="94.71" latitude="40.13"/>
-    <city name="金塔" longitude="98.92" latitude="39.97"/>
-    <city name="安西" longitude="95.77" latitude="40.51"/>
-    <city name="阿克塞" longitude="94.25" latitude="38.46"/>
-    <city name="肃北" longitude="94.89" latitude="39.49"/>
-  </provinces>
-  <provinces name="福建">
-    <city name="福州" longitude="119.3" latitude="26.08"/>
-    <city name="闽侯" longitude="119.14" latitude="26.16"/>
-    <city name="厦门" longitude="118.1" latitude="24.46"/>
-    <city name="同安" longitude="118.15" latitude="24.74"/>
-    <city name="南平" longitude="118.16" latitude="26.65"/>
-    <city name="南平" longitude="118.11" latitude="27.34"/>
-    <city name="建瓯" longitude="118.32" latitude="27.05"/>
-    <city name="浦城" longitude="118.55" latitude="27.92"/>
-    <city name="邵武" longitude="117.48" latitude="27.34"/>
-    <city name="顺昌" longitude="117.8" latitude="26.8"/>
-    <city name="崇安" longitude="118.02" latitude="27.76"/>
-    <city name="光泽" longitude="117.34" latitude="27.54"/>
-    <city name="松溪" longitude="118.77" latitude="27.53"/>
-    <city name="政和" longitude="118.85" latitude="27.38"/>
-    <city name="宁德" longitude="119.52" latitude="26.65"/>
-    <city name="福安" longitude="119.65" latitude="27.09"/>
-    <city name="连江" longitude="119.53" latitude="26.2"/>
-    <city name="福鼎" longitude="120.2" latitude="27.34"/>
-    <city name="霞浦" longitude="120" latitude="26.89"/>
-    <city name="吉田" longitude="118.74" latitude="26.59"/>
-    <city name="罗源" longitude="119.55" latitude="26.49"/>
-    <city name="寿宁" longitude="119.5" latitude="27.47"/>
-    <city name="周宁" longitude="119.36" latitude="27.12"/>
-    <city name="屏南" longitude="118.98" latitude="26.92"/>
-    <city name="柘荣" longitude="119.89" latitude="27.25"/>
-    <city name="莆田" longitude="119" latitude="25.44"/>
-    <city name="仙游" longitude="118.7" latitude="25.37"/>
-    <city name="福清" longitude="119.39" latitude="25.73"/>
-    <city name="长乐" longitude="119.52" latitude="25.96"/>
-    <city name="永泰" longitude="118.95" latitude="25.88"/>
-    <city name="平潭" longitude="119.78" latitude="25.51"/>
-    <city name="闽清" longitude="118.86" latitude="26.21"/>
-    <city name="泉州" longitude="118.58" latitude="24.93"/>
-    <city name="晋江" longitude="118.57" latitude="24.82"/>
-    <city name="南安" longitude="118.39" latitude="24.96"/>
-    <city name="惠安" longitude="118.78" latitude="25.04"/>
-    <city name="安溪" longitude="118.18" latitude="25.07"/>
-    <city name="永春" longitude="118.3" latitude="25.34"/>
-    <city name="德化" longitude="118.24" latitude="25.5"/>
-    <city name="金门" longitude="118.34" latitude="24.43"/>
-    <city name="漳州" longitude="117.35" latitude="24.52"/>
-    <city name="龙海" longitude="117.79" latitude="24.44"/>
-    <city name="漳浦" longitude="117.61" latitude="24.12"/>
-    <city name="诏安" longitude="117.16" latitude="23.73"/>
-    <city name="平和" longitude="117.3" latitude="24.38"/>
-    <city name="云霄" longitude="117.34" latitude="23.99"/>
-    <city name="南靖" longitude="117.35" latitude="24.51"/>
-    <city name="长泰" longitude="117.75" latitude="24.62"/>
-    <city name="东山" longitude="117.4" latitude="23.72"/>
-    <city name="华安" longitude="117.53" latitude="25"/>
-    <city name="龙岩" longitude="117.01" latitude="25.12"/>
-    <city name="上杭" longitude="116.41" latitude="25.43"/>
-    <city name="永定" longitude="116.81" latitude="24.76"/>
-    <city name="长汀" longitude="116.37" latitude="25.85"/>
-    <city name="武平" longitude="116.1" latitude="25.11"/>
-    <city name="连城" longitude="116.75" latitude="25.72"/>
-    <city name="漳平" longitude="117.4" latitude="25.3"/>
-    <city name="三明" longitude="117.61" latitude="26.23"/>
-    <city name="龙溪" longitude="118.17" latitude="26.18"/>
-    <city name="宁化" longitude="116.64" latitude="26.26"/>
-    <city name="大田" longitude="117.83" latitude="25.69"/>
-    <city name="永安" longitude="117.37" latitude="25.97"/>
-    <city name="沙县" longitude="117.77" latitude="26.41"/>
-    <city name="将乐" longitude="117.45" latitude="26.73"/>
-    <city name="清流" longitude="116.81" latitude="26.12"/>
-    <city name="建宁" longitude="116.82" latitude="26.85"/>
-    <city name="泰宁" longitude="117.15" latitude="26.92"/>
-    <city name="明溪" longitude="117.18" latitude="26.36"/>
-  </provinces>
-  <provinces name="西藏自治区">
-    <city name="拉萨" longitude="91.11" latitude="29.97"/>
-    <city name="林周" longitude="91.24" latitude="30.2"/>
-    <city name="当雄" longitude="91.05" latitude="30.51"/>
-    <city name="墨竹工卡" longitude="91.77" latitude="29.77"/>
-    <city name="尼木" longitude="90.14" latitude="29.44"/>
-    <city name="米林" longitude="94.13" latitude="29.18"/>
-    <city name="墨脱" longitude="95.26" latitude="29.22"/>
-    <city name="达孜" longitude="91.39" latitude="29.63"/>
-    <city name="曲水" longitude="90.7" latitude="29.39"/>
-    <city name="堆龙德庆" longitude="90.96" latitude="29.67"/>
-    <city name="林芝" longitude="94.25" latitude="29.59"/>
-    <city name="工布江达" longitude="93.25" latitude="29.92"/>
-    <city name="那曲" longitude="92.1" latitude="31.47"/>
-    <city name="巴青" longitude="94.1" latitude="31.96"/>
-    <city name="比如" longitude="93.68" latitude="31.53"/>
-    <city name="班戈" longitude="90.05" latitude="31.35"/>
-    <city name="嘉黎" longitude="93.46" latitude="30.63"/>
-    <city name="聂荣" longitude="92.3" latitude="31.08"/>
-    <city name="索县" longitude="93.71" latitude="31.92"/>
-    <city name="安多" longitude="91.68" latitude="32.29"/>
-    <city name="申扎" longitude="88.7" latitude="30.94"/>
-    <city name="吕都" longitude="97.14" latitude="31.18"/>
-    <city name="贡觉" longitude="98.29" latitude="30.86"/>
-    <city name="左贡" longitude="97.9" latitude="29.68"/>
-    <city name="察隅" longitude="97.49" latitude="28.62"/>
-    <city name="洛隆" longitude="95.76" latitude="30.81"/>
-    <city name="丁青" longitude="95.63" latitude="31.42"/>
-    <city name="波密" longitude="95.75" latitude="29.92"/>
-    <city name="江达" longitude="89.19" latitude="31.53"/>
-    <city name="察雅" longitude="97.56" latitude="30.69"/>
-    <city name="芒康" longitude="98.68" latitude="29.64"/>
-    <city name="八宿" longitude="96.95" latitude="30.04"/>
-    <city name="边坝" longitude="94.69" latitude="30.94"/>
-    <city name="类乌齐" longitude="96.57" latitude="31.2"/>
-    <city name="乃东" longitude="91.76" latitude="29.18"/>
-    <city name="加查" longitude="92.6" latitude="29.09"/>
-    <city name="曲松" longitude="92.11" latitude="29.08"/>
-    <city name="错那" longitude="91.91" latitude="27.98"/>
-    <city name="穷结" longitude="91.65" latitude="29.04"/>
-    <city name="贡嘎" longitude="90.96" latitude="29.25"/>
-    <city name="浪卡子" longitude="90.33" latitude="29.96"/>
-    <city name="桑日" longitude="92" latitude="29.26"/>
-    <city name="朗县" longitude="93.11" latitude="29.06"/>
-    <city name="隆子" longitude="92.42" latitude="28.46"/>
-    <city name="措美" longitude="91.4" latitude="28.49"/>
-    <city name="洛扎" longitude="90.83" latitude="28.42"/>
-    <city name="扎囊" longitude="91.26" latitude="29.22"/>
-    <city name="日喀则" longitude="88.82" latitude="29.28"/>
-    <city name="定结" longitude="87.77" latitude="28.38"/>
-    <city name="拉孜" longitude="87.62" latitude="29.1"/>
-    <city name="聂拉木" longitude="85.94" latitude="28.19"/>
-    <city name="谢通门" longitude="88.25" latitude="29.43"/>
-    <city name="仲巴" longitude="84.15" latitude="29.66"/>
-    <city name="康马" longitude="89.67" latitude="28.57"/>
-    <city name="亚东" longitude="88.93" latitude="27.55"/>
-    <city name="岗巴" longitude="88.5" latitude="28.29"/>
-    <city name="南木林" longitude="89.02" latitude="29.71"/>
-    <city name="萨迦" longitude="88" latitude="28.87"/>
-    <city name="定日" longitude="87.11" latitude="28.57"/>
-    <city name="吉隆" longitude="85.29" latitude="28.94"/>
-    <city name="昂仁" longitude="87.22" latitude="29.3"/>
-    <city name="江孜" longitude="89.63" latitude="28.94"/>
-    <city name="仁布" longitude="89.77" latitude="29.21"/>
-    <city name="白朗" longitude="89.16" latitude="29.11"/>
-    <city name="萨嘎" longitude="85.3" latitude="29.38"/>
-    <city name="噶尔" longitude="80" latitude="32.08"/>
-    <city name="革吉" longitude="81.13" latitude="32.45"/>
-    <city name="扎达" longitude="79.76" latitude="31.47"/>
-    <city name="措勤" longitude="85.16" latitude="31.06"/>
-    <city name="日上" longitude="79.61" latitude="33.44"/>
-    <city name="改则" longitude="84.1" latitude="32.33"/>
-    <city name="普兰" longitude="81.18" latitude="30.37"/>
-  </provinces>
-  <provinces name="贵州">
-    <city name="贵阳" longitude="106.71" latitude="26.57"/>
-    <city name="六盘水" longitude="104.82" latitude="26.58"/>
-    <city name="水城" longitude="104.82" latitude="26.58"/>
-    <city name="盘县" longitude="104.64" latitude="25.81"/>
-    <city name="六枝" longitude="105.47" latitude="26.21"/>
-    <city name="遵义" longitude="106.9" latitude="27.7"/>
-    <city name="绥阳" longitude="107.19" latitude="27.95"/>
-    <city name="道真" longitude="107.6" latitude="28.89"/>
-    <city name="凤冈" longitude="107.72" latitude="27.97"/>
-    <city name="余庆" longitude="107.88" latitude="27.22"/>
-    <city name="赤水" longitude="105.69" latitude="28.57"/>
-    <city name="桐梓" longitude="106.8" latitude="28.16"/>
-    <city name="正安" longitude="107.43" latitude="28.56"/>
-    <city name="务川" longitude="107.87" latitude="28.54"/>
-    <city name="湄潭" longitude="107.5" latitude="27.76"/>
-    <city name="仁怀" longitude="106.41" latitude="27.81"/>
-    <city name="习水" longitude="106.2" latitude="28.33"/>
-    <city name="铜仁" longitude="109.21" latitude="27.73"/>
-    <city name="玉屏" longitude="108.91" latitude="27.24"/>
-    <city name="思南" longitude="108.23" latitude="27.94"/>
-    <city name="德江" longitude="108.13" latitude="28.27"/>
-    <city name="万山" longitude="109.2" latitude="27.52"/>
-    <city name="江口" longitude="108.82" latitude="27.68"/>
-    <city name="师阡" longitude="108.24" latitude="27.52"/>
-    <city name="印江" longitude="108.41" latitude="28.02"/>
-    <city name="沿河" longitude="108.48" latitude="28.57"/>
-    <city name="松桃" longitude="109.18" latitude="28.17"/>
-    <city name="毕节" longitude="105.29" latitude="27.32"/>
-    <city name="黔西" longitude="106.04" latitude="27.03"/>
-    <city name="织金" longitude="105.76" latitude="26.66"/>
-    <city name="赫章" longitude="104.71" latitude="27.13"/>
-    <city name="大方" longitude="105.61" latitude="27.16"/>
-    <city name="金沙" longitude="106.22" latitude="27.46"/>
-    <city name="钠雍" longitude="105.38" latitude="26.77"/>
-    <city name="威宁" longitude="104.28" latitude="26.87"/>
-    <city name="安顺" longitude="105.92" latitude="26.25"/>
-    <city name="息烽" longitude="106.73" latitude="27.1"/>
-    <city name="清镇" longitude="106.46" latitude="26.56"/>
-    <city name="普定" longitude="105.75" latitude="26.32"/>
-    <city name="开阳" longitude="106.95" latitude="27.06"/>
-    <city name="修文" longitude="106.59" latitude="26.84"/>
-    <city name="平坝" longitude="106.26" latitude="26.42"/>
-    <city name="镇宁" longitude="105.75" latitude="26.08"/>
-    <city name="紫云" longitude="106.06" latitude="25.75"/>
-    <city name="关岭" longitude="105.62" latitude="25.94"/>
-    <city name="兴义" longitude="104.91" latitude="25.1"/>
-    <city name="普安" longitude="104.96" latitude="25.79"/>
-    <city name="贞丰" longitude="105.63" latitude="25.39"/>
-    <city name="望谟" longitude="106.09" latitude="25.17"/>
-    <city name="册亭" longitude="105.79" latitude="25"/>
-    <city name="安龙" longitude="105.49" latitude="25.11"/>
-    <city name="兴仁" longitude="105.18" latitude="25.44"/>
-    <city name="晴龙" longitude="105.21" latitude="25.83"/>
-    <city name="凯里" longitude="107.97" latitude="26.59"/>
-    <city name="施秉" longitude="108.11" latitude="27.03"/>
-    <city name="镇远" longitude="108.41" latitude="27.06"/>
-    <city name="天柱" longitude="109.2" latitude="26.89"/>
-    <city name="剑河" longitude="108.58" latitude="26.64"/>
-    <city name="黎平" longitude="109.14" latitude="26.24"/>
-    <city name="从江" longitude="108.9" latitude="25.76"/>
-    <city name="麻江" longitude="107.58" latitude="26.49"/>
-    <city name="黄平" longitude="107.89" latitude="26.89"/>
-    <city name="三穗" longitude="108.68" latitude="26.98"/>
-    <city name="岑巩" longitude="108.72" latitude="27.21"/>
-    <city name="锦屏" longitude="109.18" latitude="26.7"/>
-    <city name="台江" longitude="108.32" latitude="26.68"/>
-    <city name="榕江" longitude="108.5" latitude="25.94"/>
-    <city name="雷山" longitude="108.07" latitude="26.38"/>
-    <city name="丹寨" longitude="107.79" latitude="26.21"/>
-    <city name="都匀" longitude="107.53" latitude="26.72"/>
-    <city name="贵定" longitude="107.22" latitude="26.58"/>
-    <city name="瓮安" longitude="107.48" latitude="27.08"/>
-    <city name="平塘" longitude="107.55" latitude="25.83"/>
-    <city name="长顺" longitude="106.45" latitude="26.03"/>
-    <city name="惠水" longitude="106.66" latitude="26.14"/>
-    <city name="荔波" longitude="107.88" latitude="25.42"/>
-    <city name="福泉" longitude="107.51" latitude="26.7"/>
-    <city name="独山" longitude="107.54" latitude="25.84"/>
-    <city name="罗甸" longitude="106.74" latitude="25.43"/>
-    <city name="龙里" longitude="106.98" latitude="26.46"/>
-    <city name="三都" longitude="107.86" latitude="26"/>
-  </provinces>
-  <provinces name="辽宁">
-    <city name="沈阳" longitude="123.38" latitude="41.8"/>
-    <city name="新民" longitude="122.83" latitude="42"/>
-    <city name="辽中" longitude="122.7" latitude="41.52"/>
-    <city name="大连" longitude="121.62" latitude="38.92"/>
-    <city name="金县" longitude="121.7" latitude="39.13"/>
-    <city name="复县" longitude="121.97" latitude="39.63"/>
-    <city name="新金" longitude="121.95" latitude="39.55"/>
-    <city name="庄河" longitude="22.97" latitude="39.7"/>
-    <city name="长海" longitude="122.58" latitude="39.28"/>
-    <city name="鞍山" longitude="122.85" latitude="41.12"/>
-    <city name="海城" longitude="122.75" latitude="40.85"/>
-    <city name="台安" longitude="122.4" latitude="41.4"/>
-    <city name="抚顺" longitude="123.97" latitude="41.97"/>
-    <city name="新宾" longitude="125.02" latitude="41.72"/>
-    <city name="清原" longitude="124.9" latitude="42.13"/>
-    <city name="本溪" longitude="123.73" latitude="41.3"/>
-    <city name="垣仁" longitude="125.33" latitude="41.28"/>
-    <city name="锦州" longitude="121.15" latitude="41.13"/>
-    <city name="锦县" longitude="121.35" latitude="41.17"/>
-    <city name="义县" longitude="121.22" latitude="41.55"/>
-    <city name="黑山" longitude="122.12" latitude="41.7"/>
-    <city name="北镇" longitude="121.8" latitude="41.6"/>
-    <city name="锦西" longitude="120.83" latitude="40.77"/>
-    <city name="兴城" longitude="120.68" latitude="40.63"/>
-    <city name="绥中" longitude="120.32" latitude="40.35"/>
-    <city name="丹东" longitude="124.37" latitude="40.13"/>
-    <city name="东沟" longitude="124.13" latitude="39.97"/>
-    <city name="岫岩" longitude="123.25" latitude="40.3"/>
-    <city name="凤城" longitude="124.05" latitude="40.47"/>
-    <city name="宽甸" longitude="124.77" latitude="40.75"/>
-    <city name="阜新" longitude="121.65" latitude="42"/>
-    <city name="彰武" longitude="122.52" latitude="42.42"/>
-    <city name="营口" longitude="122.18" latitude="40.65"/>
-    <city name="盖县" longitude="122.37" latitude="40.42"/>
-    <city name="盘山" longitude="122.03" latitude="41.02"/>
-    <city name="大洼" longitude="122.06" latitude="41"/>
-    <city name="辽阳" longitude="123.17" latitude="41.28"/>
-    <city name="灯塔" longitude="123.34" latitude="41.43"/>
-    <city name="铁岭" longitude="123.85" latitude="42.32"/>
-    <city name="开原" longitude="124.03" latitude="42.53"/>
-    <city name="昌图" longitude="124.13" latitude="42.8"/>
-    <city name="铁法" longitude="123.5" latitude="42.48"/>
-    <city name="康平" longitude="123.33" latitude="42.75"/>
-    <city name="法库" longitude="123.37" latitude="42.52"/>
-    <city name="西丰" longitude="124.7" latitude="42.77"/>
-    <city name="朝阳" longitude="120.42" latitude="41.58"/>
-    <city name="建昌" longitude="119.78" latitude="40.82"/>
-    <city name="北票" longitude="120.75" latitude="41.82"/>
-    <city name="凌源" longitude="119.37" latitude="41.27"/>
-    <city name="建平" longitude="119.63" latitude="41.38"/>
-  </provinces>
-  <provinces name="重庆">
-    <city name="重庆" longitude="106.54" latitude="29.59"/>
-    <city name="綦江" longitude="106.56" latitude="29.41"/>
-    <city name="长寿" longitude="106.64" latitude="29.01"/>
-    <city name="南桐" longitude="107.04" latitude="29.86"/>
-    <city name="合川" longitude="106.28" latitude="29.26"/>
-    <city name="潼南" longitude="106.22" latitude="30.03"/>
-    <city name="铜梁" longitude="105.8" latitude="30.16"/>
-    <city name="壁山" longitude="106.03" latitude="29.86"/>
-    <city name="荣昌" longitude="106.21" latitude="29.62"/>
-    <city name="大足" longitude="105.59" latitude="29.4"/>
-    <city name="永川" longitude="105.71" latitude="29.75"/>
-    <city name="万盛" longitude="105.91" latitude="29.38"/>
-  </provinces>
-  <provinces name="陕西">
-    <city name="西安" longitude="108.95" latitude="34.27"/>
-    <city name="长安" longitude="108.97" latitude="34.18"/>
-    <city name="铜川" longitude="109.11" latitude="35.09"/>
-    <city name="耀县" longitude="108.98" latitude="34.91"/>
-    <city name="宝鸡" longitude="107.15" latitude="34.38"/>
-    <city name="凤翔" longitude="107.39" latitude="34.53"/>
-    <city name="千阳" longitude="107.13" latitude="34.65"/>
-    <city name="陇县" longitude="106.86" latitude="34.91"/>
-    <city name="麟游" longitude="107.8" latitude="34.69"/>
-    <city name="岐山" longitude="107.63" latitude="34.46"/>
-    <city name="浮风" longitude="107.87" latitude="34.38"/>
-    <city name="武功" longitude="108.22" latitude="34.28"/>
-    <city name="眉县" longitude="107.76" latitude="34.29"/>
-    <city name="太白" longitude="107.3" latitude="34.09"/>
-    <city name="凤县" longitude="106.51" latitude="33.93"/>
-    <city name="榆林" longitude="109.77" latitude="38.3"/>
-    <city name="神木" longitude="110.51" latitude="38.83"/>
-    <city name="府谷" longitude="111.07" latitude="39.05"/>
-    <city name="佳县" longitude="110.48" latitude="38.04"/>
-    <city name="米脂" longitude="110.23" latitude="37.78"/>
-    <city name="吴堡" longitude="110.73" latitude="37.49"/>
-    <city name="绥德" longitude="110.24" latitude="37.49"/>
-    <city name="清涧" longitude="110.15" latitude="37.11"/>
-    <city name="子洲" longitude="110.05" latitude="37.45"/>
-    <city name="横山" longitude="109.32" latitude="37.97"/>
-    <city name="靖边" longitude="108.79" latitude="37.61"/>
-    <city name="定边" longitude="107.59" latitude="37.6"/>
-    <city name="延安" longitude="109.47" latitude="36.6"/>
-    <city name="安寨" longitude="109.34" latitude="36.88"/>
-    <city name="子长" longitude="109.65" latitude="37.16"/>
-    <city name="延川" longitude="110.18" latitude="36.87"/>
-    <city name="延长" longitude="110.02" latitude="36.59"/>
-    <city name="宜川" longitude="110.15" latitude="36.04"/>
-    <city name="黄龙" longitude="109.86" latitude="35.6"/>
-    <city name="洛川" longitude="109.42" latitude="35.76"/>
-    <city name="宜君" longitude="109.11" latitude="35.43"/>
-    <city name="黄陵" longitude="109.27" latitude="35.6"/>
-    <city name="富县" longitude="109.37" latitude="36"/>
-    <city name="甘泉" longitude="109.37" latitude="36.29"/>
-    <city name="志丹" longitude="108.78" latitude="36.84"/>
-    <city name="吴旗" longitude="108.22" latitude="36.93"/>
-    <city name="咸阳" longitude="108.72" latitude="34.36"/>
-    <city name="礼泉" longitude="108.43" latitude="34.5"/>
-    <city name="永寿" longitude="108.14" latitude="34.71"/>
-    <city name="彬县" longitude="108.09" latitude="35.04"/>
-    <city name="长武" longitude="107.8" latitude="35.22"/>
-    <city name="旬邑" longitude="108.33" latitude="35.13"/>
-    <city name="淳化" longitude="108.57" latitude="34.81"/>
-    <city name="泾阳" longitude="108.84" latitude="34.53"/>
-    <city name="三原" longitude="108.94" latitude="34.62"/>
-    <city name="高陵" longitude="109.1" latitude="34.55"/>
-    <city name="户县" longitude="108.61" latitude="34.12"/>
-    <city name="周至" longitude="108.22" latitude="34.18"/>
-    <city name="兴平" longitude="108.49" latitude="34.32"/>
-    <city name="乾县" longitude="108.25" latitude="34.54"/>
-    <city name="渭南" longitude="109.5" latitude="34.52"/>
-    <city name="蒲城" longitude="109.59" latitude="34.97"/>
-    <city name="白水" longitude="109.6" latitude="35.18"/>
-    <city name="成城" longitude="109.93" latitude="35.2"/>
-    <city name="韩城" longitude="110.45" latitude="35.47"/>
-    <city name="合阳" longitude="110.15" latitude="35.24"/>
-    <city name="人荔" longitude="109.96" latitude="34.82"/>
-    <city name="潼关" longitude="110.25" latitude="34.56"/>
-    <city name="华阴" longitude="110.09" latitude="34.58"/>
-    <city name="华县" longitude="109.77" latitude="34.53"/>
-    <city name="蓝田" longitude="109.32" latitude="34.17"/>
-    <city name="临潼" longitude="109.22" latitude="34.38"/>
-    <city name="富平" longitude="109.17" latitude="34.76"/>
-    <city name="商县" longitude="109.96" latitude="33.88"/>
-    <city name="洛南" longitude="110.15" latitude="34.11"/>
-    <city name="丹凤" longitude="110.35" latitude="33.71"/>
-    <city name="商南" longitude="110.88" latitude="33.54"/>
-    <city name="山阳" longitude="109.91" latitude="33.55"/>
-    <city name="镇安" longitude="109.16" latitude="33.45"/>
-    <city name="柞水" longitude="109.14" latitude="33.69"/>
-    <city name="安康" longitude="109.02" latitude="32.7"/>
-    <city name="旬阳" longitude="109.35" latitude="32.83"/>
-    <city name="白河" longitude="110.06" latitude="32.83"/>
-    <city name="平利" longitude="109.37" latitude="32.41"/>
-    <city name="镇坪" longitude="109.51" latitude="31.91"/>
-    <city name="岚皋" longitude="108.89" latitude="32.3"/>
-    <city name="紫阳" longitude="108.55" latitude="32.56"/>
-    <city name="汉阴" longitude="108.53" latitude="32.9"/>
-    <city name="石泉" longitude="108.26" latitude="33.05"/>
-    <city name="宁陕" longitude="108.33" latitude="33.34"/>
-    <city name="汉中" longitude="108.04" latitude="33.07"/>
-    <city name="留坝" longitude="106.95" latitude="33.65"/>
-    <city name="城固" longitude="107.32" latitude="33.16"/>
-    <city name="洋县" longitude="107.56" latitude="33.23"/>
-    <city name="佛坪" longitude="108" latitude="33.55"/>
-    <city name="西乡" longitude="107.77" latitude="33"/>
-    <city name="镇巴" longitude="107.91" latitude="32.56"/>
-    <city name="南郑" longitude="106.93" latitude="33"/>
-    <city name="宁强" longitude="106.25" latitude="32.82"/>
-    <city name="勉县" longitude="106.68" latitude="33.16"/>
-    <city name="略阳" longitude="106.16" latitude="33.34"/>
-  </provinces>
-  <provinces name="青海">
-    <city name="西宁" longitude="101.74" latitude="36.56"/>
-    <city name="大通" longitude="101.67" latitude="36.92"/>
-    <city name="平安" longitude="102.09" latitude="36.47"/>
-    <city name="湟中" longitude="101.57" latitude="36.49"/>
-    <city name="乐都" longitude="102.38" latitude="36.49"/>
-    <city name="民和" longitude="102.8" latitude="36.3"/>
-    <city name="湟源" longitude="101.28" latitude="36.72"/>
-    <city name="互助" longitude="101.95" latitude="36.84"/>
-    <city name="化隆" longitude="102.3" latitude="36.11"/>
-    <city name="循化" longitude="102.46" latitude="35.84"/>
-    <city name="门源" longitude="101.62" latitude="37.37"/>
-    <city name="海晏" longitude="100.99" latitude="36.89"/>
-    <city name="刚察" longitude="100.17" latitude="37.32"/>
-    <city name="祁连" longitude="100.22" latitude="38.2"/>
-    <city name="同仁" longitude="102" latitude="35.54"/>
-    <city name="尖扎" longitude="102" latitude="35.92"/>
-    <city name="泽库" longitude="101.5" latitude="35.03"/>
-    <city name="河南" longitude="101.62" latitude="34.75"/>
-    <city name="共和" longitude="100.61" latitude="36.27"/>
-    <city name="贵德" longitude="101.47" latitude="36.02"/>
-    <city name="贵南" longitude="100.75" latitude="35.57"/>
-    <city name="同德" longitude="100.63" latitude="35.24"/>
-    <city name="兴海" longitude="99.99" latitude="35.6"/>
-    <city name="玛沁" longitude="100.26" latitude="34.49"/>
-    <city name="甘德" longitude="99.89" latitude="33.95"/>
-    <city name="久治" longitude="101.47" latitude="33.46"/>
-    <city name="班玛" longitude="100.73" latitude="32.92"/>
-    <city name="达日" longitude="99.68" latitude="33.74"/>
-    <city name="玛多" longitude="98.26" latitude="34.92"/>
-    <city name="玉树" longitude="96.97" latitude="33.03"/>
-    <city name="称多" longitude="97.12" latitude="33.35"/>
-    <city name="囊谦" longitude="96.47" latitude="32.23"/>
-    <city name="杂多" longitude="95.3" latitude="32.92"/>
-    <city name="治多" longitude="95.6" latitude="33.86"/>
-    <city name="曲麻菜" longitude="95.5" latitude="34.52"/>
-    <city name="格尔木" longitude="94.9" latitude="36.41"/>
-    <city name="乌兰" longitude="98.46" latitude="36.9"/>
-    <city name="都兰" longitude="98.13" latitude="36.3"/>
-    <city name="天峻" longitude="99.03" latitude="37.28"/>
-  </provinces>
-  <provinces name="黑龙江">
-    <city name="哈尔滨" longitude="126.63" latitude="45.75"/>
-    <city name="齐齐哈尔" longitude="123.97" latitude="47.33"/>
-    <city name="鹤岗" longitude="130.3" latitude="47.33"/>
-    <city name="双鸭山" longitude="131.17" latitude="46.65"/>
-    <city name="鸡四" longitude="130.97" latitude="45.3"/>
-    <city name="大庆" longitude="125.03" latitude="46.58"/>
-    <city name="伊春" longitude="128.92" latitude="47.73"/>
-    <city name="嘉荫" longitude="130" latitude="48.93"/>
-    <city name="铁力" longitude="128.08" latitude="47.98"/>
-    <city name="绥化" longitude="127" latitude="46.63"/>
-    <city name="绥棱" longitude="127.12" latitude="47.22"/>
-    <city name="海伦" longitude="126.97" latitude="47.47"/>
-    <city name="庆安" longitude="127.5" latitude="46.87"/>
-    <city name="兰西" longitude="126.3" latitude="46.28"/>
-    <city name="肇东" longitude="125.98" latitude="46.07"/>
-    <city name="肇州" longitude="125.25" latitude="45.72"/>
-    <city name="肇源" longitude="125.07" latitude="45.53"/>
-    <city name="安达" longitude="125.33" latitude="46.42"/>
-    <city name="明水" longitude="125.88" latitude="47.18"/>
-    <city name="青岗" longitude="126.13" latitude="46.68"/>
-    <city name="望奎" longitude="126.5" latitude="46.83"/>
-    <city name="黑河" longitude="127.53" latitude="50.22"/>
-    <city name="爱辉" longitude="127.53" latitude="50.22"/>
-    <city name="德都" longitude="126.17" latitude="48.5"/>
-    <city name="通北" longitude="126.8" latitude="49.76"/>
-    <city name="北安" longitude="126.5" latitude="48.22"/>
-    <city name="孙吴" longitude="127.5" latitude="49.22"/>
-    <city name="逊克" longitude="128.42" latitude="49.57"/>
-    <city name="嫩江" longitude="125.2" latitude="49.17"/>
-    <city name="佳木斯" longitude="130.35" latitude="46.83"/>
-    <city name="桦川" longitude="130.68" latitude="47.02"/>
-    <city name="萝北" longitude="130.83" latitude="47.58"/>
-    <city name="绥滨" longitude="131.83" latitude="47.3"/>
-    <city name="富锦" longitude="132.02" latitude="47.23"/>
-    <city name="同江" longitude="132.5" latitude="47.67"/>
-    <city name="抚远" longitude="134.15" latitude="48.33"/>
-    <city name="饶河" longitude="134" latitude="46.78"/>
-    <city name="七台河" longitude="130.83" latitude="45.82"/>
-    <city name="宝清" longitude="132.17" latitude="46.33"/>
-    <city name="集贤" longitude="131.13" latitude="46.7"/>
-    <city name="勃利" longitude="130.53" latitude="45.75"/>
-    <city name="桦南" longitude="130.53" latitude="46.25"/>
-    <city name="依兰" longitude="129.55" latitude="46.33"/>
-    <city name="汤源" longitude="129.92" latitude="46.73"/>
-    <city name="牡丹江" longitude="129.58" latitude="44.6"/>
-    <city name="林口" longitude="130.23" latitude="45.3"/>
-    <city name="鸡东" longitude="131.04" latitude="45.27"/>
-    <city name="密山" longitude="131.85" latitude="45.53"/>
-    <city name="虎林" longitude="133.97" latitude="45.75"/>
-    <city name="绥芬河" longitude="131.17" latitude="44.38"/>
-    <city name="东宁" longitude="131.12" latitude="44.07"/>
-    <city name="穆棱" longitude="130.5" latitude="44.9"/>
-    <city name="宁安" longitude="129.47" latitude="44.35"/>
-    <city name="海林" longitude="129.35" latitude="44.57"/>
-    <city name="阿城" longitude="126.95" latitude="45.52"/>
-    <city name="呼兰" longitude="126.58" latitude="46"/>
-    <city name="巴彦" longitude="127.38" latitude="46.08"/>
-    <city name="宾县" longitude="127.48" latitude="45.75"/>
-    <city name="木兰" longitude="128.03" latitude="45.95"/>
-    <city name="通河" longitude="128.7" latitude="45.98"/>
-    <city name="方正" longitude="128.8" latitude="45.83"/>
-    <city name="延寿" longitude="128.35" latitude="45.47"/>
-    <city name="尚志" longitude="127.95" latitude="45.22"/>
-    <city name="五常" longitude="127.17" latitude="44.93"/>
-    <city name="双城" longitude="126.32" latitude="45.53"/>
-    <city name="富裕" longitude="124.4" latitude="47.8"/>
-    <city name="讷河" longitude="124.85" latitude="48.48"/>
-    <city name="克山" longitude="125.87" latitude="48.03"/>
-    <city name="克东" longitude="126.22" latitude="48.03"/>
-    <city name="拜泉" longitude="126.07" latitude="47.62"/>
-    <city name="依安" longitude="125.3" latitude="47.92"/>
-    <city name="林甸" longitude="124.87" latitude="47.18"/>
-    <city name="泰来" longitude="123.45" latitude="46.4"/>
-    <city name="龙江" longitude="123.18" latitude="47.35"/>
-    <city name="甘南" longitude="123.48" latitude="47.9"/>
-    <city name="杜尔伯特" longitude="124.44" latitude="46.86"/>
-    <city name="加格达奇" longitude="124.07" latitude="50.42"/>
-    <city name="呼玛" longitude="126.6" latitude="51.72"/>
-    <city name="塔河" longitude="124.7" latitude="52.32"/>
-    <city name="漠河" longitude="122.37" latitude="53.48"/>
-  </provinces>
-    */
+  country:{
+    name: "中国",
+    provinces:{
+      name: "上海",
+      city: [
+        {name:"上海", longitude: "121.48", latitude: "31.22"},
+        {name:"嘉定", longitude: "121.24", latitude: "31.4"},
+        {name:"宝山", longitude: "121.48", latitude: "31.41"},
+      ]
     }
+/*
+<city name="川沙" longitude="121.7" latitude="31.19"/>
+<city name="南汇" longitude="121.76" latitude="31.05"/>
+<city name="奉贤" longitude="121.46" latitude="30.92"/>
+<city name="松江" longitude="121.24" latitude="31"/>
+<city name="金山" longitude="121.16" latitude="30.89"/>
+<city name="青浦" longitude="121.1" latitude="31.15"/>
+<city name="崇明" longitude="121.4" latitude="31.73"/>
+</provinces>
+<provinces name="云南">
+<city name="昆明" longitude="102.73" latitude="25.04"/>
+<city name="富民" longitude="102.48" latitude="25.21"/>
+<city name="晋宁" longitude="102.58" latitude="24.68"/>
+<city name="呈贡" longitude="102.79" latitude="24.9"/>
+<city name="安宁" longitude="102.44" latitude="24.95"/>
+<city name="昭通" longitude="103.7" latitude="29.32"/>
+<city name="永善" longitude="103.63" latitude="28.22"/>
+<city name="大关" longitude="103.91" latitude="27.74"/>
+<city name="彝良" longitude="104.06" latitude="27.61"/>
+<city name="鲁甸" longitude="103.54" latitude="27.21"/>
+<city name="绥江" longitude="103.97" latitude="28.58"/>
+<city name="盐津" longitude="104.28" latitude="28.08"/>
+<city name="威信" longitude="105.05" latitude="27.85"/>
+<city name="镇雄" longitude="104.86" latitude="27.42"/>
+<city name="巧家" longitude="102.92" latitude="26.9"/>
+<city name="永富" longitude="104.38" latitude="28.62"/>
+<city name="曲靖" longitude="103.79" latitude="25.51"/>
+<city name="宣威" longitude="104.09" latitude="26.24"/>
+<city name="富源" longitude="104.24" latitude="25.67"/>
+<city name="师宗" longitude="103.97" latitude="24.85"/>
+<city name="嵩明" longitude="103.03" latitude="25.35"/>
+<city name="会泽" longitude="103.27" latitude="26.41"/>
+<city name="沽益" longitude="103.82" latitude="25.62"/>
+<city name="罗平" longitude="104.3" latitude="24.88"/>
+<city name="陆良" longitude="104.64" latitude="25.04"/>
+<city name="宜良" longitude="103.12" latitude="24.9"/>
+<city name="马龙" longitude="103.61" latitude="25.41"/>
+<city name="路南" longitude="103.24" latitude="24.77"/>
+<city name="寻甸" longitude="103.25" latitude="25.56"/>
+<city name="玉溪" longitude="102.52" latitude="24.35"/>
+<city name="华宁" longitude="102.93" latitude="24.26"/>
+<city name="通海" longitude="102.75" latitude="24.09"/>
+<city name="澄江" longitude="102.91" latitude="24.68"/>
+<city name="江川" longitude="102.73" latitude="24.27"/>
+<city name="易门" longitude="102.15" latitude="24.67"/>
+<city name="元江" longitude="102" latitude="23.59"/>
+<city name="新平" longitude="101.98" latitude="24.06"/>
+<city name="峨山" longitude="102.38" latitude="24.16"/>
+<city name="思茅" longitude="101" latitude="22.79"/>
+<city name="普洱" longitude="101.03" latitude="23.07"/>
+<city name="镇沅" longitude="100.88" latitude="23.9"/>
+<city name="景东" longitude="100.82" latitude="24.42"/>
+<city name="景谷" longitude="100.71" latitude="23.5"/>
+<city name="黑江" longitude="101.71" latitude="23.4"/>
+<city name="澜沦" longitude="99.97" latitude="22.55"/>
+<city name="西盟" longitude="99.47" latitude="22.73"/>
+<city name="江城" longitude="101.88" latitude="22.58"/>
+<city name="孟连" longitude="99.55" latitude="22.32"/>
+<city name="临沦" longitude="100.09" latitude="23.88"/>
+<city name="云县" longitude="100.12" latitude="24.44"/>
+<city name="镇康" longitude="99.02" latitude="23.92"/>
+<city name="永德" longitude="99.25" latitude="24.03"/>
+<city name="凤庆" longitude="99.92" latitude="24.58"/>
+<city name="双江" longitude="99.85" latitude="23.45"/>
+<city name="沧源" longitude="99.24" latitude="23.15"/>
+<city name="耿马" longitude="99.41" latitude="23.56"/>
+<city name="保由" longitude="99.18" latitude="25.12"/>
+<city name="施甸" longitude="99.15" latitude="24.69"/>
+<city name="腾冲" longitude="98.51" latitude="25.01"/>
+<city name="昌宁" longitude="99.61" latitude="24.82"/>
+<city name="龙陵" longitude="98.7" latitude="24.58"/>
+<city name="丽江" longitude="100.25" latitude="26.86"/>
+<city name="华坪" longitude="101.24" latitude="26.63"/>
+<city name="永胜" longitude="100.76" latitude="26.71"/>
+<city name="宁蒗" longitude="100.82" latitude="27.29"/>
+<city name="文山" longitude="104.24" latitude="23.37"/>
+<city name="广南" longitude="105.09" latitude="24.05"/>
+<city name="西畴" longitude="104.68" latitude="23.42"/>
+<city name="麻栗坡" longitude="104.71" latitude="23.12"/>
+<city name="马关" longitude="104.4" latitude="23.01"/>
+<city name="丘北" longitude="104.19" latitude="24.03"/>
+<city name="砚山" longitude="104.35" latitude="23.62"/>
+<city name="富宁" longitude="105.6" latitude="23.62"/>
+<city name="个旧" longitude="102.43" latitude="23.35"/>
+<city name="弥勒" longitude="103.43" latitude="24.41"/>
+<city name="蒙自" longitude="103.41" latitude="23.36"/>
+<city name="元阳" longitude="102.81" latitude="23.17"/>
+<city name="红河" longitude="102.42" latitude="23.35"/>
+<city name="石屏" longitude="102.48" latitude="23.73"/>
+<city name="泸西" longitude="103.76" latitude="24.52"/>
+<city name="金平" longitude="103.24" latitude="22.77"/>
+<city name="开远" longitude="103.23" latitude="23.7"/>
+<city name="绿春" longitude="102.42" latitude="23.01"/>
+<city name="建水" longitude="102.79" latitude="23.64"/>
+<city name="河口" longitude="103.98" latitude="22.52"/>
+<city name="屏边" longitude="103.67" latitude="22.68"/>
+<city name="景淇" longitude="100.79" latitude="22"/>
+<city name="勐海" longitude="100.5" latitude="21.95"/>
+<city name="勐腊" longitude="101.56" latitude="21.48"/>
+<city name="楚雄" longitude="101.54" latitude="25.01"/>
+<city name="元谋" longitude="101.85" latitude="25.7"/>
+<city name="武定" longitude="102.36" latitude="25.55"/>
+<city name="禄丰" longitude="102.08" latitude="25.15"/>
+<city name="南华" longitude="101.26" latitude="25.21"/>
+<city name="大姚" longitude="101.34" latitude="25.73"/>
+<city name="永仁" longitude="101.7" latitude="26.07"/>
+<city name="禄劝" longitude="102.45" latitude="25.58"/>
+<city name="牟定" longitude="101.58" latitude="25.32"/>
+<city name="双柏" longitude="101.67" latitude="24.68"/>
+<city name="姚安" longitude="101.24" latitude="25.4"/>
+<city name="下关" longitude="100.24" latitude="25.45"/>
+<city name="剑川" longitude="99.88" latitude="26.53"/>
+<city name="洱源" longitude="99.94" latitude="26.1"/>
+<city name="宾川" longitude="100.55" latitude="25.82"/>
+<city name="弥渡" longitude="100.52" latitude="25.34"/>
+<city name="永平" longitude="99.52" latitude="25.45"/>
+<city name="鹤庆" longitude="100.18" latitude="26.55"/>
+<city name="大理" longitude="100.19" latitude="25.69"/>
+<city name="漾濞" longitude="99.98" latitude="25.68"/>
+<city name="云龙" longitude="99.39" latitude="25.9"/>
+<city name="祥云" longitude="100.56" latitude="25.48"/>
+<city name="巍山" longitude="100.33" latitude="25.23"/>
+<city name="南涧" longitude="100.51" latitude="25.04"/>
+<city name="潞西" longitude="98.6" latitude="24.41"/>
+<city name="陇川" longitude="97.96" latitude="24.33"/>
+<city name="盈江" longitude="97.93" latitude="24.69"/>
+<city name="畹町" longitude="98.08" latitude="24.08"/>
+<city name="瑞丽" longitude="97.83" latitude="24"/>
+<city name="梁河" longitude="98.3" latitude="24.78"/>
+<city name="泸水" longitude="98.82" latitude="25.97"/>
+<city name="碧江" longitude="98.95" latitude="26.55"/>
+<city name="福贡" longitude="98.92" latitude="26.89"/>
+<city name="兰坪" longitude="99.29" latitude="26.49"/>
+<city name="贡山" longitude="98.65" latitude="27.73"/>
+<city name="中甸" longitude="99.72" latitude="27.78"/>
+<city name="德钦" longitude="98.93" latitude="28.49"/>
+<city name="维西" longitude="99.27" latitude="27.15"/>
+</provinces>
+<provinces name="其它岛屿">
+<city name="钓鱼岛" longitude="123.33" latitude="25"/>
+<city name="黄岩岛" longitude="117.51" latitude="15.07"/>
+</provinces>
+<provinces name="内蒙古">
+<city name="呼和浩特" longitude="111.65" latitude="40.82"/>
+<city name="上默特左旗" longitude="111.13" latitude="40.72"/>
+<city name="托克托" longitude="111.15" latitude="40.28"/>
+<city name="包头" longitude="110" latitude="40.58"/>
+<city name="上默特右旗" longitude="110.52" latitude="40.55"/>
+<city name="固阳" longitude="110.03" latitude="41.03"/>
+<city name="乌海" longitude="106.82" latitude="39.67"/>
+<city name="集宁" longitude="113.08" latitude="41.03"/>
+<city name="兴和" longitude="113.97" latitude="40.88"/>
+<city name="清水河" longitude="111.65" latitude="39.92"/>
+<city name="武川" longitude="111.42" latitude="41.12"/>
+<city name="卓资" longitude="112.52" latitude="40.93"/>
+<city name="商都" longitude="113.53" latitude="41.58"/>
+<city name="丰镇" longitude="113.15" latitude="40.45"/>
+<city name="凉城" longitude="112.48" latitude="40.52"/>
+<city name="和林格尔" longitude="111.8" latitude="40.4"/>
+<city name="化德" longitude="114" latitude="41.9"/>
+<city name="察哈尔右翼后旗" longitude="113.15" latitude="41.85"/>
+<city name="察哈尔右翼中旗" longitude="112.62" latitude="41.28"/>
+<city name="察哈尔右翼前旗" longitude="113.18" latitude="40.78"/>
+<city name="四子王旗" longitude="111.68" latitude="41.37"/>
+<city name="达尔罕茂明安联合旗" longitude="110.42" latitude="41.72"/>
+<city name="二连浩特" longitude="111.96" latitude="43.65"/>
+<city name="阿巴哈纳尔旗" longitude="116.08" latitude="43.95"/>
+<city name="多伦" longitude="116.48" latitude="42.18"/>
+<city name="阿巴嘎旗" longitude="114.97" latitude="44.03"/>
+<city name="西乌珠穆沁旗" longitude="117.58" latitude="44.6"/>
+<city name="东乌珠穆沁旗" longitude="116.97" latitude="45.53"/>
+<city name="苏尼特左旗" longitude="113.7" latitude="43.85"/>
+<city name="苏尼特右旗" longitude="112.95" latitude="42.47"/>
+<city name="太仆寺旗" longitude="115.3" latitude="41.9"/>
+<city name="正镶白旗" longitude="115" latitude="42.32"/>
+<city name="正蓝旗" longitude="116.02" latitude="42.25"/>
+<city name="镶黄旗" longitude="113.83" latitude="42.25"/>
+<city name="海拉尔" longitude="119.73" latitude="29.22"/>
+<city name="满洲里" longitude="117.47" latitude="49.58"/>
+<city name="陈巴尔虎旗" longitude="119.45" latitude="49.33"/>
+<city name="额尔古纳右旗" longitude="120.08" latitude="50.45"/>
+<city name="额尔古纳左旗" longitude="121.52" latitude="50.8"/>
+<city name="喜桂图旗" longitude="120.73" latitude="49.3"/>
+<city name="阿荣旗" longitude="123.5" latitude="48.13"/>
+<city name="布特哈旗" longitude="122.78" latitude="47.98"/>
+<city name="新巴尔虎左旗" longitude="116.82" latitude="48.67"/>
+<city name="新巴尔虎右旗" longitude="118.23" latitude="48.22"/>
+<city name="鄂伦春自治旗" longitude="123.7" latitude="50.58"/>
+<city name="莫力达瓦达斡尔族自治旗" longitude="124.5" latitude="48.47"/>
+<city name="鄂温克族自治旗" longitude="119.75" latitude="49.13"/>
+<city name="通辽" longitude="122.28" latitude="43.63"/>
+<city name="开鲁" longitude="121.32" latitude="43.62"/>
+<city name="科尔沁左翼后旗" longitude="122.35" latitude="42.97"/>
+<city name="科尔沁左翼中旗" longitude="123.28" latitude="44.13"/>
+<city name="库伦旗" longitude="121.75" latitude="42.72"/>
+<city name="奈曼旗" longitude="120.65" latitude="42.85"/>
+<city name="扎鲁特旗" longitude="120.87" latitude="44.55"/>
+<city name="赤峰" longitude="118.87" latitude="42.28"/>
+<city name="宁城" longitude="119.32" latitude="41.62"/>
+<city name="林西" longitude="118.02" latitude="43.62"/>
+<city name="喀喇沁旗" longitude="118.67" latitude="41.95"/>
+<city name="敖汉旗" longitude="119.87" latitude="42.3"/>
+<city name="翁牛特旗" longitude="119" latitude="42.97"/>
+<city name="巴林右旗" longitude="118.65" latitude="43.52"/>
+<city name="巴林左旗" longitude="119.35" latitude="43.98"/>
+<city name="阿鲁科尔沁旗" longitude="120.05" latitude="43.97"/>
+<city name="克什克腾旗" longitude="117.48" latitude="43.28"/>
+<city name="伊克昭盟" longitude="110" latitude="39.83"/>
+<city name="东胜县" longitude="110" latitude="39.83"/>
+<city name="准格尔旗" longitude="111.13" latitude="39.68"/>
+<city name="乌审旗" longitude="109.03" latitude="38.38"/>
+<city name="伊金霍洛旗" longitude="109.77" latitude="39.25"/>
+<city name="鄂托克旗" longitude="107.97" latitude="39.12"/>
+<city name="鄂托克前旗" longitude="107.43" latitude="38.18"/>
+<city name="杭锦旗" longitude="108.7" latitude="39.83"/>
+<city name="达拉特旗" longitude="110.02" latitude="40.42"/>
+<city name="临河" longitude="107.37" latitude="40.78"/>
+<city name="五原" longitude="108.28" latitude="41.12"/>
+<city name="磴口" longitude="106.98" latitude="40.33"/>
+<city name="杭锦后旗" longitude="107.12" latitude="40.88"/>
+<city name="乌拉特中旗" longitude="108.52" latitude="41.55"/>
+<city name="乌拉特前旗" longitude="108.65" latitude="40.75"/>
+<city name="乌拉特后旗" longitude="108.52" latitude="40.88"/>
+<city name="阿拉善左旗" longitude="105.68" latitude="38.85"/>
+<city name="阿拉善右旗" longitude="101.68" latitude="39.2"/>
+<city name="额济纳旗" longitude="100.88" latitude="41.9"/>
+<city name="乌兰浩特" longitude="122.08" latitude="46.07"/>
+<city name="突泉" longitude="121.5" latitude="45.4"/>
+<city name="科尔沁右翼前旗" longitude="122.03" latitude="46.12"/>
+<city name="科尔沁右翼中旗" longitude="121.47" latitude="45.05"/>
+</provinces>
+<provinces name="北京">
+<city name="北京" longitude="116.46" latitude="39.92"/>
+<city name="平谷" longitude="117.1" latitude="40.13"/>
+<city name="密云" longitude="116.85" latitude="40.37"/>
+<city name="顺义" longitude="116.65" latitude="40.13"/>
+<city name="通县" longitude="116.67" latitude="39.92"/>
+<city name="怀柔" longitude="116.62" latitude="40.32"/>
+<city name="大兴" longitude="116.33" latitude="39.73"/>
+<city name="房山" longitude="115.98" latitude="39.72"/>
+<city name="延庆" longitude="115.97" latitude="40.47"/>
+<city name="昌平" longitude="116.2" latitude="40.22"/>
+</provinces>
+<provinces name="吉林">
+<city name="长春" longitude="125.35" latitude="43.88"/>
+<city name="吉林" longitude="126.57" latitude="43.87"/>
+<city name="农安" longitude="125.15" latitude="44.45"/>
+<city name="德惠" longitude="125.68" latitude="44.52"/>
+<city name="榆树" longitude="126.55" latitude="44.83"/>
+<city name="九台" longitude="126.83" latitude="44.15"/>
+<city name="双阳" longitude="125.68" latitude="43.53"/>
+<city name="永吉" longitude="126.57" latitude="43.87"/>
+<city name="舒兰" longitude="126.97" latitude="44.4"/>
+<city name="蛟河" longitude="127.33" latitude="43.75"/>
+<city name="桦甸" longitude="126.72" latitude="42.97"/>
+<city name="磐石" longitude="126.03" latitude="42.93"/>
+<city name="延吉" longitude="129.52" latitude="42.93"/>
+<city name="汪清" longitude="129.75" latitude="43.32"/>
+<city name="珲春" longitude="130.35" latitude="42.85"/>
+<city name="图们" longitude="129.83" latitude="42.98"/>
+<city name="和龙" longitude="129" latitude="42.52"/>
+<city name="安图" longitude="128.3" latitude="42.58"/>
+<city name="敦化" longitude="128.18" latitude="43.35"/>
+<city name="通化" longitude="125.92" latitude="41.49"/>
+<city name="柳河" longitude="125.7" latitude="40.88"/>
+<city name="海龙" longitude="125.65" latitude="42.53"/>
+<city name="辉南" longitude="126.03" latitude="42.68"/>
+<city name="靖宇" longitude="126.8" latitude="42.38"/>
+<city name="浑江" longitude="126.4" latitude="41.97"/>
+<city name="抚松" longitude="127.27" latitude="42.33"/>
+<city name="集安" longitude="126.17" latitude="41.15"/>
+<city name="长白" longitude="128.17" latitude="41.43"/>
+<city name="四平" longitude="124.37" latitude="43.17"/>
+<city name="梨树" longitude="124.33" latitude="43.32"/>
+<city name="怀德" longitude="124.82" latitude="43.5"/>
+<city name="伊通" longitude="125.32" latitude="43.33"/>
+<city name="辽源" longitude="125.15" latitude="42.97"/>
+<city name="东丰" longitude="125.5" latitude="42.68"/>
+<city name="双辽" longitude="123.5" latitude="43.52"/>
+<city name="白城" longitude="122.82" latitude="45.63"/>
+<city name="大安" longitude="124.18" latitude="45.5"/>
+<city name="扶余" longitude="124.82" latitude="45.2"/>
+<city name="乾安" longitude="124.02" latitude="45"/>
+<city name="长岭" longitude="123.97" latitude="44.3"/>
+<city name="通榆" longitude="123.13" latitude="44.82"/>
+<city name="洮安" longitude="122.75" latitude="45.35"/>
+</provinces>
+<provinces name="四川">
+<city name="成都" longitude="104.06" latitude="30.67"/>
+<city name="金堂" longitude="104.32" latitude="30.88"/>
+<city name="双流" longitude="104.94" latitude="30.57"/>
+<city name="蒲江" longitude="103.29" latitude="30.2"/>
+<city name="郫县" longitude="103.86" latitude="30.8"/>
+<city name="新都" longitude="104.13" latitude="30.82"/>
+<city name="来易" longitude="102.15" latitude="26.9"/>
+<city name="盐边" longitude="101.56" latitude="26.9"/>
+<city name="温江" longitude="103.81" latitude="30.97"/>
+<city name="灌县" longitude="103.61" latitude="31.04"/>
+<city name="彭县" longitude="103.94" latitude="30.99"/>
+<city name="什邡" longitude="104.16" latitude="31.13"/>
+<city name="广汉" longitude="104.25" latitude="30.99"/>
+<city name="新津" longitude="103.78" latitude="30.42"/>
+<city name="邛崃" longitude="103.47" latitude="30.42"/>
+<city name="大邑" longitude="103.53" latitude="30.58"/>
+<city name="崇庆" longitude="103.69" latitude="30.63"/>
+<city name="绵阳" longitude="104.73" latitude="31.48"/>
+<city name="江油" longitude="104.7" latitude="31.8"/>
+<city name="青川" longitude="105.21" latitude="32.59"/>
+<city name="平武" longitude="104.52" latitude="32.42"/>
+<city name="光元" longitude="105.86" latitude="32.44"/>
+<city name="旺苍" longitude="106.33" latitude="32.25"/>
+<city name="剑阁" longitude="105.45" latitude="32.03"/>
+<city name="梓潼" longitude="105.16" latitude="31.64"/>
+<city name="三台" longitude="105.06" latitude="31.1"/>
+<city name="盐亭" longitude="105.35" latitude="31.23"/>
+<city name="射洪" longitude="105.31" latitude="30.9"/>
+<city name="遂宁" longitude="105.58" latitude="30.52"/>
+<city name="蓬溪" longitude="105.74" latitude="30.78"/>
+<city name="中江" longitude="104.68" latitude="31.06"/>
+<city name="德阳" longitude="104.37" latitude="31.13"/>
+<city name="绵竹" longitude="104.19" latitude="31.32"/>
+<city name="安县" longitude="104.41" latitude="31.64"/>
+<city name="北川" longitude="104.44" latitude="31.89"/>
+<city name="内江" longitude="105.04" latitude="29.59"/>
+<city name="乐至" longitude="105.02" latitude="30.3"/>
+<city name="安岳" longitude="105.3" latitude="30.12"/>
+<city name="威远" longitude="104.7" latitude="29.57"/>
+<city name="资中" longitude="104.85" latitude="29.81"/>
+<city name="资阳" longitude="104.6" latitude="30.19"/>
+<city name="简阳" longitude="104.53" latitude="30.38"/>
+<city name="隆昌" longitude="105.25" latitude="29.64"/>
+<city name="宜宾" longitude="104.56" latitude="29.77"/>
+<city name="富顺" longitude="104.97" latitude="29.24"/>
+<city name="南溪" longitude="104.96" latitude="28.87"/>
+<city name="江安" longitude="105.06" latitude="28.71"/>
+<city name="纳溪" longitude="105.38" latitude="28.77"/>
+<city name="泸县" longitude="105.46" latitude="28.96"/>
+<city name="合江" longitude="105.78" latitude="28.79"/>
+<city name="泸州" longitude="105.39" latitude="28.91"/>
+<city name="古蔺" longitude="105.79" latitude="28.03"/>
+<city name="叙水" longitude="105.44" latitude="28.19"/>
+<city name="长宁" longitude="104.91" latitude="28.6"/>
+<city name="兴文" longitude="105.06" latitude="28.36"/>
+<city name="琪县" longitude="104.81" latitude="28.38"/>
+<city name="高县" longitude="104.52" latitude="28.4"/>
+<city name="筠连" longitude="104.53" latitude="28.16"/>
+<city name="屏由" longitude="104.15" latitude="28.68"/>
+<city name="乐由" longitude="103.73" latitude="29.59"/>
+<city name="夹江" longitude="103.59" latitude="29.75"/>
+<city name="洪雅" longitude="103.38" latitude="29.95"/>
+<city name="丹棱" longitude="103.53" latitude="30.04"/>
+<city name="青神" longitude="103.81" latitude="29.86"/>
+<city name="眉由" longitude="103.81" latitude="30.05"/>
+<city name="彭由" longitude="103.83" latitude="30.22"/>
+<city name="井研" longitude="104.06" latitude="29.67"/>
+<city name="仁寿" longitude="104.09" latitude="30"/>
+<city name="犍为" longitude="103.93" latitude="29.21"/>
+<city name="沐川" longitude="103.98" latitude="28.96"/>
+<city name="娥眉" longitude="103.5" latitude="29.62"/>
+<city name="马边" longitude="103.53" latitude="28.87"/>
+<city name="峨边" longitude="103.25" latitude="29.23"/>
+<city name="金口" longitude="103.13" latitude="29.24"/>
+<city name="涪陵" longitude="107.36" latitude="29.7"/>
+<city name="垫江" longitude="107.34" latitude="30.36"/>
+<city name="丰都" longitude="107.7" latitude="29.89"/>
+<city name="石柱" longitude="108.13" latitude="29.98"/>
+<city name="秀山" longitude="108.97" latitude="28.47"/>
+<city name="西阳" longitude="108.75" latitude="28.85"/>
+<city name="黔江" longitude="108.81" latitude="29.53"/>
+<city name="彭水" longitude="108.19" latitude="29.29"/>
+<city name="武隆" longitude="108.72" latitude="29.29"/>
+<city name="南川" longitude="107.13" latitude="29.15"/>
+<city name="万县" longitude="108.35" latitude="30.83"/>
+<city name="开县" longitude="108.39" latitude="31.23"/>
+<city name="城口" longitude="108.67" latitude="31.98"/>
+<city name="巫溪" longitude="109.6" latitude="31.42"/>
+<city name="巫山" longitude="109.86" latitude="31.1"/>
+<city name="奉节" longitude="109.52" latitude="31.06"/>
+<city name="云阳" longitude="108.89" latitude="30.99"/>
+<city name="忠县" longitude="108.03" latitude="30.33"/>
+<city name="梁平" longitude="107.78" latitude="30.66"/>
+<city name="南允" longitude="106.06" latitude="30.8"/>
+<city name="苍溪" longitude="105.96" latitude="31.75"/>
+<city name="阆中" longitude="105.97" latitude="31.75"/>
+<city name="仪陇" longitude="106.38" latitude="31.52"/>
+<city name="南部" longitude="106.03" latitude="31.34"/>
+<city name="西允" longitude="105.84" latitude="31.01"/>
+<city name="营山" longitude="106.57" latitude="31.07"/>
+<city name="蓬安" longitude="106.44" latitude="31.04"/>
+<city name="广安" longitude="106.61" latitude="30.48"/>
+<city name="岳池" longitude="106.43" latitude="30.55"/>
+<city name="武胜" longitude="106.3" latitude="30.38"/>
+<city name="华云" longitude="106.74" latitude="30.41"/>
+<city name="达县" longitude="107.49" latitude="31.23"/>
+<city name="万源" longitude="108.06" latitude="32.07"/>
+<city name="宜汉" longitude="107.71" latitude="31.39"/>
+<city name="开江" longitude="107.87" latitude="31.1"/>
+<city name="邻水" longitude="106.91" latitude="30.36"/>
+<city name="大竹" longitude="107.21" latitude="30.75"/>
+<city name="渠县" longitude="106.94" latitude="30.85"/>
+<city name="南江" longitude="106.83" latitude="32.36"/>
+<city name="巴中" longitude="106.73" latitude="31.86"/>
+<city name="平昌" longitude="107.11" latitude="31.59"/>
+<city name="通江" longitude="108.24" latitude="31.95"/>
+<city name="百沙" longitude="108.18" latitude="32"/>
+<city name="雅安" longitude="102.97" latitude="29.97"/>
+<city name="芦山" longitude="102.91" latitude="30.17"/>
+<city name="名山" longitude="103.06" latitude="30.09"/>
+<city name="荣经" longitude="102.81" latitude="29.79"/>
+<city name="汉源" longitude="102.66" latitude="29.4"/>
+<city name="石棉" longitude="102.38" latitude="29.21"/>
+<city name="天全" longitude="102.78" latitude="30.09"/>
+<city name="宝兴" longitude="102.84" latitude="30.36"/>
+<city name="马尔康" longitude="102.22" latitude="31.92"/>
+<city name="红原" longitude="102.55" latitude="31.79"/>
+<city name="阿坝" longitude="101.72" latitude="31.93"/>
+<city name="若尔盖" longitude="102.94" latitude="33.62"/>
+<city name="黑水" longitude="102.95" latitude="32.06"/>
+<city name="松潘" longitude="103.61" latitude="32.64"/>
+<city name="南坪" longitude="104.19" latitude="33.23"/>
+<city name="汶川" longitude="103.61" latitude="31.46"/>
+<city name="理县" longitude="103.16" latitude="31.42"/>
+<city name="小金" longitude="102.34" latitude="30.97"/>
+<city name="金川" longitude="102.03" latitude="31.48"/>
+<city name="壤塘" longitude="100.97" latitude="32.3"/>
+<city name="茂汶" longitude="103.89" latitude="31.67"/>
+<city name="康定" longitude="101.95" latitude="30.04"/>
+<city name="炉霍" longitude="100.65" latitude="31.38"/>
+<city name="甘孜" longitude="99.96" latitude="31.64"/>
+<city name="新龙" longitude="100.28" latitude="30.96"/>
+<city name="白玉" longitude="98.83" latitude="32.23"/>
+<city name="德格" longitude="98.57" latitude="31.81"/>
+<city name="石渠" longitude="98.06" latitude="33.01"/>
+<city name="色达" longitude="100.35" latitude="32.3"/>
+<city name="泸定" longitude="102.25" latitude="29.92"/>
+<city name="丹巴" longitude="101.87" latitude="30.85"/>
+<city name="九龙" longitude="101.53" latitude="29.01"/>
+<city name="雅江" longitude="101" latitude="30.03"/>
+<city name="道孚" longitude="101.14" latitude="30.99"/>
+<city name="理塘" longitude="100.28" latitude="30.03"/>
+<city name="乡城" longitude="99.78" latitude="28.93"/>
+<city name="稻城" longitude="100.31" latitude="29.04"/>
+<city name="巴塘" longitude="99" latitude="30"/>
+<city name="得荣" longitude="99.25" latitude="28.71"/>
+<city name="西昌" longitude="102.29" latitude="27.92"/>
+<city name="昭觉" longitude="102.83" latitude="28.03"/>
+<city name="甘洛" longitude="102.74" latitude="28.96"/>
+<city name="雷波" longitude="103.62" latitude="28.21"/>
+<city name="宁南" longitude="102.76" latitude="27.07"/>
+<city name="会东" longitude="102.55" latitude="26.74"/>
+<city name="会理" longitude="102.21" latitude="26.67"/>
+<city name="德昌" longitude="102.15" latitude="27.4"/>
+<city name="美姑" longitude="103.14" latitude="28.33"/>
+<city name="金阳" longitude="103.22" latitude="27.73"/>
+<city name="布拖" longitude="102.8" latitude="27.7"/>
+<city name="普格" longitude="102.52" latitude="27.38"/>
+<city name="喜德" longitude="102.42" latitude="28.33"/>
+<city name="越西" longitude="102.49" latitude="28.66"/>
+<city name="盐源" longitude="101.51" latitude="27.42"/>
+<city name="冕宁" longitude="102.15" latitude="28.58"/>
+<city name="木里" longitude="101.25" latitude="27.9"/>
+</provinces>
+<provinces name="天津">
+<city name="天津" longitude="117.2" latitude="39.13"/>
+<city name="宁河" longitude="117.83" latitude="39.33"/>
+<city name="静海" longitude="116.92" latitude="38.93"/>
+<city name="蓟县" longitude="117.4" latitude="40.05"/>
+<city name="宝坻" longitude="117.3" latitude="39.75"/>
+<city name="武清" longitude="117.05" latitude="39.4"/>
+</provinces>
+<provinces name="宁夏回族自治区">
+<city name="银川" longitude="106.27" latitude="38.47"/>
+<city name="永宁" longitude="106.24" latitude="38.28"/>
+<city name="贺兰" longitude="106.35" latitude="38.55"/>
+<city name="石嘴山" longitude="106.39" latitude="39.04"/>
+<city name="平罗" longitude="106.54" latitude="38.91"/>
+<city name="陶乐" longitude="106.69" latitude="38.82"/>
+<city name="吴忠" longitude="106.21" latitude="37.99"/>
+<city name="同心" longitude="105.94" latitude="36.97"/>
+<city name="灵武" longitude="106.34" latitude="38.1"/>
+<city name="中宁" longitude="105.66" latitude="37.48"/>
+<city name="盐池" longitude="107.41" latitude="37.78"/>
+<city name="中卫" longitude="105.18" latitude="37.51"/>
+<city name="青铜峡" longitude="106.07" latitude="38.02"/>
+<city name="固原" longitude="106.28" latitude="36.01"/>
+<city name="西吉" longitude="105.7" latitude="35.97"/>
+<city name="泾源" longitude="106.33" latitude="35.5"/>
+<city name="海原" longitude="105.64" latitude="36.56"/>
+<city name="隆德" longitude="106.11" latitude="35.63"/>
+</provinces>
+<provinces name="安徽">
+<city name="合肥" longitude="117.27" latitude="31.86"/>
+<city name="长丰" longitude="117.16" latitude="32.47"/>
+<city name="淮南" longitude="116.98" latitude="32.62"/>
+<city name="凤台" longitude="116.71" latitude="32.68"/>
+<city name="淮北" longitude="116.77" latitude="33.97"/>
+<city name="濉溪" longitude="116.76" latitude="33.92"/>
+<city name="芜湖" longitude="118.38" latitude="31.33"/>
+<city name="铜陵" longitude="117.82" latitude="30.93"/>
+<city name="蚌埠" longitude="117.34" latitude="32.93"/>
+<city name="马鞍山" longitude="118.48" latitude="31.56"/>
+<city name="安庆" longitude="117.03" latitude="30.52"/>
+<city name="宿州" longitude="116.97" latitude="33.63"/>
+<city name="宿县" longitude="116.97" latitude="33.63"/>
+<city name="砀山" longitude="116.34" latitude="34.42"/>
+<city name="萧县" longitude="116.93" latitude="34.19"/>
+<city name="吴壁" longitude="117.55" latitude="33.55"/>
+<city name="泗县" longitude="117.89" latitude="33.49"/>
+<city name="五河" longitude="117.87" latitude="33.14"/>
+<city name="固镇" longitude="117.32" latitude="33.33"/>
+<city name="怀远" longitude="117.19" latitude="32.95"/>
+<city name="滁州" longitude="118.31" latitude="32.33"/>
+<city name="嘉山" longitude="117.98" latitude="32.78"/>
+<city name="天长" longitude="119" latitude="32.68"/>
+<city name="来安" longitude="118.44" latitude="32.44"/>
+<city name="全椒" longitude="118.27" latitude="32.1"/>
+<city name="定远" longitude="117.68" latitude="32.52"/>
+<city name="凤阳" longitude="117.4" latitude="32.86"/>
+<city name="巢湖" longitude="117.87" latitude="31.62"/>
+<city name="巢县" longitude="117.87" latitude="31.62"/>
+<city name="肥东" longitude="117.47" latitude="31.89"/>
+<city name="含山" longitude="118.11" latitude="31.7"/>
+<city name="和县" longitude="118.37" latitude="31.7"/>
+<city name="无为" longitude="117.75" latitude="31.3"/>
+<city name="卢江" longitude="117.29" latitude="31.23"/>
+<city name="宣城" longitude="118.73" latitude="31.95"/>
+<city name="当涂" longitude="118.49" latitude="31.55"/>
+<city name="郎溪" longitude="119.17" latitude="31.14"/>
+<city name="广德" longitude="119.41" latitude="30.89"/>
+<city name="泾县" longitude="118.41" latitude="30.68"/>
+<city name="南陵" longitude="118.32" latitude="30.91"/>
+<city name="繁昌" longitude="118.21" latitude="31.07"/>
+<city name="宁国" longitude="118.95" latitude="30.62"/>
+<city name="青阳" longitude="117.84" latitude="30.64"/>
+<city name="屯溪" longitude="118.31" latitude="29.72"/>
+<city name="休宁" longitude="118.19" latitude="29.81"/>
+<city name="旌得" longitude="118.53" latitude="30.28"/>
+<city name="绩溪" longitude="118.57" latitude="30.07"/>
+<city name="歙县" longitude="118.44" latitude="29.88"/>
+<city name="祁门" longitude="117.7" latitude="29.86"/>
+<city name="黟县" longitude="117.92" latitude="29.93"/>
+<city name="太平" longitude="118.13" latitude="30.28"/>
+<city name="石台" longitude="117.48" latitude="30.19"/>
+<city name="桐城" longitude="116.94" latitude="31.04"/>
+<city name="纵阳" longitude="117.21" latitude="30.69"/>
+<city name="怀宁" longitude="116.63" latitude="30.41"/>
+<city name="望江" longitude="116.69" latitude="30.12"/>
+<city name="宿松" longitude="116.13" latitude="30.15"/>
+<city name="太湖" longitude="116.27" latitude="30.42"/>
+<city name="岳西" longitude="116.36" latitude="30.84"/>
+<city name="潜山" longitude="116.53" latitude="30.62"/>
+<city name="东至" longitude="116.99" latitude="30.08"/>
+<city name="贵池" longitude="117.48" latitude="30.66"/>
+<city name="六安" longitude="116.49" latitude="31.73"/>
+<city name="霍丘" longitude="116.27" latitude="32.32"/>
+<city name="寿县" longitude="116.78" latitude="32.57"/>
+<city name="肥西" longitude="117.15" latitude="31.7"/>
+<city name="舒城" longitude="116.94" latitude="31.45"/>
+<city name="霍山" longitude="116.32" latitude="31.38"/>
+<city name="金寨" longitude="115.87" latitude="31.67"/>
+<city name="阜阳" longitude="115.81" latitude="32.89"/>
+<city name="毫县" longitude="116.76" latitude="33.86"/>
+<city name="涡阳" longitude="116.21" latitude="33.49"/>
+<city name="蒙城" longitude="116.55" latitude="33.25"/>
+<city name="利辛" longitude="116.19" latitude="33.12"/>
+<city name="颖上" longitude="116.26" latitude="32.62"/>
+<city name="阜南" longitude="115.6" latitude="32.63"/>
+<city name="临泉" longitude="115.24" latitude="33.06"/>
+<city name="界首" longitude="115.34" latitude="33.24"/>
+<city name="太和" longitude="115.61" latitude="33.16"/>
+</provinces>
+<provinces name="山东">
+<city name="济南" longitude="117" latitude="36.65"/>
+<city name="历城" longitude="117.07" latitude="36.69"/>
+<city name="长清" longitude="116.73" latitude="36.55"/>
+<city name="章丘" longitude="117.53" latitude="36.72"/>
+<city name="青岛" longitude="120.33" latitude="36.07"/>
+<city name="崂山" longitude="120.42" latitude="36.15"/>
+<city name="胶南" longitude="119.97" latitude="35.88"/>
+<city name="即墨" longitude="120.45" latitude="36.38"/>
+<city name="胶县" longitude="120" latitude="36.28"/>
+<city name="淄博" longitude="118.05" latitude="36.78"/>
+<city name="枣庄" longitude="117.57" latitude="34.86"/>
+<city name="滕县" longitude="117.17" latitude="35.09"/>
+<city name="东营" longitude="118.49" latitude="37.46"/>
+<city name="垦利" longitude="118.54" latitude="37.59"/>
+<city name="利津" longitude="118.25" latitude="37.49"/>
+<city name="德州" longitude="116.29" latitude="37.45"/>
+<city name="宁津" longitude="116.8" latitude="37.64"/>
+<city name="乐陵" longitude="117.22" latitude="37.74"/>
+<city name="商河" longitude="117.15" latitude="37.31"/>
+<city name="济阳" longitude="117.2" latitude="36.97"/>
+<city name="禹城" longitude="116.66" latitude="36.95"/>
+<city name="夏津" longitude="116" latitude="36.95"/>
+<city name="陵县" longitude="116.58" latitude="37.34"/>
+<city name="庆云" longitude="117.37" latitude="37.37"/>
+<city name="临邑" longitude="116.86" latitude="37.2"/>
+<city name="齐河" longitude="116.76" latitude="36.79"/>
+<city name="平原" longitude="116.44" latitude="37.16"/>
+<city name="武城" longitude="116.08" latitude="37.2"/>
+<city name="滨州" longitude="118.03" latitude="37.36"/>
+<city name="滨县" longitude="117.97" latitude="37.47"/>
+<city name="广饶" longitude="118.41" latitude="37.04"/>
+<city name="桓台" longitude="118.12" latitude="36.95"/>
+<city name="邹平" longitude="117.75" latitude="36.89"/>
+<city name="阳信" longitude="117.58" latitude="37.65"/>
+<city name="沾化" longitude="118.14" latitude="37.7"/>
+<city name="博兴" longitude="118.12" latitude="37.12"/>
+<city name="高青" longitude="117.66" latitude="37.18"/>
+<city name="惠民" longitude="117.51" latitude="17.49"/>
+<city name="无棣" longitude="117.58" latitude="37.73"/>
+<city name="潍坊" longitude="119.1" latitude="36.62"/>
+<city name="潍县" longitude="119.22" latitude="36.77"/>
+<city name="平度" longitude="119.97" latitude="36.77"/>
+<city name="诸城" longitude="119.42" latitude="35.99"/>
+<city name="安丘" longitude="119.2" latitude="36.42"/>
+<city name="临朐" longitude="118.53" latitude="36.5"/>
+<city name="寿光" longitude="118.73" latitude="36.86"/>
+<city name="昌邑" longitude="119.41" latitude="36.86"/>
+<city name="高密" longitude="119.75" latitude="36.38"/>
+<city name="五莲" longitude="119.2" latitude="35.74"/>
+<city name="昌乐" longitude="118.83" latitude="36.69"/>
+<city name="高都" longitude="118.47" latitude="36.69"/>
+<city name="烟台" longitude="121.39" latitude="37.52"/>
+<city name="牟平" longitude="121.59" latitude="37.38"/>
+<city name="文登" longitude="122.05" latitude="37.2"/>
+<city name="海阳" longitude="121.17" latitude="36.76"/>
+<city name="莱阳" longitude="120.71" latitude="36.97"/>
+<city name="栖霞" longitude="120.83" latitude="37.28"/>
+<city name="掖县" longitude="119.93" latitude="37.18"/>
+<city name="长岛" longitude="120.73" latitude="37.91"/>
+<city name="威海" longitude="122.1" latitude="37.5"/>
+<city name="福山" longitude="121.27" latitude="37.49"/>
+<city name="荣成" longitude="122.41" latitude="37.16"/>
+<city name="乳山" longitude="121.52" latitude="36.89"/>
+<city name="莱西" longitude="120.53" latitude="36.86"/>
+<city name="招远" longitude="120.38" latitude="37.35"/>
+<city name="黄县" longitude="120.51" latitude="37.64"/>
+<city name="蓬莱" longitude="120.75" latitude="37.8"/>
+<city name="临沂" longitude="118.35" latitude="35.05"/>
+<city name="沂水" longitude="118.64" latitude="35.78"/>
+<city name="日照" longitude="119.46" latitude="35.42"/>
+<city name="临沭" longitude="118.73" latitude="34.89"/>
+<city name="仓山" longitude="118.03" latitude="34.84"/>
+<city name="平邑" longitude="117.63" latitude="35.49"/>
+<city name="沂源" longitude="118.17" latitude="36.18"/>
+<city name="沂南" longitude="118.47" latitude="35.54"/>
+<city name="营县" longitude="118.83" latitude="35.57"/>
+<city name="莒南" longitude="118.83" latitude="35.17"/>
+<city name="郯城" longitude="118.35" latitude="34.61"/>
+<city name="费县" longitude="117.97" latitude="35.26"/>
+<city name="蒙阴" longitude="117.95" latitude="35.7"/>
+<city name="泰安" longitude="117.13" latitude="36.18"/>
+<city name="莱芜" longitude="117.67" latitude="36.19"/>
+<city name="肥城" longitude="116.76" latitude="36.24"/>
+<city name="平阴" longitude="116.46" latitude="36.29"/>
+<city name="新汶" longitude="117.67" latitude="35.86"/>
+<city name="新泰" longitude="117.76" latitude="35.91"/>
+<city name="宁阳" longitude="116.8" latitude="35.76"/>
+<city name="东平" longitude="116.3" latitude="35.91"/>
+<city name="济宁" longitude="116.59" latitude="35.38"/>
+<city name="兖州" longitude="116.83" latitude="35.54"/>
+<city name="泗水" longitude="117.27" latitude="35.65"/>
+<city name="鱼台" longitude="116.65" latitude="35"/>
+<city name="嘉祥" longitude="116.34" latitude="35.41"/>
+<city name="汶上" longitude="116.49" latitude="35.71"/>
+<city name="曲阜" longitude="116.98" latitude="35.59"/>
+<city name="邹县" longitude="116.97" latitude="35.39"/>
+<city name="微山" longitude="117.12" latitude="34.8"/>
+<city name="金乡" longitude="116.32" latitude="35.07"/>
+<city name="荷泽" longitude="115.43" latitude="35.24"/>
+<city name="郓城" longitude="115.94" latitude="35.59"/>
+<city name="巨野" longitude="116.08" latitude="35.38"/>
+<city name="单县" longitude="116.07" latitude="34.82"/>
+<city name="曹县" longitude="115.53" latitude="34.83"/>
+<city name="鄄城" longitude="115.5" latitude="35.57"/>
+<city name="梁山" longitude="116.1" latitude="35.8"/>
+<city name="成武" longitude="115.88" latitude="34.97"/>
+<city name="定陶" longitude="115.57" latitude="35.07"/>
+<city name="东明" longitude="115.08" latitude="35.31"/>
+<city name="聊城" longitude="115.97" latitude="36.45"/>
+<city name="高唐" longitude="116.23" latitude="36.86"/>
+<city name="东阿" longitude="116.23" latitude="36.32"/>
+<city name="莘县" longitude="115.67" latitude="36.24"/>
+<city name="临清" longitude="115.72" latitude="36.68"/>
+<city name="茌平" longitude="116.27" latitude="36.58"/>
+<city name="阳谷" longitude="115.78" latitude="36.11"/>
+<city name="冠县" longitude="115.45" latitude="35.47"/>
+</provinces>
+<provinces name="山西">
+<city name="太原" longitude="112.53" latitude="37.87"/>
+<city name="阳曲" longitude="112.65" latitude="38.05"/>
+<city name="娄烦" longitude="111.78" latitude="38.05"/>
+<city name="清徐" longitude="112.33" latitude="37.62"/>
+<city name="大同" longitude="113.3" latitude="40.12"/>
+<city name="阳泉" longitude="113.57" latitude="37.85"/>
+<city name="长治" longitude="113.08" latitude="36.18"/>
+<city name="天镇" longitude="114.08" latitude="40.42"/>
+<city name="灵丘" longitude="114.2" latitude="39.47"/>
+<city name="怀仁" longitude="113.1" latitude="39.82"/>
+<city name="山阴" longitude="112.82" latitude="39.52"/>
+<city name="平鲁" longitude="112.12" latitude="39.53"/>
+<city name="右玉" longitude="112.33" latitude="40.18"/>
+<city name="阳高" longitude="113.72" latitude="40.38"/>
+<city name="广灵" longitude="113.27" latitude="39.75"/>
+<city name="浑源" longitude="113.68" latitude="39.7"/>
+<city name="应县" longitude="113.18" latitude="39.58"/>
+<city name="朔县" longitude="112.42" latitude="39.32"/>
+<city name="左云" longitude="112.67" latitude="40.02"/>
+<city name="忻县" longitude="112.7" latitude="38.38"/>
+<city name="代县" longitude="112.97" latitude="39.07"/>
+<city name="五台" longitude="113.32" latitude="38.72"/>
+<city name="静乐" longitude="111.9" latitude="38.37"/>
+<city name="保德" longitude="111.09" latitude="38.01"/>
+<city name="河曲" longitude="111.17" latitude="39.38"/>
+<city name="神池" longitude="112.17" latitude="39.1"/>
+<city name="原平" longitude="112.7" latitude="38.73"/>
+<city name="繁峙" longitude="113.28" latitude="39.2"/>
+<city name="定襄" longitude="112.95" latitude="38.5"/>
+<city name="岢岚" longitude="111.58" latitude="38.7"/>
+<city name="五寨" longitude="111.82" latitude="38.93"/>
+<city name="偏关" longitude="111.47" latitude="39.45"/>
+<city name="宁武" longitude="112.28" latitude="39"/>
+<city name="榆次" longitude="112.72" latitude="37.68"/>
+<city name="孟县" longitude="113.37" latitude="38.01"/>
+<city name="昔阳" longitude="113.68" latitude="37.62"/>
+<city name="左权" longitude="113.35" latitude="37.07"/>
+<city name="太谷" longitude="112.53" latitude="37.42"/>
+<city name="平遥" longitude="112.18" latitude="37.2"/>
+<city name="灵石" longitude="111.77" latitude="36.83"/>
+<city name="寿阳" longitude="113.17" latitude="37.88"/>
+<city name="平定" longitude="113.62" latitude="37.79"/>
+<city name="和顺" longitude="113.55" latitude="37.33"/>
+<city name="榆社" longitude="112.97" latitude="37.08"/>
+<city name="祁县" longitude="112.33" latitude="37.36"/>
+<city name="介休" longitude="111.88" latitude="37.03"/>
+<city name="离石" longitude="111.13" latitude="37.53"/>
+<city name="兴县" longitude="111.22" latitude="38.47"/>
+<city name="方由" longitude="111.24" latitude="37.86"/>
+<city name="岚县" longitude="111.62" latitude="38.28"/>
+<city name="交城" longitude="112.14" latitude="37.55"/>
+<city name="文水" longitude="112.02" latitude="37.42"/>
+<city name="汾阳" longitude="111.75" latitude="37.27"/>
+<city name="孝义" longitude="111.8" latitude="37.12"/>
+<city name="交口" longitude="111.2" latitude="36.97"/>
+<city name="石楼" longitude="110.83" latitude="37"/>
+<city name="中阳" longitude="111.17" latitude="37.37"/>
+<city name="临县" longitude="110.95" latitude="37.95"/>
+<city name="柳林" longitude="110.85" latitude="37.45"/>
+<city name="襄垣" longitude="113.02" latitude="36.55"/>
+<city name="黎城" longitude="113.4" latitude="36.56"/>
+<city name="壶关" longitude="113.23" latitude="35.11"/>
+<city name="高平" longitude="112.88" latitude="35.48"/>
+<city name="阳城" longitude="112.38" latitude="35.84"/>
+<city name="长子" longitude="112.87" latitude="36.13"/>
+<city name="沁源" longitude="112.32" latitude="36.5"/>
+<city name="潞城" longitude="113.22" latitude="36.33"/>
+<city name="武乡" longitude="112.83" latitude="36.83"/>
+<city name="平顺" longitude="113.43" latitude="36.19"/>
+<city name="陵川" longitude="113.27" latitude="35.78"/>
+<city name="晋城" longitude="112.83" latitude="35.52"/>
+<city name="沁水" longitude="112.15" latitude="35.67"/>
+<city name="屯留" longitude="112.87" latitude="36.32"/>
+<city name="沁县" longitude="112.68" latitude="36.75"/>
+<city name="临汾" longitude="111.5" latitude="36.08"/>
+<city name="汾西" longitude="111.53" latitude="36.63"/>
+<city name="安泽" longitude="112.2" latitude="36.15"/>
+<city name="古县" longitude="111.9" latitude="36.29"/>
+<city name="翼城" longitude="111.68" latitude="35.73"/>
+<city name="曲沃" longitude="111.33" latitude="35.63"/>
+<city name="吉县" longitude="110.65" latitude="36.12"/>
+<city name="大宁" longitude="110.72" latitude="36.47"/>
+<city name="侯马" longitude="111.45" latitude="35.03"/>
+<city name="永和" longitude="110.64" latitude="36.62"/>
+<city name="洪洞" longitude="111.68" latitude="36.25"/>
+<city name="霍县" longitude="111.72" latitude="36.57"/>
+<city name="浮山" longitude="111.83" latitude="35.97"/>
+<city name="襄汾" longitude="111.43" latitude="35.86"/>
+<city name="乡宁" longitude="110.8" latitude="35.97"/>
+<city name="蒲县" longitude="111.07" latitude="36.42"/>
+<city name="运城" longitude="110.97" latitude="35.03"/>
+<city name="闻喜" longitude="111.2" latitude="35.37"/>
+<city name="垣曲" longitude="111.63" latitude="35.3"/>
+<city name="芮城" longitude="110.68" latitude="34.71"/>
+<city name="临猗" longitude="110.78" latitude="35.15"/>
+<city name="新绛" longitude="111.22" latitude="35.62"/>
+<city name="河津" longitude="110.7" latitude="35.58"/>
+<city name="夏县" longitude="111.22" latitude="35.12"/>
+<city name="绛县" longitude="111.58" latitude="35.48"/>
+<city name="平陆" longitude="111.2" latitude="34.12"/>
+<city name="永济" longitude="110.42" latitude="34.88"/>
+<city name="万荣" longitude="110.83" latitude="110.83"/>
+<city name="稷山" longitude="110.97" latitude="35.6"/>
+</provinces>
+<provinces name="广东">
+<city name="广州" longitude="113.23" latitude="23.16"/>
+<city name="花县" longitude="113.19" latitude="23.4"/>
+<city name="新十" longitude="114.2" latitude="24.09"/>
+<city name="增城" longitude="113.81" latitude="23.13"/>
+<city name="从化" longitude="113.55" latitude="23.57"/>
+<city name="龙门" longitude="114.25" latitude="23.75"/>
+<city name="番禺" longitude="113.36" latitude="22.95"/>
+<city name="海口" longitude="110.35" latitude="20.02"/>
+<city name="汕头" longitude="116.69" latitude="23.39"/>
+<city name="洪江" longitude="110.38" latitude="21.2"/>
+<city name="茂名" longitude="110.88" latitude="21.68"/>
+<city name="佛山" longitude="113.11" latitude="23.05"/>
+<city name="江门" longitude="113.06" latitude="22.61"/>
+<city name="深圳" longitude="114.07" latitude="22.62"/>
+<city name="宝安" longitude="113.85" latitude="22.58"/>
+<city name="珠海" longitude="113.52" latitude="22.3"/>
+<city name="韶关" longitude="113.62" latitude="24.84"/>
+<city name="曲江" longitude="113.58" latitude="24.68"/>
+<city name="乐昌" longitude="113.35" latitude="25.14"/>
+<city name="仁化" longitude="113.73" latitude="25.11"/>
+<city name="南雄" longitude="114.33" latitude="25.14"/>
+<city name="始兴" longitude="114.08" latitude="24.78"/>
+<city name="翁源" longitude="114.13" latitude="24.36"/>
+<city name="佛岗" longitude="113.52" latitude="23.86"/>
+<city name="英德" longitude="113.38" latitude="24.17"/>
+<city name="清远" longitude="113.01" latitude="23.7"/>
+<city name="阳山" longitude="112.65" latitude="24.48"/>
+<city name="连县" longitude="112.4" latitude="24.77"/>
+<city name="连山" longitude="112.07" latitude="24.59"/>
+<city name="连南" longitude="112.28" latitude="24.77"/>
+<city name="惠州" longitude="114.4" latitude="23.09"/>
+<city name="惠阳" longitude="114.4" latitude="23.09"/>
+<city name="博罗" longitude="114.28" latitude="23.18"/>
+<city name="河源" longitude="114.68" latitude="23.73"/>
+<city name="连平" longitude="114.48" latitude="24.39"/>
+<city name="和平" longitude="114.89" latitude="24.45"/>
+<city name="龙川" longitude="115.25" latitude="24.09"/>
+<city name="紫金" longitude="115.18" latitude="23.64"/>
+<city name="惠东" longitude="114.7" latitude="22.97"/>
+<city name="东莞" longitude="113.75" latitude="23.04"/>
+<city name="梅州" longitude="116.1" latitude="24.55"/>
+<city name="梅县" longitude="116.1" latitude="24.55"/>
+<city name="平远" longitude="117.9" latitude="24.59"/>
+<city name="蕉岭" longitude="116.18" latitude="24.66"/>
+<city name="大埔" longitude="116.7" latitude="24.34"/>
+<city name="丰顺" longitude="116.18" latitude="23.78"/>
+<city name="五华" longitude="115.75" latitude="23.93"/>
+<city name="兴宁" longitude="115.75" latitude="24.15"/>
+<city name="潮州" longitude="116.63" latitude="23.68"/>
+<city name="澄海" longitude="116.8" latitude="23.48"/>
+<city name="潮安" longitude="116.63" latitude="23.68"/>
+<city name="饶平" longitude="117.01" latitude="23.7"/>
+<city name="南澳" longitude="117.03" latitude="23.44"/>
+<city name="潮阳" longitude="116.61" latitude="23.27"/>
+<city name="惠来" longitude="116.29" latitude="23.07"/>
+<city name="陆丰" longitude="117.64" latitude="22.95"/>
+<city name="海丰" longitude="117.33" latitude="22.98"/>
+<city name="普宁" longitude="116.17" latitude="23.29"/>
+<city name="揭西" longitude="115.82" latitude="23.45"/>
+<city name="揭阳" longitude="116.35" latitude="23.55"/>
+<city name="南海" longitude="113.11" latitude="23.05"/>
+<city name="三水" longitude="112.89" latitude="23.18"/>
+<city name="顺德" longitude="113.24" latitude="22.84"/>
+<city name="中山" longitude="113.38" latitude="22.52"/>
+<city name="斗门" longitude="113.25" latitude="22.2"/>
+<city name="新会" longitude="113.02" latitude="22.52"/>
+<city name="鹤山" longitude="112.94" latitude="22.76"/>
+<city name="开平" longitude="112.68" latitude="22.36"/>
+<city name="台山" longitude="112.78" latitude="22.27"/>
+<city name="恩平" longitude="112.29" latitude="22.21"/>
+<city name="高明" longitude="112.76" latitude="21.71"/>
+<city name="廉江" longitude="110.27" latitude="21.63"/>
+<city name="化州" longitude="110.59" latitude="21.64"/>
+<city name="高州" longitude="110.83" latitude="21.95"/>
+<city name="信宜" longitude="110.9" latitude="22.36"/>
+<city name="阳春" longitude="111.78" latitude="22.16"/>
+<city name="阳江" longitude="111.95" latitude="21.85"/>
+<city name="电白" longitude="110.99" latitude="21.52"/>
+<city name="吴川" longitude="110.78" latitude="21.43"/>
+<city name="徐闻" longitude="110.17" latitude="20.34"/>
+<city name="海康" longitude="110.07" latitude="20.91"/>
+<city name="遂溪" longitude="110.24" latitude="21.39"/>
+<city name="肇庆" longitude="112.44" latitude="23.05"/>
+<city name="高要" longitude="112.44" latitude="23.05"/>
+<city name="怀集" longitude="112.18" latitude="23.93"/>
+<city name="广宁" longitude="112.43" latitude="23.14"/>
+<city name="四会" longitude="112.68" latitude="23.36"/>
+<city name="新兴" longitude="112.2" latitude="22.68"/>
+<city name="云浮" longitude="112.02" latitude="22.93"/>
+<city name="罗定" longitude="111.56" latitude="22.77"/>
+<city name="郁南" longitude="111.51" latitude="23.23"/>
+<city name="德庆" longitude="111.75" latitude="23.15"/>
+<city name="封开" longitude="111.48" latitude="23.45"/>
+</provinces>
+<provinces name="广西">
+<city name="南宁" longitude="108.33" latitude="22.84"/>
+<city name="柳州" longitude="109.4" latitude="24.33"/>
+<city name="桂林" longitude="110.28" latitude="25.29"/>
+<city name="梧州" longitude="111.34" latitude="23.51"/>
+<city name="凭祥" longitude="106.75" latitude="22.11"/>
+<city name="邕宁" longitude="108.49" latitude="22.74"/>
+<city name="武鸣" longitude="108.27" latitude="23.17"/>
+<city name="马山" longitude="108.2" latitude="23.73"/>
+<city name="上林" longitude="108.59" latitude="23.44"/>
+<city name="宾阳" longitude="108.8" latitude="23.22"/>
+<city name="横县" longitude="109.2" latitude="22.69"/>
+<city name="扶绥" longitude="107.92" latitude="22.65"/>
+<city name="崇左" longitude="107.37" latitude="22.42"/>
+<city name="宁明" longitude="107.08" latitude="22.12"/>
+<city name="龙州" longitude="106.84" latitude="22.36"/>
+<city name="大新" longitude="107.21" latitude="22.85"/>
+<city name="天等" longitude="107.12" latitude="23.08"/>
+<city name="隆安" longitude="107.68" latitude="23.18"/>
+<city name="河池" longitude="108.06" latitude="24.7"/>
+<city name="环江" longitude="108.26" latitude="24.83"/>
+<city name="罗城" longitude="108.9" latitude="24.79"/>
+<city name="宜山" longitude="108.64" latitude="24.47"/>
+<city name="东兰" longitude="107.36" latitude="24.53"/>
+<city name="凤山" longitude="107.05" latitude="24.55"/>
+<city name="天峨" longitude="107.16" latitude="25.01"/>
+<city name="南丹" longitude="107.54" latitude="24.98"/>
+<city name="都安" longitude="108.09" latitude="23.94"/>
+<city name="巴马" longitude="107.25" latitude="24.15"/>
+<city name="合山" longitude="108.89" latitude="23.82"/>
+<city name="柳城" longitude="109.24" latitude="24.67"/>
+<city name="融安" longitude="109.37" latitude="24.24"/>
+<city name="鹿寨" longitude="109.74" latitude="24.49"/>
+<city name="象州" longitude="109.7" latitude="23.98"/>
+<city name="武宜" longitude="109.66" latitude="23.6"/>
+<city name="柳江" longitude="109.34" latitude="24.27"/>
+<city name="来宾" longitude="109.24" latitude="23.76"/>
+<city name="忻城" longitude="108.66" latitude="24.07"/>
+<city name="融水" longitude="109.24" latitude="25.07"/>
+<city name="三江" longitude="109.58" latitude="25.8"/>
+<city name="金秀" longitude="110.18" latitude="24.14"/>
+<city name="临桂" longitude="110.22" latitude="25.22"/>
+<city name="灵川" longitude="110.33" latitude="25.42"/>
+<city name="兴安" longitude="110.66" latitude="25.6"/>
+<city name="资源" longitude="110.66" latitude="26.03"/>
+<city name="全州" longitude="111.06" latitude="25.96"/>
+<city name="灌阳" longitude="111.14" latitude="25.49"/>
+<city name="恭城" longitude="110.81" latitude="24.85"/>
+<city name="平乐" longitude="110.66" latitude="24.64"/>
+<city name="荔浦" longitude="110.38" latitude="24.51"/>
+<city name="永福" longitude="109.98" latitude="24.99"/>
+<city name="龙胜" longitude="110.02" latitude="25.78"/>
+<city name="苍悟" longitude="111.22" latitude="23.51"/>
+<city name="钟山" longitude="111.3" latitude="24.53"/>
+<city name="富川" longitude="110.26" latitude="24.83"/>
+<city name="贺县" longitude="111.54" latitude="24.44"/>
+<city name="岑溪" longitude="111" latitude="22.95"/>
+<city name="藤县" longitude="110.9" latitude="23.36"/>
+<city name="蒙山" longitude="110.54" latitude="24.22"/>
+<city name="昭平" longitude="110.8" latitude="24.18"/>
+<city name="玉林" longitude="110.14" latitude="22.64"/>
+<city name="桂平" longitude="110.07" latitude="23.38"/>
+<city name="平南" longitude="110.4" latitude="23.55"/>
+<city name="容县" longitude="110.53" latitude="22.87"/>
+<city name="北流" longitude="110.33" latitude="22.71"/>
+<city name="陆川" longitude="110.25" latitude="22.33"/>
+<city name="博白" longitude="109.98" latitude="22.27"/>
+<city name="贵县" longitude="109.6" latitude="23.11"/>
+<city name="北海" longitude="109.12" latitude="21.49"/>
+<city name="钦州" longitude="108.61" latitude="21.96"/>
+<city name="灵山" longitude="109.29" latitude="22.44"/>
+<city name="浦北" longitude="109.56" latitude="22.27"/>
+<city name="合浦" longitude="109.2" latitude="21.33"/>
+<city name="上思" longitude="107.98" latitude="22.16"/>
+<city name="防城" longitude="108.35" latitude="21.78"/>
+<city name="百色" longitude="106.62" latitude="23.91"/>
+<city name="凌云" longitude="106.55" latitude="24.35"/>
+<city name="乐业" longitude="106.56" latitude="24.78"/>
+<city name="田阳" longitude="106.9" latitude="23.75"/>
+<city name="田东" longitude="107.12" latitude="23.62"/>
+<city name="平果" longitude="107.59" latitude="23.33"/>
+<city name="德保" longitude="106.6" latitude="23.34"/>
+<city name="靖西" longitude="106.41" latitude="23.15"/>
+<city name="那坡" longitude="105.85" latitude="23.42"/>
+<city name="西林" longitude="105.08" latitude="24.51"/>
+<city name="田林" longitude="106.24" latitude="24.31"/>
+<city name="隆林" longitude="105.34" latitude="24.8"/>
+</provinces>
+<provinces name="新疆">
+<city name="乌鲁木齐" longitude="87.68" latitude="43.77"/>
+<city name="克拉玛依" longitude="84.77" latitude="45.59"/>
+<city name="石河子" longitude="85.94" latitude="44.27"/>
+<city name="吐鲁番" longitude="89.19" latitude="42.91"/>
+<city name="托克逊" longitude="88.63" latitude="42.77"/>
+<city name="鄯善" longitude="90.25" latitude="42.82"/>
+<city name="哈密" longitude="93.44" latitude="42.78"/>
+<city name="伊吾" longitude="94.65" latitude="43.28"/>
+<city name="巴里坤" longitude="93" latitude="43.6"/>
+<city name="库尔勒" longitude="86.06" latitude="41.68"/>
+<city name="和静" longitude="86.35" latitude="42.31"/>
+<city name="和硕" longitude="86.84" latitude="42.23"/>
+<city name="博湖" longitude="86.53" latitude="41.95"/>
+<city name="尉梨" longitude="86.24" latitude="41.36"/>
+<city name="轮台" longitude="84.25" latitude="41.77"/>
+<city name="焉耆" longitude="86.55" latitude="42.05"/>
+<city name="和田" longitude="79.94" latitude="37.12"/>
+<city name="民丰" longitude="82.63" latitude="37.07"/>
+<city name="策勒" longitude="80.78" latitude="37.04"/>
+<city name="于田" longitude="81.63" latitude="36.86"/>
+<city name="洛浦" longitude="80.17" latitude="37.12"/>
+<city name="皮山" longitude="78.29" latitude="37.06"/>
+<city name="墨玉" longitude="79.74" latitude="37.31"/>
+<city name="阿克苏" longitude="80.29" latitude="41.15"/>
+<city name="温宿" longitude="80.24" latitude="41.29"/>
+<city name="拜城" longitude="81.84" latitude="41.82"/>
+<city name="库车" longitude="82.97" latitude="41.68"/>
+<city name="新和" longitude="82.63" latitude="41.55"/>
+<city name="沙雅" longitude="82.9" latitude="41.25"/>
+<city name="阿瓦提" longitude="80.34" latitude="40.64"/>
+<city name="柯平" longitude="79.06" latitude="40.55"/>
+<city name="乌什" longitude="79.25" latitude="41.22"/>
+<city name="咯什" longitude="75.94" latitude="39.52"/>
+<city name="巴楚" longitude="78.59" latitude="39.78"/>
+<city name="枷师" longitude="76.78" latitude="39.46"/>
+<city name="乐普湖" longitude="76.67" latitude="39.23"/>
+<city name="麦盖提" longitude="77.62" latitude="38.95"/>
+<city name="莎车" longitude="77.25" latitude="38.45"/>
+<city name="泽普" longitude="77.26" latitude="38.2"/>
+<city name="叶城" longitude="77.42" latitude="37.89"/>
+<city name="疏勒" longitude="76.05" latitude="39.41"/>
+<city name="英吉沙" longitude="76.17" latitude="38.91"/>
+<city name="疏附" longitude="75.83" latitude="39.42"/>
+<city name="塔什库尔干" longitude="75.22" latitude="75.22"/>
+<city name="阿图什" longitude="76.12" latitude="39.73"/>
+<city name="阿合奇" longitude="78.42" latitude="41.91"/>
+<city name="阿克陶" longitude="75.94" latitude="39.14"/>
+<city name="乌恰" longitude="75.18" latitude="39.7"/>
+<city name="昌吉" longitude="87.31" latitude="44.05"/>
+<city name="阜康" longitude="87.94" latitude="44.14"/>
+<city name="奇台" longitude="89.52" latitude="44.02"/>
+<city name="吉木萨尔" longitude="89.14" latitude="44"/>
+<city name="米泉" longitude="87.68" latitude="43.97"/>
+<city name="玛纳斯" longitude="86.22" latitude="44.28"/>
+<city name="呼图壁" longitude="86.92" latitude="44.18"/>
+<city name="木垒" longitude="90.34" latitude="43.8"/>
+<city name="博乐" longitude="82.1" latitude="44.93"/>
+<city name="精河" longitude="82.92" latitude="44.67"/>
+<city name="温泉" longitude="81.08" latitude="44.95"/>
+<city name="伊宁" longitude="81.33" latitude="43.91"/>
+<city name="尼勒克" longitude="82.53" latitude="43.82"/>
+<city name="新源" longitude="83.27" latitude="43.41"/>
+<city name="巩留" longitude="82.23" latitude="43.35"/>
+<city name="奎屯" longitude="84.89" latitude="44.45"/>
+<city name="特克斯" longitude="81.81" latitude="43.23"/>
+<city name="昭苏" longitude="81.08" latitude="43.15"/>
+<city name="霍城" longitude="80.87" latitude="44.07"/>
+<city name="察布察尔" longitude="81.12" latitude="43.82"/>
+<city name="塔城" longitude="82.96" latitude="46.74"/>
+<city name="额敏" longitude="83.62" latitude="46.52"/>
+<city name="乌苏" longitude="84.62" latitude="44.45"/>
+<city name="托里" longitude="83.59" latitude="45.92"/>
+<city name="裕民" longitude="82.94" latitude="46.21"/>
+<city name="沙湾" longitude="85.56" latitude="44.29"/>
+<city name="和布克赛尔" longitude="85.13" latitude="46.78"/>
+<city name="阿勒泰" longitude="88.14" latitude="47.86"/>
+<city name="青河" longitude="90.37" latitude="46.71"/>
+<city name="富蕴" longitude="89.44" latitude="47.05"/>
+<city name="福海" longitude="87.51" latitude="47.15"/>
+<city name="吉木乃" longitude="85.84" latitude="47.42"/>
+<city name="布尔津" longitude="86.92" latitude="47.7"/>
+<city name="哈巴河" longitude="86.41" latitude="48.05"/>
+</provinces>
+<provinces name="江苏">
+<city name="南京" longitude="118.78" latitude="32.04"/>
+<city name="江宁" longitude="118.83" latitude="31.95"/>
+<city name="六合" longitude="118.83" latitude="32.36"/>
+<city name="江浦" longitude="118.62" latitude="32.07"/>
+<city name="徐州" longitude="117.2" latitude="34.26"/>
+<city name="连云港" longitude="119.16" latitude="34.59"/>
+<city name="南通" longitude="120.86" latitude="32.01"/>
+<city name="苏州" longitude="120.62" latitude="31.32"/>
+<city name="无锡" longitude="120.29" latitude="31.59"/>
+<city name="常州" longitude="119.95" latitude="31.79"/>
+<city name="丰县" longitude="116.57" latitude="34.79"/>
+<city name="沛县" longitude="116.93" latitude="34.73"/>
+<city name="赣榆" longitude="119.11" latitude="34.83"/>
+<city name="东海" longitude="118.75" latitude="34.54"/>
+<city name="新沂" longitude="118.33" latitude="34.38"/>
+<city name="邳县" longitude="117.97" latitude="34.3"/>
+<city name="睢宁" longitude="117.94" latitude="33.89"/>
+<city name="铜山" longitude="117.2" latitude="34.26"/>
+<city name="清江" longitude="119.02" latitude="33.59"/>
+<city name="灌云" longitude="119.23" latitude="34.3"/>
+<city name="灌南" longitude="119.36" latitude="34.09"/>
+<city name="沭阳" longitude="118.79" latitude="34.12"/>
+<city name="宿迁" longitude="118.3" latitude="33.96"/>
+<city name="泗阳" longitude="118.68" latitude="33.73"/>
+<city name="盱眙" longitude="118.05" latitude="33"/>
+<city name="涟水" longitude="119.26" latitude="33.77"/>
+<city name="淮阴" longitude="119.02" latitude="33.62"/>
+<city name="淮安" longitude="119.15" latitude="33.5"/>
+<city name="洪泽" longitude="118.85" latitude="33.28"/>
+<city name="泗洪" longitude="118.23" latitude="33.46"/>
+<city name="金湖" longitude="119.02" latitude="33.01"/>
+<city name="盐城" longitude="120.13" latitude="33.38"/>
+<city name="滨海" longitude="119.84" latitude="34.01"/>
+<city name="阜宁" longitude="119.79" latitude="33.78"/>
+<city name="射阳" longitude="120.26" latitude="33.77"/>
+<city name="建湖" longitude="119.77" latitude="33.46"/>
+<city name="响水" longitude="119.56" latitude="34.2"/>
+<city name="大丰" longitude="120.45" latitude="33.19"/>
+<city name="东台" longitude="120.31" latitude="32.84"/>
+<city name="海安" longitude="120.45" latitude="32.57"/>
+<city name="如皋" longitude="120.56" latitude="32.39"/>
+<city name="如东" longitude="121.18" latitude="32.33"/>
+<city name="启东" longitude="121.66" latitude="31.8"/>
+<city name="海门" longitude="121.15" latitude="31.89"/>
+<city name="南通" longitude="121.05" latitude="32.08"/>
+<city name="扬州" longitude="119.42" latitude="32.39"/>
+<city name="宝应" longitude="119.32" latitude="33.23"/>
+<city name="兴化" longitude="119.82" latitude="32.93"/>
+<city name="高邮" longitude="119.45" latitude="32.78"/>
+<city name="泰兴" longitude="120.02" latitude="32.16"/>
+<city name="泰县" longitude="120.15" latitude="32.51"/>
+<city name="泰州" longitude="119.9" latitude="32.49"/>
+<city name="靖江" longitude="120.26" latitude="32.03"/>
+<city name="江都" longitude="119.55" latitude="32.43"/>
+<city name="邗江" longitude="119.42" latitude="32.39"/>
+<city name="仪征" longitude="119.16" latitude="32.27"/>
+<city name="镇江" longitude="119.44" latitude="32.2"/>
+<city name="丹徒" longitude="119.44" latitude="32.2"/>
+<city name="扬中" longitude="119.81" latitude="32.24"/>
+<city name="丹阳" longitude="119.55" latitude="32"/>
+<city name="武进" longitude="119.95" latitude="31.78"/>
+<city name="宜兴" longitude="119.82" latitude="31.36"/>
+<city name="金坛" longitude="119.56" latitude="31.74"/>
+<city name="溧阳" longitude="119.48" latitude="31.43"/>
+<city name="句容" longitude="119.16" latitude="31.95"/>
+<city name="溧水" longitude="119.02" latitude="31.65"/>
+<city name="高淳" longitude="118.87" latitude="31.32"/>
+<city name="江阴" longitude="120.26" latitude="31.91"/>
+<city name="沙洲" longitude="120.55" latitude="31.86"/>
+<city name="常熟" longitude="120.74" latitude="31.64"/>
+<city name="太仓" longitude="121.1" latitude="31.45"/>
+<city name="昆山" longitude="120.95" latitude="31.39"/>
+<city name="吴县" longitude="120.62" latitude="31.32"/>
+<city name="吴江" longitude="120.63" latitude="31.16"/>
+</provinces>
+<provinces name="江西">
+<city name="南昌" longitude="115.89" latitude="28.68"/>
+<city name="新建" longitude="115.8" latitude="28.69"/>
+<city name="景德镇" longitude="117.22" latitude="29.3"/>
+<city name="萍乡" longitude="113.85" latitude="27.6"/>
+<city name="九江" longitude="115.97" latitude="29.71"/>
+<city name="彭泽" longitude="116.56" latitude="29.9"/>
+<city name="湖口" longitude="116.23" latitude="29.75"/>
+<city name="都昌" longitude="116.19" latitude="29.29"/>
+<city name="星子" longitude="116.03" latitude="29.47"/>
+<city name="永修" longitude="115.82" latitude="29.04"/>
+<city name="德安" longitude="115.75" latitude="29.33"/>
+<city name="瑞昌" longitude="115.65" latitude="29.68"/>
+<city name="武宁" longitude="115.09" latitude="29.26"/>
+<city name="修永" longitude="114.55" latitude="29.04"/>
+<city name="上饶" longitude="117.97" latitude="28.47"/>
+<city name="婺源" longitude="117.83" latitude="29.25"/>
+<city name="德兴" longitude="117.58" latitude="28.96"/>
+<city name="玉山" longitude="118.25" latitude="28.68"/>
+<city name="广丰" longitude="118.2" latitude="28.45"/>
+<city name="铅山" longitude="117.71" latitude="28.32"/>
+<city name="横峰" longitude="117.62" latitude="28.42"/>
+<city name="鹰潭" longitude="117.02" latitude="28.23"/>
+<city name="贵溪" longitude="117.2" latitude="28.3"/>
+<city name="余江" longitude="116.82" latitude="28.22"/>
+<city name="万年" longitude="117.08" latitude="28.7"/>
+<city name="乐平" longitude="117.12" latitude="28.97"/>
+<city name="波阳" longitude="116.68" latitude="29"/>
+<city name="于干" longitude="116.69" latitude="28.7"/>
+<city name="弋阳" longitude="117.43" latitude="28.42"/>
+<city name="宜春" longitude="114.38" latitude="27.81"/>
+<city name="万载" longitude="114.44" latitude="28.11"/>
+<city name="铜鼓" longitude="114.37" latitude="28.53"/>
+<city name="宜丰" longitude="114.78" latitude="28.4"/>
+<city name="上高" longitude="114.91" latitude="28.25"/>
+<city name="安义" longitude="115.55" latitude="28.86"/>
+<city name="奉新" longitude="115.38" latitude="28.71"/>
+<city name="高安" longitude="115.38" latitude="28.42"/>
+<city name="丰城" longitude="115.7" latitude="28.19"/>
+<city name="清江" longitude="115.54" latitude="28.07"/>
+<city name="新余" longitude="114.92" latitude="27.81"/>
+<city name="分宜" longitude="114.68" latitude="27.82"/>
+<city name="靖安" longitude="115.37" latitude="28.88"/>
+<city name="抚州" longitude="116.34" latitude="28"/>
+<city name="临川" longitude="116.29" latitude="27.95"/>
+<city name="金溪" longitude="116.77" latitude="27.92"/>
+<city name="资溪" longitude="117.06" latitude="27.7"/>
+<city name="黎川" longitude="116.91" latitude="27.3"/>
+<city name="南丰" longitude="116.52" latitude="27.22"/>
+<city name="南城" longitude="116.62" latitude="27.56"/>
+<city name="宜黄" longitude="116.2" latitude="27.55"/>
+<city name="崇仁" longitude="116.05" latitude="27.75"/>
+<city name="乐安" longitude="115.82" latitude="27.44"/>
+<city name="东乡" longitude="116.61" latitude="28.23"/>
+<city name="进贤" longitude="116.26" latitude="28.37"/>
+<city name="吉安" longitude="114.97" latitude="27.12"/>
+<city name="新干" longitude="115.4" latitude="27.77"/>
+<city name="峡江" longitude="115.15" latitude="27.56"/>
+<city name="吉水" longitude="115.14" latitude="27.22"/>
+<city name="永丰" longitude="115.42" latitude="27.33"/>
+<city name="泰和" longitude="114.88" latitude="26.81"/>
+<city name="万安" longitude="114.77" latitude="26.47"/>
+<city name="遂川" longitude="114.5" latitude="26.33"/>
+<city name="宁冈" longitude="113.97" latitude="26.71"/>
+<city name="永新" longitude="114.23" latitude="26.96"/>
+<city name="莲花" longitude="113.94" latitude="27.14"/>
+<city name="安福" longitude="114.62" latitude="27.39"/>
+<city name="井冈山" longitude="114.17" latitude="26.57"/>
+<city name="赣州" longitude="114.92" latitude="25.85"/>
+<city name="广昌" longitude="116.32" latitude="26.84"/>
+<city name="石城" longitude="116.32" latitude="26.34"/>
+<city name="宁都" longitude="116" latitude="26.46"/>
+<city name="兴国" longitude="115.33" latitude="26.32"/>
+<city name="于都" longitude="115.39" latitude="25.96"/>
+<city name="瑞金" longitude="116.02" latitude="25.89"/>
+<city name="会昌" longitude="115.79" latitude="25.58"/>
+<city name="安远" longitude="115.41" latitude="25.15"/>
+<city name="寻乌" longitude="115.64" latitude="24.96"/>
+<city name="定南" longitude="115.02" latitude="24.7"/>
+<city name="龙南" longitude="114.79" latitude="24.91"/>
+<city name="全南" longitude="114.53" latitude="24.76"/>
+<city name="信丰" longitude="114.94" latitude="25.39"/>
+<city name="赣县" longitude="114.02" latitude="25.85"/>
+<city name="南康" longitude="114.75" latitude="25.66"/>
+<city name="上犹" longitude="114.55" latitude="25.8"/>
+<city name="崇义" longitude="114.31" latitude="25.69"/>
+<city name="大余" longitude="114.36" latitude="25.39"/>
+</provinces>
+<provinces name="河北">
+<city name="石家庄" longitude="114.48" latitude="38.03"/>
+<city name="唐山" longitude="118.02" latitude="39.63"/>
+<city name="行唐" longitude="114.54" latitude="38.42"/>
+<city name="灵寿" longitude="114.38" latitude="38.31"/>
+<city name="束鹿" longitude="115.18" latitude="37.94"/>
+<city name="晋县" longitude="115.03" latitude="38.03"/>
+<city name="藁城" longitude="114.84" latitude="38.03"/>
+<city name="高邑" longitude="114.58" latitude="37.62"/>
+<city name="赵县" longitude="114.78" latitude="37.76"/>
+<city name="井陉" longitude="114.13" latitude="38.03"/>
+<city name="获鹿" longitude="114.03" latitude="38.08"/>
+<city name="新乐" longitude="114.67" latitude="38.33"/>
+<city name="正定" longitude="114.56" latitude="38.13"/>
+<city name="深泽" longitude="115.2" latitude="38.2"/>
+<city name="无极" longitude="114.96" latitude="38.16"/>
+<city name="赞皇" longitude="114.35" latitude="37.65"/>
+<city name="元氏" longitude="114.5" latitude="37.74"/>
+<city name="栾城" longitude="114.64" latitude="38.87"/>
+<city name="平山" longitude="114.24" latitude="38.2"/>
+<city name="邯郸" longitude="114.47" latitude="36.6"/>
+<city name="永年" longitude="114.5" latitude="36.77"/>
+<city name="曲周" longitude="114.92" latitude="36.78"/>
+<city name="馆陶" longitude="115.4" latitude="36.47"/>
+<city name="魏县" longitude="114.94" latitude="36.37"/>
+<city name="成安" longitude="114.68" latitude="36.43"/>
+<city name="大名" longitude="115.14" latitude="36.28"/>
+<city name="涉县" longitude="113.67" latitude="36.57"/>
+<city name="鸡泽" longitude="113.85" latitude="36.95"/>
+<city name="丘县" longitude="115.18" latitude="36.84"/>
+<city name="广平" longitude="114.94" latitude="36.49"/>
+<city name="肥乡" longitude="114.8" latitude="36.56"/>
+<city name="临漳" longitude="114.62" latitude="36.35"/>
+<city name="磁县" longitude="114.37" latitude="36.37"/>
+<city name="武安" longitude="114.2" latitude="36.7"/>
+<city name="邢台" longitude="114.48" latitude="37.05"/>
+<city name="柏乡" longitude="114.68" latitude="37.49"/>
+<city name="宁普" longitude="114.9" latitude="37.62"/>
+<city name="隆尧" longitude="114.75" latitude="37.35"/>
+<city name="临西" longitude="115.5" latitude="36.87"/>
+<city name="南官" longitude="115.37" latitude="37.37"/>
+<city name="巨鹿" longitude="115.03" latitude="37.22"/>
+<city name="任县" longitude="114.68" latitude="37.11"/>
+<city name="沙河" longitude="114.52" latitude="36.94"/>
+<city name="临城" longitude="114.5" latitude="37.43"/>
+<city name="内丘" longitude="114.5" latitude="37.28"/>
+<city name="新河" longitude="115.22" latitude="37.53"/>
+<city name="清河" longitude="115.67" latitude="37.07"/>
+<city name="威县" longitude="115.08" latitude="36.97"/>
+<city name="广宗" longitude="115.14" latitude="37.06"/>
+<city name="平乡" longitude="115.02" latitude="37.06"/>
+<city name="南和" longitude="114.71" latitude="37"/>
+<city name="保定" longitude="115.48" latitude="38.85"/>
+<city name="涞水" longitude="115.71" latitude="39.39"/>
+<city name="涿县" longitude="115.98" latitude="39.48"/>
+<city name="定兴" longitude="115.78" latitude="39.28"/>
+<city name="容城" longitude="115.86" latitude="39.06"/>
+<city name="安新" longitude="115.92" latitude="38.92"/>
+<city name="蠡县" longitude="115.58" latitude="38.49"/>
+<city name="博野" longitude="115.46" latitude="38.46"/>
+<city name="定县" longitude="114.02" latitude="38.52"/>
+<city name="阜平" longitude="114.18" latitude="38.85"/>
+<city name="唐县" longitude="114.97" latitude="38.75"/>
+<city name="涞源" longitude="114.67" latitude="39.37"/>
+<city name="易县" longitude="115.49" latitude="39.35"/>
+<city name="新城" longitude="115.84" latitude="39.34"/>
+<city name="雄县" longitude="116.1" latitude="38.98"/>
+<city name="徐水" longitude="115.65" latitude="39.02"/>
+<city name="高阳" longitude="115.78" latitude="38.68"/>
+<city name="安国" longitude="115.3" latitude="38.41"/>
+<city name="清苑" longitude="115.47" latitude="38.76"/>
+<city name="望都" longitude="115.14" latitude="38.71"/>
+<city name="曲阳" longitude="114.68" latitude="38.62"/>
+<city name="完县" longitude="115.12" latitude="38.84"/>
+<city name="满城" longitude="115.45" latitude="38.95"/>
+<city name="张家口" longitude="114.87" latitude="40.82"/>
+<city name="康保" longitude="114.6" latitude="41.87"/>
+<city name="赤城" longitude="115.82" latitude="40.92"/>
+<city name="怀来" longitude="115.54" latitude="40.4"/>
+<city name="蔚县" longitude="114.53" latitude="39.83"/>
+<city name="宣化" longitude="115.03" latitude="40.63"/>
+<city name="张北" longitude="114.7" latitude="41.15"/>
+<city name="沽源" longitude="115.68" latitude="41.68"/>
+<city name="崇礼" longitude="115.25" latitude="40.98"/>
+<city name="涿鹿" longitude="115.2" latitude="40.37"/>
+<city name="阳原" longitude="114.15" latitude="40.12"/>
+<city name="怀安" longitude="114.38" latitude="40.67"/>
+<city name="尚义" longitude="113.95" latitude="41.05"/>
+<city name="万全" longitude="114.73" latitude="40.84"/>
+<city name="承德" longitude="117.93" latitude="40.97"/>
+<city name="围场" longitude="117.72" latitude="41.95"/>
+<city name="平泉" longitude="118.68" latitude="41.02"/>
+<city name="宽城" longitude="118.47" latitude="40.62"/>
+<city name="兴隆" longitude="117.48" latitude="40.42"/>
+<city name="滦平" longitude="117.53" latitude="40.95"/>
+<city name="隆化" longitude="117.7" latitude="41.32"/>
+<city name="青龙" longitude="118.93" latitude="40.43"/>
+<city name="丰宁" longitude="116.63" latitude="41.2"/>
+<city name="秦皇岛" longitude="119.57" latitude="39.95"/>
+<city name="迁西" longitude="118.3" latitude="40.15"/>
+<city name="迁安" longitude="118.69" latitude="40.02"/>
+<city name="昌黎" longitude="119.15" latitude="39.72"/>
+<city name="卢龙" longitude="118.85" latitude="39.89"/>
+<city name="滦南" longitude="118.67" latitude="39.49"/>
+<city name="玉田" longitude="117.9" latitude="39.9"/>
+<city name="唐海" longitude="118.54" latitude="39.31"/>
+<city name="遵化" longitude="117.97" latitude="40.2"/>
+<city name="抚宁" longitude="119.22" latitude="39.88"/>
+<city name="乐亭" longitude="118.9" latitude="39.43"/>
+<city name="滦县" longitude="118.73" latitude="39.74"/>
+<city name="丰南" longitude="118.1" latitude="39.58"/>
+<city name="丰润" longitude="118.13" latitude="39.82"/>
+<city name="廊坊" longitude="116.7" latitude="39.53"/>
+<city name="安次" longitude="116.69" latitude="39.52"/>
+<city name="三河" longitude="117.06" latitude="39.97"/>
+<city name="香河" longitude="117" latitude="39.76"/>
+<city name="霸县" longitude="116.38" latitude="39.12"/>
+<city name="固安" longitude="116.29" latitude="39.44"/>
+<city name="大城" longitude="116.63" latitude="38.7"/>
+<city name="文安" longitude="116.45" latitude="38.87"/>
+<city name="永清" longitude="116.48" latitude="39.32"/>
+<city name="大厂" longitude="116.98" latitude="39.98"/>
+<city name="沧州" longitude="116.83" latitude="38.33"/>
+<city name="黄骅" longitude="117.33" latitude="38.4"/>
+<city name="盐山" longitude="117.22" latitude="38.07"/>
+<city name="吴桥" longitude="116.37" latitude="37.65"/>
+<city name="东光" longitude="116.52" latitude="37.89"/>
+<city name="肃宁" longitude="115.82" latitude="38.43"/>
+<city name="河间" longitude="116.07" latitude="38.45"/>
+<city name="泊头" longitude="116.56" latitude="38.08"/>
+<city name="交河" longitude="116.27" latitude="38.02"/>
+<city name="青县" longitude="116.8" latitude="38.58"/>
+<city name="海兴" longitude="117.85" latitude="38.17"/>
+<city name="南皮" longitude="116.7" latitude="38.05"/>
+<city name="任丘" longitude="116.08" latitude="38.72"/>
+<city name="献县" longitude="116.12" latitude="38.2"/>
+<city name="孟村" longitude="117.1" latitude="38.06"/>
+<city name="衡水" longitude="115.72" latitude="37.72"/>
+<city name="饶阳" longitude="115.74" latitude="38.24"/>
+<city name="阜城" longitude="116.14" latitude="37.87"/>
+<city name="景县" longitude="116.26" latitude="37.69"/>
+<city name="枣强" longitude="115.72" latitude="37.52"/>
+<city name="深县" longitude="115.56" latitude="38.02"/>
+<city name="安平" longitude="115.5" latitude="38.22"/>
+<city name="武强" longitude="115.96" latitude="38.03"/>
+<city name="武邑" longitude="115.9" latitude="37.81"/>
+<city name="故城" longitude="115.96" latitude="37.36"/>
+<city name="冀县" longitude="115.56" latitude="37.59"/>
+</provinces>
+<provinces name="河南">
+<city name="郑州" longitude="113.65" latitude="34.76"/>
+<city name="荥阳" longitude="113.35" latitude="34.79"/>
+<city name="开封" longitude="114.35" latitude="34.79"/>
+<city name="平顶山" longitude="113.29" latitude="33.75"/>
+<city name="洛阳" longitude="112.44" latitude="34.7"/>
+<city name="焦作" longitude="113.21" latitude="35.24"/>
+<city name="鹤壁" longitude="114.17" latitude="35.9"/>
+<city name="杞县" longitude="114.77" latitude="34.56"/>
+<city name="尉氏" longitude="114.17" latitude="34.41"/>
+<city name="新郑" longitude="113.71" latitude="34.4"/>
+<city name="登封" longitude="113.02" latitude="34.46"/>
+<city name="通许" longitude="114.46" latitude="34.48"/>
+<city name="中牟" longitude="114" latitude="34.73"/>
+<city name="密县" longitude="113.35" latitude="34.51"/>
+<city name="巩县" longitude="112.96" latitude="34.76"/>
+<city name="兰考" longitude="114.81" latitude="34.69"/>
+<city name="新乡" longitude="113.85" latitude="35.31"/>
+<city name="汲县" longitude="114.05" latitude="35.44"/>
+<city name="封丘" longitude="114.04" latitude="35.03"/>
+<city name="获嘉" longitude="113.63" latitude="35.27"/>
+<city name="温贺" longitude="113.06" latitude="34.94"/>
+<city name="济源" longitude="112.57" latitude="35.08"/>
+<city name="博爱" longitude="113.05" latitude="35.16"/>
+<city name="辉县" longitude="113.77" latitude="35.46"/>
+<city name="延津" longitude="114.19" latitude="35.14"/>
+<city name="原阳" longitude="113.96" latitude="35.05"/>
+<city name="武陟" longitude="113.38" latitude="35.1"/>
+<city name="孟县" longitude="112.77" latitude="34.92"/>
+<city name="沁阳" longitude="112.92" latitude="35.08"/>
+<city name="修武" longitude="113.42" latitude="35.24"/>
+<city name="安阳" longitude="114.35" latitude="36.1"/>
+<city name="南乐" longitude="115.21" latitude="36.08"/>
+<city name="范县" longitude="115.46" latitude="35.9"/>
+<city name="台前" longitude="115.83" latitude="36"/>
+<city name="滑县" longitude="114.52" latitude="35.57"/>
+<city name="浚县" longitude="114.54" latitude="35.67"/>
+<city name="淇县" longitude="114.17" latitude="35.6"/>
+<city name="内黄" longitude="114.88" latitude="35.95"/>
+<city name="清丰" longitude="115.1" latitude="35.89"/>
+<city name="濮阳" longitude="114.98" latitude="35.71"/>
+<city name="长垣" longitude="114.67" latitude="35.19"/>
+<city name="汤阴" longitude="114.35" latitude="35.92"/>
+<city name="林县" longitude="113.81" latitude="36.06"/>
+<city name="商丘" longitude="115.65" latitude="34.44"/>
+<city name="夏邑" longitude="116.13" latitude="34.22"/>
+<city name="柘城" longitude="115.29" latitude="34.08"/>
+<city name="睢县" longitude="115.04" latitude="34.46"/>
+<city name="虞城" longitude="115.87" latitude="34.4"/>
+<city name="永城" longitude="116.37" latitude="33.94"/>
+<city name="宁陵" longitude="115.31" latitude="34.44"/>
+<city name="民权" longitude="115.13" latitude="34.65"/>
+<city name="周口" longitude="114.63" latitude="33.63"/>
+<city name="商水" longitude="114.59" latitude="33.54"/>
+<city name="扶沟" longitude="114.38" latitude="34.05"/>
+<city name="鹿邑" longitude="115.48" latitude="33.86"/>
+<city name="淮阳" longitude="114.88" latitude="33.74"/>
+<city name="沈丘" longitude="115.06" latitude="33.41"/>
+<city name="西华" longitude="114.5" latitude="33.79"/>
+<city name="太康" longitude="114.85" latitude="34.06"/>
+<city name="郸城" longitude="115.17" latitude="33.63"/>
+<city name="项城" longitude="114.9" latitude="33.44"/>
+<city name="许昌" longitude="113.81" latitude="34.02"/>
+<city name="鄢县" longitude="114.17" latitude="34.11"/>
+<city name="郾城" longitude="113.98" latitude="33.6"/>
+<city name="襄城" longitude="113.46" latitude="33.86"/>
+<city name="鲁山" longitude="112.88" latitude="33.74"/>
+<city name="郏县" longitude="113.19" latitude="33.98"/>
+<city name="漯河" longitude="114.02" latitude="33.56"/>
+<city name="长葛" longitude="113.77" latitude="34.22"/>
+<city name="临颖" longitude="113.94" latitude="33.81"/>
+<city name="舞阳" longitude="113.58" latitude="33.44"/>
+<city name="叶县" longitude="113.35" latitude="33.62"/>
+<city name="宝丰" longitude="113.04" latitude="33.86"/>
+<city name="禹县" longitude="113.47" latitude="34.16"/>
+<city name="驻马店" longitude="114.02" latitude="32.98"/>
+<city name="确山" longitude="114.02" latitude="32.83"/>
+<city name="西平" longitude="114" latitude="33.38"/>
+<city name="汝南" longitude="114.35" latitude="33"/>
+<city name="新蔡" longitude="114.97" latitude="32.75"/>
+<city name="泌阳" longitude="113.31" latitude="32.72"/>
+<city name="遂平" longitude="113.98" latitude="33.15"/>
+<city name="上蔡" longitude="114.26" latitude="33.25"/>
+<city name="平舆" longitude="114.62" latitude="32.97"/>
+<city name="正阳" longitude="114.38" latitude="32.62"/>
+<city name="信阳" longitude="114.08" latitude="32.13"/>
+<city name="息县" longitude="114.72" latitude="32.35"/>
+<city name="固始" longitude="115.68" latitude="32.17"/>
+<city name="潢川" longitude="115.04" latitude="32.13"/>
+<city name="新县" longitude="114.83" latitude="31.62"/>
+<city name="罗山" longitude="114.53" latitude="32.21"/>
+<city name="淮滨" longitude="115.41" latitude="32.44"/>
+<city name="商城" longitude="115.42" latitude="31.81"/>
+<city name="光山" longitude="114.91" latitude="32.02"/>
+<city name="南阳" longitude="112.53" latitude="33.01"/>
+<city name="方城" longitude="112.98" latitude="33.25"/>
+<city name="唐河" longitude="112.83" latitude="32.7"/>
+<city name="新野" longitude="112.36" latitude="32.51"/>
+<city name="邓县" longitude="112.08" latitude="32.68"/>
+<city name="淅川" longitude="111.47" latitude="33.14"/>
+<city name="南召" longitude="112.4" latitude="33.49"/>
+<city name="社旗" longitude="112.92" latitude="33.05"/>
+<city name="桐柏" longitude="113.4" latitude="32.37"/>
+<city name="镇平" longitude="112.23" latitude="33.03"/>
+<city name="内乡" longitude="111.83" latitude="33.05"/>
+<city name="西峡" longitude="111.5" latitude="33.31"/>
+<city name="三门峡" longitude="111.19" latitude="34.76"/>
+<city name="孟津" longitude="112.42" latitude="34.84"/>
+<city name="临汝" longitude="112.83" latitude="34.17"/>
+<city name="汝阳" longitude="112.46" latitude="34.16"/>
+<city name="嵩县" longitude="112.07" latitude="34.14"/>
+<city name="栾川" longitude="111.6" latitude="33.81"/>
+<city name="灵宝" longitude="110.85" latitude="34.52"/>
+<city name="渑池" longitude="111.75" latitude="34.76"/>
+<city name="义马" longitude="111.92" latitude="34.73"/>
+<city name="偃师" longitude="112.77" latitude="34.73"/>
+<city name="伊川" longitude="112.42" latitude="34.43"/>
+<city name="宜阳" longitude="112.15" latitude="34.51"/>
+<city name="洛宁" longitude="111.65" latitude="34.39"/>
+<city name="卢氏" longitude="111.03" latitude="34.06"/>
+<city name="陕县" longitude="111.19" latitude="34.76"/>
+<city name="新安" longitude="112.14" latitude="34.75"/>
+</provinces>
+<provinces name="浙江">
+<city name="杭州" longitude="120.19" latitude="30.26"/>
+<city name="余杭" longitude="120.3" latitude="30.43"/>
+<city name="富阳" longitude="119.95" latitude="30.07"/>
+<city name="建德" longitude="119.27" latitude="29.49"/>
+<city name="临安" longitude="119.72" latitude="30.23"/>
+<city name="萧山" longitude="120.25" latitude="30.16"/>
+<city name="桐庐" longitude="119.64" latitude="29.8"/>
+<city name="淳安" longitude="119.05" latitude="29.61"/>
+<city name="宁波" longitude="121.56" latitude="29.86"/>
+<city name="镇海" longitude="121.72" latitude="29.96"/>
+<city name="温州" longitude="120.65" latitude="28.01"/>
+<city name="瓯海" longitude="120.65" latitude="28.01"/>
+<city name="永喜" longitude="120.68" latitude="28.16"/>
+<city name="洞头" longitude="121.12" latitude="27.84"/>
+<city name="平阳" longitude="120.55" latitude="27.68"/>
+<city name="泰顺" longitude="119.7" latitude="27.57"/>
+<city name="乐清" longitude="120.94" latitude="28.14"/>
+<city name="瑞安" longitude="120.62" latitude="27.8"/>
+<city name="文成" longitude="120.08" latitude="27.08"/>
+<city name="苍南" longitude="120.36" latitude="27.53"/>
+<city name="湖州" longitude="120.1" latitude="30.86"/>
+<city name="平湖" longitude="121.02" latitude="30.7"/>
+<city name="桐乡" longitude="120.54" latitude="30.64"/>
+<city name="安吉" longitude="119.68" latitude="30.68"/>
+<city name="嘉善" longitude="120.92" latitude="30.84"/>
+<city name="嘉兴" longitude="120.76" latitude="30.77"/>
+<city name="海盐" longitude="120.92" latitude="30.53"/>
+<city name="海宁" longitude="120.69" latitude="30.53"/>
+<city name="德清" longitude="120.08" latitude="30.54"/>
+<city name="长兴" longitude="119.91" latitude="30.01"/>
+<city name="定海" longitude="122.11" latitude="30.03"/>
+<city name="岱山" longitude="122.2" latitude="30.26"/>
+<city name="嵊四" longitude="122.45" latitude="30.72"/>
+<city name="普陀" longitude="122.3" latitude="29.97"/>
+<city name="鄞县" longitude="121.56" latitude="29.86"/>
+<city name="象山" longitude="121.8" latitude="29.48"/>
+<city name="奉化" longitude="121.41" latitude="29.66"/>
+<city name="慈溪" longitude="121.23" latitude="30.18"/>
+<city name="宁海" longitude="121.42" latitude="29.3"/>
+<city name="余姚" longitude="121.16" latitude="30.04"/>
+<city name="绍兴" longitude="120.58" latitude="30.01"/>
+<city name="新昌" longitude="120.89" latitude="29.49"/>
+<city name="诸暨" longitude="120.23" latitude="29.71"/>
+<city name="上虞" longitude="120.87" latitude="30.03"/>
+<city name="嵊县" longitude="120.81" latitude="29.6"/>
+<city name="椒江" longitude="121.44" latitude="28.67"/>
+<city name="临海" longitude="121.13" latitude="28.8"/>
+<city name="三门" longitude="121.38" latitude="29.11"/>
+<city name="温岭" longitude="121.36" latitude="28.36"/>
+<city name="仙居" longitude="120.73" latitude="28.85"/>
+<city name="天台" longitude="121.03" latitude="29.15"/>
+<city name="黄岩" longitude="121.27" latitude="28.64"/>
+<city name="玉环" longitude="121.23" latitude="28.14"/>
+<city name="丽水" longitude="119.92" latitude="28.45"/>
+<city name="青田" longitude="120.28" latitude="28.45"/>
+<city name="庆无" longitude="119.06" latitude="27.61"/>
+<city name="遂昌" longitude="119.25" latitude="28.59"/>
+<city name="缙云" longitude="120.6" latitude="28.66"/>
+<city name="云和" longitude="119.56" latitude="28.12"/>
+<city name="龙泉" longitude="119.13" latitude="28.08"/>
+<city name="松阳" longitude="119.48" latitude="28.46"/>
+<city name="金华" longitude="119.64" latitude="29.12"/>
+<city name="浦江" longitude="119.88" latitude="29.46"/>
+<city name="东阳" longitude="120.23" latitude="29.27"/>
+<city name="武义" longitude="119.81" latitude="28.9"/>
+<city name="江山" longitude="118.61" latitude="28.74"/>
+<city name="开化" longitude="118.39" latitude="29.15"/>
+<city name="衢州" longitude="118.88" latitude="28.97"/>
+<city name="兰溪" longitude="119.48" latitude="29.19"/>
+<city name="义乌" longitude="120.06" latitude="29.32"/>
+<city name="永康" longitude="120.02" latitude="28.92"/>
+<city name="常山" longitude="118.5" latitude="28.9"/>
+</provinces>
+<provinces name="海南">
+<city name="海口" longitude="110.35" latitude="20.02"/>
+<city name="琼山" longitude="110.33" latitude="19.98"/>
+<city name="文昌" longitude="110.72" latitude="19.61"/>
+<city name="定安" longitude="110.31" latitude="19.68"/>
+<city name="琼海" longitude="110.46" latitude="19.25"/>
+<city name="万宁" longitude="110.39" latitude="18.8"/>
+<city name="屯昌" longitude="110.1" latitude="19.36"/>
+<city name="澄迈" longitude="110" latitude="19.75"/>
+<city name="儋县" longitude="109.57" latitude="19.52"/>
+<city name="临高" longitude="109.69" latitude="19.91"/>
+<city name="保亭" longitude="109.7" latitude="18.64"/>
+<city name="白沙" longitude="109.44" latitude="19.23"/>
+<city name="琼中" longitude="109.83" latitude="19.05"/>
+<city name="陵水" longitude="110.02" latitude="18.48"/>
+<city name="崖县" longitude="109.5" latitude="18.25"/>
+<city name="乐东" longitude="109.17" latitude="18.73"/>
+<city name="东方" longitude="108.64" latitude="19.09"/>
+<city name="昌江" longitude="109.03" latitude="19.25"/>
+</provinces>
+<provinces name="港澳台">
+<city name="香港" longitude="114.1" latitude="22.2"/>
+<city name="澳门" longitude="113.33" latitude="22.13"/>
+<city name="台北" longitude="121.5" latitude="25.05"/>
+<city name="高雄" longitude="120.37" latitude="22.64"/>
+<city name="基隆" longitude="121.73" latitude="25.14"/>
+<city name="台中" longitude="120.67" latitude="24.15"/>
+<city name="台南" longitude="120.19" latitude="22.98"/>
+<city name="宜兰" longitude="121.75" latitude="24.75"/>
+<city name="桃园" longitude="121.3" latitude="25"/>
+<city name="新竹" longitude="120.96" latitude="24.81"/>
+</provinces>
+<provinces name="湖北">
+<city name="武汉" longitude="114.31" latitude="30.52"/>
+<city name="武昌" longitude="114.33" latitude="30.35"/>
+<city name="汉阳" longitude="114.02" latitude="30.57"/>
+<city name="黄石" longitude="115.09" latitude="30.2"/>
+<city name="十堰" longitude="110.79" latitude="32.65"/>
+<city name="沙市" longitude="112.24" latitude="30.32"/>
+<city name="宜昌" longitude="111.3" latitude="30.7"/>
+<city name="襄樊" longitude="112.14" latitude="30.02"/>
+<city name="孝感" longitude="113.91" latitude="31.92"/>
+<city name="黄陂" longitude="114.36" latitude="30.88"/>
+<city name="汉川" longitude="113.59" latitude="30.63"/>
+<city name="云梦" longitude="113.73" latitude="31.02"/>
+<city name="应山" longitude="113.81" latitude="31.62"/>
+<city name="大悟" longitude="114.09" latitude="31.56"/>
+<city name="应城" longitude="113.6" latitude="30.94"/>
+<city name="安陆" longitude="113.69" latitude="31.25"/>
+<city name="鄂城" longitude="114.87" latitude="30.38"/>
+<city name="黄冈" longitude="114.87" latitude="30.44"/>
+<city name="新洲" longitude="114.8" latitude="31.84"/>
+<city name="红安" longitude="114.61" latitude="31.29"/>
+<city name="麻城" longitude="115" latitude="31.17"/>
+<city name="罗川" longitude="115.37" latitude="30.79"/>
+<city name="浠水" longitude="115.22" latitude="30.46"/>
+<city name="蕲春" longitude="115.3" latitude="30.24"/>
+<city name="黄梅" longitude="115.93" latitude="30.09"/>
+<city name="广济" longitude="115.56" latitude="29.85"/>
+<city name="英山" longitude="115.57" latitude="30.75"/>
+<city name="咸宁" longitude="114.28" latitude="29.87"/>
+<city name="阳新" longitude="115.22" latitude="29.83"/>
+<city name="通山" longitude="114.52" latitude="29.6"/>
+<city name="通城" longitude="113.8" latitude="29.23"/>
+<city name="嘉鱼" longitude="113.91" latitude="29.97"/>
+<city name="崇阳" longitude="114.04" latitude="29.54"/>
+<city name="蒲圻" longitude="113.85" latitude="29.71"/>
+<city name="荆门" longitude="112.19" latitude="31.02"/>
+<city name="江陵" longitude="112.18" latitude="30.35"/>
+<city name="钟祥" longitude="112.58" latitude="31.17"/>
+<city name="京山" longitude="113.11" latitude="31.03"/>
+<city name="监利" longitude="112.9" latitude="29.83"/>
+<city name="石首" longitude="112.41" latitude="29.73"/>
+</provinces>
+<provinces name="湖南">
+<city name="长沙" longitude="113" latitude="28.21"/>
+<city name="望城" longitude="112.8" latitude="28.37"/>
+<city name="株洲" longitude="113.16" latitude="27.83"/>
+<city name="湘潭" longitude="112.91" latitude="27.87"/>
+<city name="衡阳" longitude="112.61" latitude="26.89"/>
+<city name="邵阳" longitude="111.5" latitude="27.22"/>
+<city name="岳阳" longitude="113.09" latitude="29.37"/>
+<city name="临湘" longitude="113.42" latitude="29.48"/>
+<city name="平江" longitude="113.56" latitude="29.71"/>
+<city name="泪罗" longitude="113.05" latitude="28.8"/>
+<city name="湘阴" longitude="112.87" latitude="28.68"/>
+<city name="华容" longitude="112.55" latitude="29.52"/>
+<city name="浏阳" longitude="113.63" latitude="28.16"/>
+<city name="醴陵" longitude="113.5" latitude="27.67"/>
+<city name="攸县" longitude="113.32" latitude="27.01"/>
+<city name="茶陵" longitude="113.54" latitude="26.79"/>
+<city name="酃县" longitude="113.77" latitude="26.49"/>
+<city name="湘乡" longitude="112.5" latitude="27.75"/>
+<city name="郴州" longitude="113" latitude="25.79"/>
+<city name="郴县" longitude="113" latitude="25.79"/>
+<city name="安仁" longitude="113.27" latitude="26.71"/>
+<city name="永兴" longitude="113.11" latitude="26.13"/>
+<city name="资兴" longitude="113.39" latitude="25.95"/>
+<city name="桂东" longitude="113.91" latitude="25.08"/>
+<city name="汝城" longitude="113.68" latitude="25.54"/>
+<city name="宜章" longitude="113.96" latitude="25.41"/>
+<city name="临武" longitude="112.55" latitude="25.27"/>
+<city name="嘉禾" longitude="112.35" latitude="25.56"/>
+<city name="桂阳" longitude="112.72" latitude="25.73"/>
+<city name="来阳" longitude="112.84" latitude="26.41"/>
+<city name="衡南" longitude="112.61" latitude="26.89"/>
+<city name="衡山" longitude="112.86" latitude="27.25"/>
+<city name="衡东" longitude="112.95" latitude="27.1"/>
+<city name="常宁" longitude="112.39" latitude="26.38"/>
+<city name="祁阳" longitude="111.85" latitude="26.59"/>
+<city name="祁东" longitude="112.14" latitude="26.8"/>
+<city name="衡阳" longitude="112.39" latitude="26.98"/>
+<city name="永州" longitude="111.63" latitude="26.22"/>
+<city name="零陵" longitude="111.63" latitude="26.22"/>
+<city name="新田" longitude="112.21" latitude="25.91"/>
+<city name="宁远" longitude="111.95" latitude="25.6"/>
+<city name="蓝山" longitude="112.16" latitude="25.37"/>
+<city name="双牌" longitude="111.64" latitude="25.96"/>
+<city name="江永" longitude="111.33" latitude="25.41"/>
+<city name="道县" longitude="111.57" latitude="25.52"/>
+<city name="东安" longitude="111.28" latitude="26.41"/>
+<city name="江华" longitude="111.79" latitude="24.97"/>
+<city name="新宁" longitude="110.84" latitude="26.44"/>
+<city name="武冈" longitude="110.61" latitude="26.73"/>
+<city name="隆回" longitude="111.04" latitude="27.13"/>
+<city name="绥宁" longitude="110.14" latitude="25.59"/>
+<city name="洞口" longitude="110.57" latitude="27.06"/>
+<city name="城步" longitude="110.3" latitude="26.37"/>
+<city name="娄底" longitude="111.96" latitude="27.71"/>
+<city name="涟源" longitude="111.66" latitude="27.68"/>
+<city name="新邵" longitude="111.46" latitude="27.33"/>
+<city name="双峰" longitude="112.18" latitude="27.44"/>
+<city name="冷水江" longitude="111.41" latitude="27.68"/>
+<city name="邵东" longitude="111.73" latitude="27.25"/>
+<city name="新化" longitude="111.29" latitude="27.73"/>
+<city name="怀化" longitude="109.95" latitude="27.52"/>
+<city name="黔阳" longitude="110.14" latitude="27.33"/>
+<city name="辰溪" longitude="110.18" latitude="28.02"/>
+<city name="沅陵" longitude="110.39" latitude="28.46"/>
+<city name="溆浦" longitude="110.57" latitude="27.92"/>
+<city name="会同" longitude="109.71" latitude="26.86"/>
+<city name="靖县" longitude="109.68" latitude="26.57"/>
+<city name="洪江" longitude="109.96" latitude="27.1"/>
+<city name="芷江" longitude="109.78" latitude="27.44"/>
+<city name="麻阳" longitude="109.79" latitude="27.87"/>
+<city name="通道" longitude="109.77" latitude="26.16"/>
+<city name="新晃" longitude="109.16" latitude="27.37"/>
+<city name="吉首" longitude="109.71" latitude="28.3"/>
+<city name="永顺" longitude="109.84" latitude="29"/>
+<city name="桑植" longitude="110.16" latitude="29.38"/>
+<city name="大庸" longitude="110.48" latitude="29.13"/>
+<city name="古丈" longitude="109.91" latitude="28.62"/>
+<city name="泸溪" longitude="110.73" latitude="28.29"/>
+<city name="凤凰" longitude="109.43" latitude="27.92"/>
+<city name="花垣" longitude="109.46" latitude="28.59"/>
+<city name="保靖" longitude="109.64" latitude="28.7"/>
+<city name="龙山" longitude="109.42" latitude="29.64"/>
+<city name="常德" longitude="111.69" latitude="29.05"/>
+<city name="临澧" longitude="111.64" latitude="29.44"/>
+<city name="澧县" longitude="111.75" latitude="29.65"/>
+<city name="安乡" longitude="112.16" latitude="29.41"/>
+<city name="津市" longitude="111.87" latitude="29.64"/>
+<city name="汉寿" longitude="111.97" latitude="28.9"/>
+<city name="桃源" longitude="111.47" latitude="28.9"/>
+<city name="慈利" longitude="111.09" latitude="29.41"/>
+<city name="石门" longitude="111.35" latitude="29.59"/>
+<city name="益阳" longitude="112.33" latitude="28.6"/>
+<city name="南县" longitude="112.39" latitude="29.37"/>
+<city name="沅江" longitude="112.36" latitude="28.83"/>
+<city name="宁乡" longitude="112.55" latitude="28.27"/>
+<city name="安化" longitude="111.2" latitude="28.38"/>
+<city name="桃江" longitude="112.11" latitude="28.51"/>
+</provinces>
+<provinces name="甘肃">
+<city name="兰州" longitude="103.73" latitude="36.03"/>
+<city name="永登" longitude="103.25" latitude="36.73"/>
+<city name="榆中" longitude="104.09" latitude="35.87"/>
+<city name="永昌" longitude="101.94" latitude="38.23"/>
+<city name="皋兰" longitude="103.97" latitude="36.32"/>
+<city name="定西" longitude="104.57" latitude="35.57"/>
+<city name="会宁" longitude="105.08" latitude="35.72"/>
+<city name="陇西" longitude="104.61" latitude="34.98"/>
+<city name="临洮" longitude="103.88" latitude="35.39"/>
+<city name="靖远" longitude="104.71" latitude="36.54"/>
+<city name="通渭" longitude="105.27" latitude="35.24"/>
+<city name="渭源" longitude="104.19" latitude="35.17"/>
+<city name="平凉" longitude="106.68" latitude="35.51"/>
+<city name="灵台" longitude="107.61" latitude="35.1"/>
+<city name="华亭" longitude="106.65" latitude="35.21"/>
+<city name="静宁" longitude="105.73" latitude="35.51"/>
+<city name="泾川" longitude="107.38" latitude="35.31"/>
+<city name="崇信" longitude="107.05" latitude="35.27"/>
+<city name="庄浪" longitude="106.06" latitude="35.2"/>
+<city name="庆阳" longitude="107.88" latitude="36.03"/>
+<city name="华池" longitude="108" latitude="36.44"/>
+<city name="庄宁" longitude="108.43" latitude="35.5"/>
+<city name="镇源" longitude="107.22" latitude="35.7"/>
+<city name="环县" longitude="107.33" latitude="36.57"/>
+<city name="合水" longitude="108.02" latitude="35.81"/>
+<city name="宁县" longitude="107.94" latitude="35.17"/>
+<city name="天水" longitude="105.69" latitude="34.6"/>
+<city name="徽县" longitude="106.11" latitude="33.78"/>
+<city name="礼县" longitude="105.15" latitude="34.22"/>
+<city name="武山" longitude="104.88" latitude="34.69"/>
+<city name="秦安" longitude="105.69" latitude="34.89"/>
+<city name="清水" longitude="106.12" latitude="34.73"/>
+<city name="两当" longitude="106.28" latitude="33.9"/>
+<city name="西和" longitude="105.28" latitude="34.02"/>
+<city name="甘谷" longitude="105.35" latitude="34.7"/>
+<city name="漳县" longitude="104.48" latitude="34.87"/>
+<city name="张家川" longitude="106.23" latitude="35"/>
+<city name="武都" longitude="104.94" latitude="33.43"/>
+<city name="宕昌" longitude="104.38" latitude="34.06"/>
+<city name="康县" longitude="105.58" latitude="33.33"/>
+<city name="成县" longitude="105.7" latitude="33.75"/>
+<city name="文县" longitude="104.7" latitude="32.95"/>
+<city name="临潭" longitude="103.35" latitude="34.69"/>
+<city name="舟曲" longitude="104.38" latitude="33.81"/>
+<city name="玛曲" longitude="102.04" latitude="33.97"/>
+<city name="下河" longitude="102.46" latitude="35.21"/>
+<city name="卓尼" longitude="103.54" latitude="34.61"/>
+<city name="迭部" longitude="103.23" latitude="34.08"/>
+<city name="碌曲" longitude="102.5" latitude="34.6"/>
+<city name="临夏" longitude="103.22" latitude="35.62"/>
+<city name="永靖" longitude="103.34" latitude="35.97"/>
+<city name="和政" longitude="103.31" latitude="35.43"/>
+<city name="康乐" longitude="103.68" latitude="35.39"/>
+<city name="广河" longitude="103.54" latitude="35.46"/>
+<city name="东乡" longitude="103.39" latitude="35.68"/>
+<city name="岷县" longitude="104.04" latitude="34.41"/>
+<city name="积石山" longitude="102.85" latitude="35.74"/>
+<city name="武威" longitude="102.61" latitude="37.94"/>
+<city name="民勤" longitude="103.08" latitude="38.62"/>
+<city name="古浪" longitude="102.86" latitude="37.43"/>
+<city name="景泰" longitude="104.05" latitude="37.14"/>
+<city name="天祝" longitude="102.84" latitude="37.24"/>
+<city name="张掖" longitude="100.46" latitude="38.93"/>
+<city name="民乐" longitude="100.85" latitude="38.43"/>
+<city name="临泽" longitude="100.17" latitude="39.14"/>
+<city name="山丹" longitude="101.19" latitude="38.79"/>
+<city name="高台" longitude="99.84" latitude="39.14"/>
+<city name="肃南" longitude="99.57" latitude="38.86"/>
+<city name="玉门" longitude="97.58" latitude="39.81"/>
+<city name="酒泉" longitude="98.5" latitude="39.71"/>
+<city name="敦煌" longitude="94.71" latitude="40.13"/>
+<city name="金塔" longitude="98.92" latitude="39.97"/>
+<city name="安西" longitude="95.77" latitude="40.51"/>
+<city name="阿克塞" longitude="94.25" latitude="38.46"/>
+<city name="肃北" longitude="94.89" latitude="39.49"/>
+</provinces>
+<provinces name="福建">
+<city name="福州" longitude="119.3" latitude="26.08"/>
+<city name="闽侯" longitude="119.14" latitude="26.16"/>
+<city name="厦门" longitude="118.1" latitude="24.46"/>
+<city name="同安" longitude="118.15" latitude="24.74"/>
+<city name="南平" longitude="118.16" latitude="26.65"/>
+<city name="南平" longitude="118.11" latitude="27.34"/>
+<city name="建瓯" longitude="118.32" latitude="27.05"/>
+<city name="浦城" longitude="118.55" latitude="27.92"/>
+<city name="邵武" longitude="117.48" latitude="27.34"/>
+<city name="顺昌" longitude="117.8" latitude="26.8"/>
+<city name="崇安" longitude="118.02" latitude="27.76"/>
+<city name="光泽" longitude="117.34" latitude="27.54"/>
+<city name="松溪" longitude="118.77" latitude="27.53"/>
+<city name="政和" longitude="118.85" latitude="27.38"/>
+<city name="宁德" longitude="119.52" latitude="26.65"/>
+<city name="福安" longitude="119.65" latitude="27.09"/>
+<city name="连江" longitude="119.53" latitude="26.2"/>
+<city name="福鼎" longitude="120.2" latitude="27.34"/>
+<city name="霞浦" longitude="120" latitude="26.89"/>
+<city name="吉田" longitude="118.74" latitude="26.59"/>
+<city name="罗源" longitude="119.55" latitude="26.49"/>
+<city name="寿宁" longitude="119.5" latitude="27.47"/>
+<city name="周宁" longitude="119.36" latitude="27.12"/>
+<city name="屏南" longitude="118.98" latitude="26.92"/>
+<city name="柘荣" longitude="119.89" latitude="27.25"/>
+<city name="莆田" longitude="119" latitude="25.44"/>
+<city name="仙游" longitude="118.7" latitude="25.37"/>
+<city name="福清" longitude="119.39" latitude="25.73"/>
+<city name="长乐" longitude="119.52" latitude="25.96"/>
+<city name="永泰" longitude="118.95" latitude="25.88"/>
+<city name="平潭" longitude="119.78" latitude="25.51"/>
+<city name="闽清" longitude="118.86" latitude="26.21"/>
+<city name="泉州" longitude="118.58" latitude="24.93"/>
+<city name="晋江" longitude="118.57" latitude="24.82"/>
+<city name="南安" longitude="118.39" latitude="24.96"/>
+<city name="惠安" longitude="118.78" latitude="25.04"/>
+<city name="安溪" longitude="118.18" latitude="25.07"/>
+<city name="永春" longitude="118.3" latitude="25.34"/>
+<city name="德化" longitude="118.24" latitude="25.5"/>
+<city name="金门" longitude="118.34" latitude="24.43"/>
+<city name="漳州" longitude="117.35" latitude="24.52"/>
+<city name="龙海" longitude="117.79" latitude="24.44"/>
+<city name="漳浦" longitude="117.61" latitude="24.12"/>
+<city name="诏安" longitude="117.16" latitude="23.73"/>
+<city name="平和" longitude="117.3" latitude="24.38"/>
+<city name="云霄" longitude="117.34" latitude="23.99"/>
+<city name="南靖" longitude="117.35" latitude="24.51"/>
+<city name="长泰" longitude="117.75" latitude="24.62"/>
+<city name="东山" longitude="117.4" latitude="23.72"/>
+<city name="华安" longitude="117.53" latitude="25"/>
+<city name="龙岩" longitude="117.01" latitude="25.12"/>
+<city name="上杭" longitude="116.41" latitude="25.43"/>
+<city name="永定" longitude="116.81" latitude="24.76"/>
+<city name="长汀" longitude="116.37" latitude="25.85"/>
+<city name="武平" longitude="116.1" latitude="25.11"/>
+<city name="连城" longitude="116.75" latitude="25.72"/>
+<city name="漳平" longitude="117.4" latitude="25.3"/>
+<city name="三明" longitude="117.61" latitude="26.23"/>
+<city name="龙溪" longitude="118.17" latitude="26.18"/>
+<city name="宁化" longitude="116.64" latitude="26.26"/>
+<city name="大田" longitude="117.83" latitude="25.69"/>
+<city name="永安" longitude="117.37" latitude="25.97"/>
+<city name="沙县" longitude="117.77" latitude="26.41"/>
+<city name="将乐" longitude="117.45" latitude="26.73"/>
+<city name="清流" longitude="116.81" latitude="26.12"/>
+<city name="建宁" longitude="116.82" latitude="26.85"/>
+<city name="泰宁" longitude="117.15" latitude="26.92"/>
+<city name="明溪" longitude="117.18" latitude="26.36"/>
+</provinces>
+<provinces name="西藏自治区">
+<city name="拉萨" longitude="91.11" latitude="29.97"/>
+<city name="林周" longitude="91.24" latitude="30.2"/>
+<city name="当雄" longitude="91.05" latitude="30.51"/>
+<city name="墨竹工卡" longitude="91.77" latitude="29.77"/>
+<city name="尼木" longitude="90.14" latitude="29.44"/>
+<city name="米林" longitude="94.13" latitude="29.18"/>
+<city name="墨脱" longitude="95.26" latitude="29.22"/>
+<city name="达孜" longitude="91.39" latitude="29.63"/>
+<city name="曲水" longitude="90.7" latitude="29.39"/>
+<city name="堆龙德庆" longitude="90.96" latitude="29.67"/>
+<city name="林芝" longitude="94.25" latitude="29.59"/>
+<city name="工布江达" longitude="93.25" latitude="29.92"/>
+<city name="那曲" longitude="92.1" latitude="31.47"/>
+<city name="巴青" longitude="94.1" latitude="31.96"/>
+<city name="比如" longitude="93.68" latitude="31.53"/>
+<city name="班戈" longitude="90.05" latitude="31.35"/>
+<city name="嘉黎" longitude="93.46" latitude="30.63"/>
+<city name="聂荣" longitude="92.3" latitude="31.08"/>
+<city name="索县" longitude="93.71" latitude="31.92"/>
+<city name="安多" longitude="91.68" latitude="32.29"/>
+<city name="申扎" longitude="88.7" latitude="30.94"/>
+<city name="吕都" longitude="97.14" latitude="31.18"/>
+<city name="贡觉" longitude="98.29" latitude="30.86"/>
+<city name="左贡" longitude="97.9" latitude="29.68"/>
+<city name="察隅" longitude="97.49" latitude="28.62"/>
+<city name="洛隆" longitude="95.76" latitude="30.81"/>
+<city name="丁青" longitude="95.63" latitude="31.42"/>
+<city name="波密" longitude="95.75" latitude="29.92"/>
+<city name="江达" longitude="89.19" latitude="31.53"/>
+<city name="察雅" longitude="97.56" latitude="30.69"/>
+<city name="芒康" longitude="98.68" latitude="29.64"/>
+<city name="八宿" longitude="96.95" latitude="30.04"/>
+<city name="边坝" longitude="94.69" latitude="30.94"/>
+<city name="类乌齐" longitude="96.57" latitude="31.2"/>
+<city name="乃东" longitude="91.76" latitude="29.18"/>
+<city name="加查" longitude="92.6" latitude="29.09"/>
+<city name="曲松" longitude="92.11" latitude="29.08"/>
+<city name="错那" longitude="91.91" latitude="27.98"/>
+<city name="穷结" longitude="91.65" latitude="29.04"/>
+<city name="贡嘎" longitude="90.96" latitude="29.25"/>
+<city name="浪卡子" longitude="90.33" latitude="29.96"/>
+<city name="桑日" longitude="92" latitude="29.26"/>
+<city name="朗县" longitude="93.11" latitude="29.06"/>
+<city name="隆子" longitude="92.42" latitude="28.46"/>
+<city name="措美" longitude="91.4" latitude="28.49"/>
+<city name="洛扎" longitude="90.83" latitude="28.42"/>
+<city name="扎囊" longitude="91.26" latitude="29.22"/>
+<city name="日喀则" longitude="88.82" latitude="29.28"/>
+<city name="定结" longitude="87.77" latitude="28.38"/>
+<city name="拉孜" longitude="87.62" latitude="29.1"/>
+<city name="聂拉木" longitude="85.94" latitude="28.19"/>
+<city name="谢通门" longitude="88.25" latitude="29.43"/>
+<city name="仲巴" longitude="84.15" latitude="29.66"/>
+<city name="康马" longitude="89.67" latitude="28.57"/>
+<city name="亚东" longitude="88.93" latitude="27.55"/>
+<city name="岗巴" longitude="88.5" latitude="28.29"/>
+<city name="南木林" longitude="89.02" latitude="29.71"/>
+<city name="萨迦" longitude="88" latitude="28.87"/>
+<city name="定日" longitude="87.11" latitude="28.57"/>
+<city name="吉隆" longitude="85.29" latitude="28.94"/>
+<city name="昂仁" longitude="87.22" latitude="29.3"/>
+<city name="江孜" longitude="89.63" latitude="28.94"/>
+<city name="仁布" longitude="89.77" latitude="29.21"/>
+<city name="白朗" longitude="89.16" latitude="29.11"/>
+<city name="萨嘎" longitude="85.3" latitude="29.38"/>
+<city name="噶尔" longitude="80" latitude="32.08"/>
+<city name="革吉" longitude="81.13" latitude="32.45"/>
+<city name="扎达" longitude="79.76" latitude="31.47"/>
+<city name="措勤" longitude="85.16" latitude="31.06"/>
+<city name="日上" longitude="79.61" latitude="33.44"/>
+<city name="改则" longitude="84.1" latitude="32.33"/>
+<city name="普兰" longitude="81.18" latitude="30.37"/>
+</provinces>
+<provinces name="贵州">
+<city name="贵阳" longitude="106.71" latitude="26.57"/>
+<city name="六盘水" longitude="104.82" latitude="26.58"/>
+<city name="水城" longitude="104.82" latitude="26.58"/>
+<city name="盘县" longitude="104.64" latitude="25.81"/>
+<city name="六枝" longitude="105.47" latitude="26.21"/>
+<city name="遵义" longitude="106.9" latitude="27.7"/>
+<city name="绥阳" longitude="107.19" latitude="27.95"/>
+<city name="道真" longitude="107.6" latitude="28.89"/>
+<city name="凤冈" longitude="107.72" latitude="27.97"/>
+<city name="余庆" longitude="107.88" latitude="27.22"/>
+<city name="赤水" longitude="105.69" latitude="28.57"/>
+<city name="桐梓" longitude="106.8" latitude="28.16"/>
+<city name="正安" longitude="107.43" latitude="28.56"/>
+<city name="务川" longitude="107.87" latitude="28.54"/>
+<city name="湄潭" longitude="107.5" latitude="27.76"/>
+<city name="仁怀" longitude="106.41" latitude="27.81"/>
+<city name="习水" longitude="106.2" latitude="28.33"/>
+<city name="铜仁" longitude="109.21" latitude="27.73"/>
+<city name="玉屏" longitude="108.91" latitude="27.24"/>
+<city name="思南" longitude="108.23" latitude="27.94"/>
+<city name="德江" longitude="108.13" latitude="28.27"/>
+<city name="万山" longitude="109.2" latitude="27.52"/>
+<city name="江口" longitude="108.82" latitude="27.68"/>
+<city name="师阡" longitude="108.24" latitude="27.52"/>
+<city name="印江" longitude="108.41" latitude="28.02"/>
+<city name="沿河" longitude="108.48" latitude="28.57"/>
+<city name="松桃" longitude="109.18" latitude="28.17"/>
+<city name="毕节" longitude="105.29" latitude="27.32"/>
+<city name="黔西" longitude="106.04" latitude="27.03"/>
+<city name="织金" longitude="105.76" latitude="26.66"/>
+<city name="赫章" longitude="104.71" latitude="27.13"/>
+<city name="大方" longitude="105.61" latitude="27.16"/>
+<city name="金沙" longitude="106.22" latitude="27.46"/>
+<city name="钠雍" longitude="105.38" latitude="26.77"/>
+<city name="威宁" longitude="104.28" latitude="26.87"/>
+<city name="安顺" longitude="105.92" latitude="26.25"/>
+<city name="息烽" longitude="106.73" latitude="27.1"/>
+<city name="清镇" longitude="106.46" latitude="26.56"/>
+<city name="普定" longitude="105.75" latitude="26.32"/>
+<city name="开阳" longitude="106.95" latitude="27.06"/>
+<city name="修文" longitude="106.59" latitude="26.84"/>
+<city name="平坝" longitude="106.26" latitude="26.42"/>
+<city name="镇宁" longitude="105.75" latitude="26.08"/>
+<city name="紫云" longitude="106.06" latitude="25.75"/>
+<city name="关岭" longitude="105.62" latitude="25.94"/>
+<city name="兴义" longitude="104.91" latitude="25.1"/>
+<city name="普安" longitude="104.96" latitude="25.79"/>
+<city name="贞丰" longitude="105.63" latitude="25.39"/>
+<city name="望谟" longitude="106.09" latitude="25.17"/>
+<city name="册亭" longitude="105.79" latitude="25"/>
+<city name="安龙" longitude="105.49" latitude="25.11"/>
+<city name="兴仁" longitude="105.18" latitude="25.44"/>
+<city name="晴龙" longitude="105.21" latitude="25.83"/>
+<city name="凯里" longitude="107.97" latitude="26.59"/>
+<city name="施秉" longitude="108.11" latitude="27.03"/>
+<city name="镇远" longitude="108.41" latitude="27.06"/>
+<city name="天柱" longitude="109.2" latitude="26.89"/>
+<city name="剑河" longitude="108.58" latitude="26.64"/>
+<city name="黎平" longitude="109.14" latitude="26.24"/>
+<city name="从江" longitude="108.9" latitude="25.76"/>
+<city name="麻江" longitude="107.58" latitude="26.49"/>
+<city name="黄平" longitude="107.89" latitude="26.89"/>
+<city name="三穗" longitude="108.68" latitude="26.98"/>
+<city name="岑巩" longitude="108.72" latitude="27.21"/>
+<city name="锦屏" longitude="109.18" latitude="26.7"/>
+<city name="台江" longitude="108.32" latitude="26.68"/>
+<city name="榕江" longitude="108.5" latitude="25.94"/>
+<city name="雷山" longitude="108.07" latitude="26.38"/>
+<city name="丹寨" longitude="107.79" latitude="26.21"/>
+<city name="都匀" longitude="107.53" latitude="26.72"/>
+<city name="贵定" longitude="107.22" latitude="26.58"/>
+<city name="瓮安" longitude="107.48" latitude="27.08"/>
+<city name="平塘" longitude="107.55" latitude="25.83"/>
+<city name="长顺" longitude="106.45" latitude="26.03"/>
+<city name="惠水" longitude="106.66" latitude="26.14"/>
+<city name="荔波" longitude="107.88" latitude="25.42"/>
+<city name="福泉" longitude="107.51" latitude="26.7"/>
+<city name="独山" longitude="107.54" latitude="25.84"/>
+<city name="罗甸" longitude="106.74" latitude="25.43"/>
+<city name="龙里" longitude="106.98" latitude="26.46"/>
+<city name="三都" longitude="107.86" latitude="26"/>
+</provinces>
+<provinces name="辽宁">
+<city name="沈阳" longitude="123.38" latitude="41.8"/>
+<city name="新民" longitude="122.83" latitude="42"/>
+<city name="辽中" longitude="122.7" latitude="41.52"/>
+<city name="大连" longitude="121.62" latitude="38.92"/>
+<city name="金县" longitude="121.7" latitude="39.13"/>
+<city name="复县" longitude="121.97" latitude="39.63"/>
+<city name="新金" longitude="121.95" latitude="39.55"/>
+<city name="庄河" longitude="22.97" latitude="39.7"/>
+<city name="长海" longitude="122.58" latitude="39.28"/>
+<city name="鞍山" longitude="122.85" latitude="41.12"/>
+<city name="海城" longitude="122.75" latitude="40.85"/>
+<city name="台安" longitude="122.4" latitude="41.4"/>
+<city name="抚顺" longitude="123.97" latitude="41.97"/>
+<city name="新宾" longitude="125.02" latitude="41.72"/>
+<city name="清原" longitude="124.9" latitude="42.13"/>
+<city name="本溪" longitude="123.73" latitude="41.3"/>
+<city name="垣仁" longitude="125.33" latitude="41.28"/>
+<city name="锦州" longitude="121.15" latitude="41.13"/>
+<city name="锦县" longitude="121.35" latitude="41.17"/>
+<city name="义县" longitude="121.22" latitude="41.55"/>
+<city name="黑山" longitude="122.12" latitude="41.7"/>
+<city name="北镇" longitude="121.8" latitude="41.6"/>
+<city name="锦西" longitude="120.83" latitude="40.77"/>
+<city name="兴城" longitude="120.68" latitude="40.63"/>
+<city name="绥中" longitude="120.32" latitude="40.35"/>
+<city name="丹东" longitude="124.37" latitude="40.13"/>
+<city name="东沟" longitude="124.13" latitude="39.97"/>
+<city name="岫岩" longitude="123.25" latitude="40.3"/>
+<city name="凤城" longitude="124.05" latitude="40.47"/>
+<city name="宽甸" longitude="124.77" latitude="40.75"/>
+<city name="阜新" longitude="121.65" latitude="42"/>
+<city name="彰武" longitude="122.52" latitude="42.42"/>
+<city name="营口" longitude="122.18" latitude="40.65"/>
+<city name="盖县" longitude="122.37" latitude="40.42"/>
+<city name="盘山" longitude="122.03" latitude="41.02"/>
+<city name="大洼" longitude="122.06" latitude="41"/>
+<city name="辽阳" longitude="123.17" latitude="41.28"/>
+<city name="灯塔" longitude="123.34" latitude="41.43"/>
+<city name="铁岭" longitude="123.85" latitude="42.32"/>
+<city name="开原" longitude="124.03" latitude="42.53"/>
+<city name="昌图" longitude="124.13" latitude="42.8"/>
+<city name="铁法" longitude="123.5" latitude="42.48"/>
+<city name="康平" longitude="123.33" latitude="42.75"/>
+<city name="法库" longitude="123.37" latitude="42.52"/>
+<city name="西丰" longitude="124.7" latitude="42.77"/>
+<city name="朝阳" longitude="120.42" latitude="41.58"/>
+<city name="建昌" longitude="119.78" latitude="40.82"/>
+<city name="北票" longitude="120.75" latitude="41.82"/>
+<city name="凌源" longitude="119.37" latitude="41.27"/>
+<city name="建平" longitude="119.63" latitude="41.38"/>
+</provinces>
+<provinces name="重庆">
+<city name="重庆" longitude="106.54" latitude="29.59"/>
+<city name="綦江" longitude="106.56" latitude="29.41"/>
+<city name="长寿" longitude="106.64" latitude="29.01"/>
+<city name="南桐" longitude="107.04" latitude="29.86"/>
+<city name="合川" longitude="106.28" latitude="29.26"/>
+<city name="潼南" longitude="106.22" latitude="30.03"/>
+<city name="铜梁" longitude="105.8" latitude="30.16"/>
+<city name="壁山" longitude="106.03" latitude="29.86"/>
+<city name="荣昌" longitude="106.21" latitude="29.62"/>
+<city name="大足" longitude="105.59" latitude="29.4"/>
+<city name="永川" longitude="105.71" latitude="29.75"/>
+<city name="万盛" longitude="105.91" latitude="29.38"/>
+</provinces>
+<provinces name="陕西">
+<city name="西安" longitude="108.95" latitude="34.27"/>
+<city name="长安" longitude="108.97" latitude="34.18"/>
+<city name="铜川" longitude="109.11" latitude="35.09"/>
+<city name="耀县" longitude="108.98" latitude="34.91"/>
+<city name="宝鸡" longitude="107.15" latitude="34.38"/>
+<city name="凤翔" longitude="107.39" latitude="34.53"/>
+<city name="千阳" longitude="107.13" latitude="34.65"/>
+<city name="陇县" longitude="106.86" latitude="34.91"/>
+<city name="麟游" longitude="107.8" latitude="34.69"/>
+<city name="岐山" longitude="107.63" latitude="34.46"/>
+<city name="浮风" longitude="107.87" latitude="34.38"/>
+<city name="武功" longitude="108.22" latitude="34.28"/>
+<city name="眉县" longitude="107.76" latitude="34.29"/>
+<city name="太白" longitude="107.3" latitude="34.09"/>
+<city name="凤县" longitude="106.51" latitude="33.93"/>
+<city name="榆林" longitude="109.77" latitude="38.3"/>
+<city name="神木" longitude="110.51" latitude="38.83"/>
+<city name="府谷" longitude="111.07" latitude="39.05"/>
+<city name="佳县" longitude="110.48" latitude="38.04"/>
+<city name="米脂" longitude="110.23" latitude="37.78"/>
+<city name="吴堡" longitude="110.73" latitude="37.49"/>
+<city name="绥德" longitude="110.24" latitude="37.49"/>
+<city name="清涧" longitude="110.15" latitude="37.11"/>
+<city name="子洲" longitude="110.05" latitude="37.45"/>
+<city name="横山" longitude="109.32" latitude="37.97"/>
+<city name="靖边" longitude="108.79" latitude="37.61"/>
+<city name="定边" longitude="107.59" latitude="37.6"/>
+<city name="延安" longitude="109.47" latitude="36.6"/>
+<city name="安寨" longitude="109.34" latitude="36.88"/>
+<city name="子长" longitude="109.65" latitude="37.16"/>
+<city name="延川" longitude="110.18" latitude="36.87"/>
+<city name="延长" longitude="110.02" latitude="36.59"/>
+<city name="宜川" longitude="110.15" latitude="36.04"/>
+<city name="黄龙" longitude="109.86" latitude="35.6"/>
+<city name="洛川" longitude="109.42" latitude="35.76"/>
+<city name="宜君" longitude="109.11" latitude="35.43"/>
+<city name="黄陵" longitude="109.27" latitude="35.6"/>
+<city name="富县" longitude="109.37" latitude="36"/>
+<city name="甘泉" longitude="109.37" latitude="36.29"/>
+<city name="志丹" longitude="108.78" latitude="36.84"/>
+<city name="吴旗" longitude="108.22" latitude="36.93"/>
+<city name="咸阳" longitude="108.72" latitude="34.36"/>
+<city name="礼泉" longitude="108.43" latitude="34.5"/>
+<city name="永寿" longitude="108.14" latitude="34.71"/>
+<city name="彬县" longitude="108.09" latitude="35.04"/>
+<city name="长武" longitude="107.8" latitude="35.22"/>
+<city name="旬邑" longitude="108.33" latitude="35.13"/>
+<city name="淳化" longitude="108.57" latitude="34.81"/>
+<city name="泾阳" longitude="108.84" latitude="34.53"/>
+<city name="三原" longitude="108.94" latitude="34.62"/>
+<city name="高陵" longitude="109.1" latitude="34.55"/>
+<city name="户县" longitude="108.61" latitude="34.12"/>
+<city name="周至" longitude="108.22" latitude="34.18"/>
+<city name="兴平" longitude="108.49" latitude="34.32"/>
+<city name="乾县" longitude="108.25" latitude="34.54"/>
+<city name="渭南" longitude="109.5" latitude="34.52"/>
+<city name="蒲城" longitude="109.59" latitude="34.97"/>
+<city name="白水" longitude="109.6" latitude="35.18"/>
+<city name="成城" longitude="109.93" latitude="35.2"/>
+<city name="韩城" longitude="110.45" latitude="35.47"/>
+<city name="合阳" longitude="110.15" latitude="35.24"/>
+<city name="人荔" longitude="109.96" latitude="34.82"/>
+<city name="潼关" longitude="110.25" latitude="34.56"/>
+<city name="华阴" longitude="110.09" latitude="34.58"/>
+<city name="华县" longitude="109.77" latitude="34.53"/>
+<city name="蓝田" longitude="109.32" latitude="34.17"/>
+<city name="临潼" longitude="109.22" latitude="34.38"/>
+<city name="富平" longitude="109.17" latitude="34.76"/>
+<city name="商县" longitude="109.96" latitude="33.88"/>
+<city name="洛南" longitude="110.15" latitude="34.11"/>
+<city name="丹凤" longitude="110.35" latitude="33.71"/>
+<city name="商南" longitude="110.88" latitude="33.54"/>
+<city name="山阳" longitude="109.91" latitude="33.55"/>
+<city name="镇安" longitude="109.16" latitude="33.45"/>
+<city name="柞水" longitude="109.14" latitude="33.69"/>
+<city name="安康" longitude="109.02" latitude="32.7"/>
+<city name="旬阳" longitude="109.35" latitude="32.83"/>
+<city name="白河" longitude="110.06" latitude="32.83"/>
+<city name="平利" longitude="109.37" latitude="32.41"/>
+<city name="镇坪" longitude="109.51" latitude="31.91"/>
+<city name="岚皋" longitude="108.89" latitude="32.3"/>
+<city name="紫阳" longitude="108.55" latitude="32.56"/>
+<city name="汉阴" longitude="108.53" latitude="32.9"/>
+<city name="石泉" longitude="108.26" latitude="33.05"/>
+<city name="宁陕" longitude="108.33" latitude="33.34"/>
+<city name="汉中" longitude="108.04" latitude="33.07"/>
+<city name="留坝" longitude="106.95" latitude="33.65"/>
+<city name="城固" longitude="107.32" latitude="33.16"/>
+<city name="洋县" longitude="107.56" latitude="33.23"/>
+<city name="佛坪" longitude="108" latitude="33.55"/>
+<city name="西乡" longitude="107.77" latitude="33"/>
+<city name="镇巴" longitude="107.91" latitude="32.56"/>
+<city name="南郑" longitude="106.93" latitude="33"/>
+<city name="宁强" longitude="106.25" latitude="32.82"/>
+<city name="勉县" longitude="106.68" latitude="33.16"/>
+<city name="略阳" longitude="106.16" latitude="33.34"/>
+</provinces>
+<provinces name="青海">
+<city name="西宁" longitude="101.74" latitude="36.56"/>
+<city name="大通" longitude="101.67" latitude="36.92"/>
+<city name="平安" longitude="102.09" latitude="36.47"/>
+<city name="湟中" longitude="101.57" latitude="36.49"/>
+<city name="乐都" longitude="102.38" latitude="36.49"/>
+<city name="民和" longitude="102.8" latitude="36.3"/>
+<city name="湟源" longitude="101.28" latitude="36.72"/>
+<city name="互助" longitude="101.95" latitude="36.84"/>
+<city name="化隆" longitude="102.3" latitude="36.11"/>
+<city name="循化" longitude="102.46" latitude="35.84"/>
+<city name="门源" longitude="101.62" latitude="37.37"/>
+<city name="海晏" longitude="100.99" latitude="36.89"/>
+<city name="刚察" longitude="100.17" latitude="37.32"/>
+<city name="祁连" longitude="100.22" latitude="38.2"/>
+<city name="同仁" longitude="102" latitude="35.54"/>
+<city name="尖扎" longitude="102" latitude="35.92"/>
+<city name="泽库" longitude="101.5" latitude="35.03"/>
+<city name="河南" longitude="101.62" latitude="34.75"/>
+<city name="共和" longitude="100.61" latitude="36.27"/>
+<city name="贵德" longitude="101.47" latitude="36.02"/>
+<city name="贵南" longitude="100.75" latitude="35.57"/>
+<city name="同德" longitude="100.63" latitude="35.24"/>
+<city name="兴海" longitude="99.99" latitude="35.6"/>
+<city name="玛沁" longitude="100.26" latitude="34.49"/>
+<city name="甘德" longitude="99.89" latitude="33.95"/>
+<city name="久治" longitude="101.47" latitude="33.46"/>
+<city name="班玛" longitude="100.73" latitude="32.92"/>
+<city name="达日" longitude="99.68" latitude="33.74"/>
+<city name="玛多" longitude="98.26" latitude="34.92"/>
+<city name="玉树" longitude="96.97" latitude="33.03"/>
+<city name="称多" longitude="97.12" latitude="33.35"/>
+<city name="囊谦" longitude="96.47" latitude="32.23"/>
+<city name="杂多" longitude="95.3" latitude="32.92"/>
+<city name="治多" longitude="95.6" latitude="33.86"/>
+<city name="曲麻菜" longitude="95.5" latitude="34.52"/>
+<city name="格尔木" longitude="94.9" latitude="36.41"/>
+<city name="乌兰" longitude="98.46" latitude="36.9"/>
+<city name="都兰" longitude="98.13" latitude="36.3"/>
+<city name="天峻" longitude="99.03" latitude="37.28"/>
+</provinces>
+<provinces name="黑龙江">
+<city name="哈尔滨" longitude="126.63" latitude="45.75"/>
+<city name="齐齐哈尔" longitude="123.97" latitude="47.33"/>
+<city name="鹤岗" longitude="130.3" latitude="47.33"/>
+<city name="双鸭山" longitude="131.17" latitude="46.65"/>
+<city name="鸡四" longitude="130.97" latitude="45.3"/>
+<city name="大庆" longitude="125.03" latitude="46.58"/>
+<city name="伊春" longitude="128.92" latitude="47.73"/>
+<city name="嘉荫" longitude="130" latitude="48.93"/>
+<city name="铁力" longitude="128.08" latitude="47.98"/>
+<city name="绥化" longitude="127" latitude="46.63"/>
+<city name="绥棱" longitude="127.12" latitude="47.22"/>
+<city name="海伦" longitude="126.97" latitude="47.47"/>
+<city name="庆安" longitude="127.5" latitude="46.87"/>
+<city name="兰西" longitude="126.3" latitude="46.28"/>
+<city name="肇东" longitude="125.98" latitude="46.07"/>
+<city name="肇州" longitude="125.25" latitude="45.72"/>
+<city name="肇源" longitude="125.07" latitude="45.53"/>
+<city name="安达" longitude="125.33" latitude="46.42"/>
+<city name="明水" longitude="125.88" latitude="47.18"/>
+<city name="青岗" longitude="126.13" latitude="46.68"/>
+<city name="望奎" longitude="126.5" latitude="46.83"/>
+<city name="黑河" longitude="127.53" latitude="50.22"/>
+<city name="爱辉" longitude="127.53" latitude="50.22"/>
+<city name="德都" longitude="126.17" latitude="48.5"/>
+<city name="通北" longitude="126.8" latitude="49.76"/>
+<city name="北安" longitude="126.5" latitude="48.22"/>
+<city name="孙吴" longitude="127.5" latitude="49.22"/>
+<city name="逊克" longitude="128.42" latitude="49.57"/>
+<city name="嫩江" longitude="125.2" latitude="49.17"/>
+<city name="佳木斯" longitude="130.35" latitude="46.83"/>
+<city name="桦川" longitude="130.68" latitude="47.02"/>
+<city name="萝北" longitude="130.83" latitude="47.58"/>
+<city name="绥滨" longitude="131.83" latitude="47.3"/>
+<city name="富锦" longitude="132.02" latitude="47.23"/>
+<city name="同江" longitude="132.5" latitude="47.67"/>
+<city name="抚远" longitude="134.15" latitude="48.33"/>
+<city name="饶河" longitude="134" latitude="46.78"/>
+<city name="七台河" longitude="130.83" latitude="45.82"/>
+<city name="宝清" longitude="132.17" latitude="46.33"/>
+<city name="集贤" longitude="131.13" latitude="46.7"/>
+<city name="勃利" longitude="130.53" latitude="45.75"/>
+<city name="桦南" longitude="130.53" latitude="46.25"/>
+<city name="依兰" longitude="129.55" latitude="46.33"/>
+<city name="汤源" longitude="129.92" latitude="46.73"/>
+<city name="牡丹江" longitude="129.58" latitude="44.6"/>
+<city name="林口" longitude="130.23" latitude="45.3"/>
+<city name="鸡东" longitude="131.04" latitude="45.27"/>
+<city name="密山" longitude="131.85" latitude="45.53"/>
+<city name="虎林" longitude="133.97" latitude="45.75"/>
+<city name="绥芬河" longitude="131.17" latitude="44.38"/>
+<city name="东宁" longitude="131.12" latitude="44.07"/>
+<city name="穆棱" longitude="130.5" latitude="44.9"/>
+<city name="宁安" longitude="129.47" latitude="44.35"/>
+<city name="海林" longitude="129.35" latitude="44.57"/>
+<city name="阿城" longitude="126.95" latitude="45.52"/>
+<city name="呼兰" longitude="126.58" latitude="46"/>
+<city name="巴彦" longitude="127.38" latitude="46.08"/>
+<city name="宾县" longitude="127.48" latitude="45.75"/>
+<city name="木兰" longitude="128.03" latitude="45.95"/>
+<city name="通河" longitude="128.7" latitude="45.98"/>
+<city name="方正" longitude="128.8" latitude="45.83"/>
+<city name="延寿" longitude="128.35" latitude="45.47"/>
+<city name="尚志" longitude="127.95" latitude="45.22"/>
+<city name="五常" longitude="127.17" latitude="44.93"/>
+<city name="双城" longitude="126.32" latitude="45.53"/>
+<city name="富裕" longitude="124.4" latitude="47.8"/>
+<city name="讷河" longitude="124.85" latitude="48.48"/>
+<city name="克山" longitude="125.87" latitude="48.03"/>
+<city name="克东" longitude="126.22" latitude="48.03"/>
+<city name="拜泉" longitude="126.07" latitude="47.62"/>
+<city name="依安" longitude="125.3" latitude="47.92"/>
+<city name="林甸" longitude="124.87" latitude="47.18"/>
+<city name="泰来" longitude="123.45" latitude="46.4"/>
+<city name="龙江" longitude="123.18" latitude="47.35"/>
+<city name="甘南" longitude="123.48" latitude="47.9"/>
+<city name="杜尔伯特" longitude="124.44" latitude="46.86"/>
+<city name="加格达奇" longitude="124.07" latitude="50.42"/>
+<city name="呼玛" longitude="126.6" latitude="51.72"/>
+<city name="塔河" longitude="124.7" latitude="52.32"/>
+<city name="漠河" longitude="122.37" latitude="53.48"/>
+</provinces>
+*/
+  }
 })
