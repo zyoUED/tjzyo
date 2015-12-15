@@ -1,0 +1,27 @@
+{
+  "name": "tjzyo",
+  "description": "zyo webapp base on thinkjs",
+  "main": "index.js",
+  "authors": [
+    "cdll"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "thinkjs",
+    "avalonjs",
+    "webapp"
+  ],
+  "homepage": "https://github.com/cdll/tjzyo",
+  "moduleType": [],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "avalon": "~1.5.5",
+    "jquery": "~2.1.4"
+  }
+}
