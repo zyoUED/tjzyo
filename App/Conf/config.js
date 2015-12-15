@@ -1,6 +1,7 @@
+//console.log(process.env.IP, process.env.PORT)
 module.exports = {
   //配置项: 配置值
-  port: process.env.PORT||3000, //监听的端口
+  port: process.env.PORT||8360, //监听的端口
   db_type: 'mysql', // 数据库类型
   db_host: process.env.IP||'127.0.0.1', // 服务器地址
   db_port: '', // 端口
@@ -13,7 +14,7 @@ module.exports = {
     /*表示当访问一个不存在的控制器时，会执行Home分组下IndexController下的_404Action方法
     /*如果指定的控制器或者方法不存在，则会报错
     */
-    call_controller: "Home:Index:_404",
+  call_controller: "Home:Index:_404",
 
   // session
   session_name: "zyinfo", //session对应的cookie名称
