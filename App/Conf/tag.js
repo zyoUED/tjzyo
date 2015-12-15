@@ -11,9 +11,9 @@ module.exports = {
   //pathinfo 解析
   path_info: [],
   // 静态资源请求检测
-  resource_check: ["CheckResource"],
+  resource_check: [],
   // 路由检测
-  route_check: ["CheckRoute"],
+  route_check: [],
   // 应用开始
   app_begin: function(){
     console.log(123)
@@ -23,13 +23,13 @@ module.exports = {
   // 模版解析初始化
   view_init: [],
   // 定位模版文件
-  view_template: ["LocationTemplate"],
+  view_template: [],
   // 模版解析
-  view_parse: ["ParseTemplate"],
+  view_parse: [],
   // 模版内容过滤
   view_filter: [],
   // 模版解析结束
-  view_end: ["WriteHtmlCache"],
+  view_end: [],
   //action 结束
   action_end: [],
   // 应用结束
