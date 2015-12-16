@@ -22,6 +22,7 @@
   ],
   "dependencies": {
     "avalon": "~1.5.5",
-    "jquery": "~2.1.4"
+    "jquery": "~2.1.4",
+    "itemslide": "~1.3.0"
   }
 }
