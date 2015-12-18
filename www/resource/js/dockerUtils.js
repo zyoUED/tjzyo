@@ -4,9 +4,9 @@
 /* @author: cdll
 /*/
 define(function (require, exports, module) {
-    exports.tabChanger= function(className){
-        var tabs= document.getElementsByClassName(className);
-        console.log(tabs);
-        return tabs;
-    };
+  exports.tabChanger= function(className){
+    var tabs= document.getElementsByClassName(className);
+    console.log(tabs);
+    return tabs;
+  };
 });
